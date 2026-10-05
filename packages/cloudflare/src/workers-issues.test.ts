@@ -1,10 +1,11 @@
-import { describe, expect, test } from "bun:test";
 import { buildRequest } from "@distilled.cloud/core/protocol-http";
 import { runValidationModes } from "@distilled.cloud/core/testing";
 import * as Effect from "effect/Effect";
+import * as Redacted from "effect/Redacted";
 import * as Schema from "effect/Schema";
 import type * as AST from "effect/SchemaAST";
-import { credentials } from "./credentials.ts";
+import { describe, expect, test } from "vitest";
+import { Credentials, DEFAULT_API_BASE_URL } from "./credentials.ts";
 import type { CloudflareOpContext } from "./protocol.ts";
 import * as Retry from "./retry.ts";
 import * as Workers from "./services/workers.ts";
@@ -26,7 +27,17 @@ const multipartMetadata = (inputAst: AST.AST, input: unknown) => {
 };
 const run = <A, E>(operation: Effect.Effect<A, E, CloudflareOpContext>, result: unknown) =>
   runValidationModes(
-    operation.pipe(Retry.none, Effect.provide(credentials({ apiToken: "offline-fixture" }))),
+    operation.pipe(
+      Retry.none,
+      Effect.provideService(
+        Credentials,
+        Effect.succeed({
+          type: "apiToken",
+          apiToken: Redacted.make("offline-fixture"),
+          apiBaseUrl: DEFAULT_API_BASE_URL,
+        }),
+      ),
+    ),
     { body: JSON.stringify({ success: true, errors: [], messages: [], result }) },
   );
 
@@ -106,7 +117,7 @@ for (const enabled of [true, false]) {
       ).toEqual(input);
       const built = request(Workers.PatchScriptSettingRequest.ast, input);
       expect(built.method).toBe("PATCH");
-      expect(built.url).toEndWith("/scripts/issues-worker/script-settings");
+      expect(built.url.endsWith("/scripts/issues-worker/script-settings")).toBe(true);
       if (built.body._tag !== "Uint8Array") throw new Error("Expected a JSON body");
       expect(JSON.parse(new TextDecoder().decode(built.body.body))).toEqual({
         observability: { issues: { enabled } },
@@ -120,7 +131,7 @@ for (const enabled of [true, false]) {
       } satisfies Workers.PatchScriptSettingRequest;
       const built = request(Workers.PatchScriptSettingRequest.ast, input);
       expect(built.method).toBe("PATCH");
-      expect(built.url).toEndWith("/scripts/issues-worker/script-settings");
+      expect(built.url.endsWith("/scripts/issues-worker/script-settings")).toBe(true);
       if (built.body._tag !== "Uint8Array") throw new Error("Expected a JSON body");
       expect(JSON.parse(new TextDecoder().decode(built.body.body))).toEqual({
         observability: observability(enabled),
