@@ -178,14 +178,7 @@ export class DuplicateMigrationTarget
       code: S.Number,
       message: S.String,
     }),
-    [
-      {
-        code: 10074,
-        message: {
-          includes: "cannot be the target of more than one migration",
-        },
-      },
-    ],
+    [{ code: 10074, message: { includes: "cannot be the target of more than one migration" } }],
   ) {}
 
 export class DurableObjectClassNotFound
@@ -595,9 +588,7 @@ export const ScriptsSecretsBulkUpdateRequestSecrets = /*@__PURE__*/ S.Unknown.pi
   ),
 );
 
-export type ScriptsSecretsBulkUpdateRequestVersionTagsMap = {
-  [key: string]: unknown | undefined;
-};
+export type ScriptsSecretsBulkUpdateRequestVersionTagsMap = { [key: string]: unknown | undefined };
 export const ScriptsSecretsBulkUpdateRequestVersionTagsMap = /*@__PURE__*/ S.Record(
   S.String,
   S.Unknown,
@@ -760,9 +751,7 @@ export const CreateAssetUploadRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "CreateAssetUploadRequest",
-}) as any as S.Schema<CreateAssetUploadRequest>;
+).annotate({ identifier: "CreateAssetUploadRequest" }) as any as S.Schema<CreateAssetUploadRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface CreateAssetUploadResponse {
@@ -940,17 +929,9 @@ export const CreateBetaWorkerRequest = /*@__PURE__*/ S.suspend(() =>
       BetaWorkersCreateRequestTailConsumersList.pipe(T.Body("tail_consumers")),
     ),
   })
-    .pipe(
-      T.Http({
-        method: "POST",
-        uri: "/accounts/{account_id}/workers/workers",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "POST", uri: "/accounts/{account_id}/workers/workers", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "CreateBetaWorkerRequest",
-}) as any as S.Schema<CreateBetaWorkerRequest>;
+).annotate({ identifier: "CreateBetaWorkerRequest" }) as any as S.Schema<CreateBetaWorkerRequest>;
 
 export type BetaWorkersCreateResponseObservabilityLogsDestinationsList = Array<string>;
 export const BetaWorkersCreateResponseObservabilityLogsDestinationsList = /*@__PURE__*/ S.Array(
@@ -1279,9 +1260,7 @@ export const CreateBetaWorkerResponse = /*@__PURE__*/ S.suspend(() =>
     updatedOn: S.String.pipe(T.Body("updated_on")),
     deployedOn: S.optional(S.NullOr(S.String).pipe(T.Body("deployed_on"))),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "CreateBetaWorkerResponse",
-}) as any as S.Schema<CreateBetaWorkerResponse>;
+).annotate({ identifier: "CreateBetaWorkerResponse" }) as any as S.Schema<CreateBetaWorkerResponse>;
 
 export interface BetaWorkersVersionsCreateRequestAnnotations {
   /** Human-readable message about the version. Truncated to 1000 bytes if longer. */
@@ -7231,9 +7210,7 @@ export const PreviewTailConsumer = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     name: S.String,
   }),
-).annotate({
-  identifier: "PreviewTailConsumer",
-}) as any as S.Schema<PreviewTailConsumer>;
+).annotate({ identifier: "PreviewTailConsumer" }) as any as S.Schema<PreviewTailConsumer>;
 
 export type PreviewTailConsumersList = Array<PreviewTailConsumer>;
 export const PreviewTailConsumersList = /*@__PURE__*/ S.Array(
@@ -7268,9 +7245,7 @@ export const CreatePreviewRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "CreatePreviewRequest",
-}) as any as S.Schema<CreatePreviewRequest>;
+).annotate({ identifier: "CreatePreviewRequest" }) as any as S.Schema<CreatePreviewRequest>;
 
 export type PreviewUrlsList = Array<string>;
 export const PreviewUrlsList = /*@__PURE__*/ S.Array(S.String) as any as S.Schema<PreviewUrlsList>;
@@ -7305,9 +7280,7 @@ export const PreviewResource = /*@__PURE__*/ S.suspend(() =>
     createdOn: S.optional(S.NullOr(S.String).pipe(T.Body("created_on"))),
     updatedOn: S.optional(S.NullOr(S.String).pipe(T.Body("updated_on"))),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PreviewResource",
-}) as any as S.Schema<PreviewResource>;
+).annotate({ identifier: "PreviewResource" }) as any as S.Schema<PreviewResource>;
 
 export interface CreatePreviewDeploymentMetadataAssets {
   jwt?: string;
@@ -7450,17 +7423,9 @@ export const CreateRouteRequest = /*@__PURE__*/ S.suspend(() =>
     pattern: S.String,
     script: S.optional(S.String),
   })
-    .pipe(
-      T.Http({
-        method: "POST",
-        uri: "/zones/{zone_id}/workers/routes",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "POST", uri: "/zones/{zone_id}/workers/routes", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "CreateRouteRequest",
-}) as any as S.Schema<CreateRouteRequest>;
+).annotate({ identifier: "CreateRouteRequest" }) as any as S.Schema<CreateRouteRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface CreateRouteResponse {
@@ -7477,9 +7442,7 @@ export const CreateRouteResponse = /*@__PURE__*/ S.suspend(() =>
     pattern: S.String,
     script: S.optional(S.NullOr(S.String)),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "CreateRouteResponse",
-}) as any as S.Schema<CreateRouteResponse>;
+).annotate({ identifier: "CreateRouteResponse" }) as any as S.Schema<CreateRouteResponse>;
 
 export interface ScriptsAssetsUploadCreateRequestManifestValue {
   /** The hash of the file. */
@@ -9123,9 +9086,7 @@ export const CreateScriptTailRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "CreateScriptTailRequest",
-}) as any as S.Schema<CreateScriptTailRequest>;
+).annotate({ identifier: "CreateScriptTailRequest" }) as any as S.Schema<CreateScriptTailRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface CreateScriptTailResponse {
@@ -9140,9 +9101,7 @@ export const CreateScriptTailResponse = /*@__PURE__*/ S.suspend(() =>
     expiresAt: S.String.pipe(T.Body("expires_at")),
     url: S.String,
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "CreateScriptTailResponse",
-}) as any as S.Schema<CreateScriptTailResponse>;
+).annotate({ identifier: "CreateScriptTailResponse" }) as any as S.Schema<CreateScriptTailResponse>;
 
 export type ScriptsVersionsCreateRequestBindingsInherit = "strict";
 export const ScriptsVersionsCreateRequestBindingsInherit = S.String;
@@ -9204,9 +9163,7 @@ export const PutScriptAssetsConfig = /*@__PURE__*/ S.suspend(() =>
     headers: S.optional(S.String.pipe(T.Body("_headers"))),
     redirects: S.optional(S.String.pipe(T.Body("_redirects"))),
   }),
-).annotate({
-  identifier: "PutScriptAssetsConfig",
-}) as any as S.Schema<PutScriptAssetsConfig>;
+).annotate({ identifier: "PutScriptAssetsConfig" }) as any as S.Schema<PutScriptAssetsConfig>;
 
 export interface PutScriptMetadataAssets {
   config?: PutScriptAssetsConfig;
@@ -9217,9 +9174,7 @@ export const PutScriptMetadataAssets = /*@__PURE__*/ S.suspend(() =>
     config: S.optional(PutScriptAssetsConfig),
     jwt: S.optional(S.String),
   }),
-).annotate({
-  identifier: "PutScriptMetadataAssets",
-}) as any as S.Schema<PutScriptMetadataAssets>;
+).annotate({ identifier: "PutScriptMetadataAssets" }) as any as S.Schema<PutScriptMetadataAssets>;
 
 export type PutScriptBindingAiType = "ai";
 export const PutScriptBindingAiType = S.String;
@@ -9233,9 +9188,7 @@ export const PutScriptBindingAi = /*@__PURE__*/ S.suspend(() =>
     name: S.String,
     type: PutScriptBindingAiType,
   }),
-).annotate({
-  identifier: "PutScriptBindingAi",
-}) as any as S.Schema<PutScriptBindingAi>;
+).annotate({ identifier: "PutScriptBindingAi" }) as any as S.Schema<PutScriptBindingAi>;
 
 export type PutScriptBindingAiSearchType = "ai_search";
 export const PutScriptBindingAiSearchType = S.String;
@@ -9253,9 +9206,7 @@ export const PutScriptBindingAiSearch = /*@__PURE__*/ S.suspend(() =>
     namespace: S.optional(S.String),
     type: PutScriptBindingAiSearchType,
   }),
-).annotate({
-  identifier: "PutScriptBindingAiSearch",
-}) as any as S.Schema<PutScriptBindingAiSearch>;
+).annotate({ identifier: "PutScriptBindingAiSearch" }) as any as S.Schema<PutScriptBindingAiSearch>;
 
 export type PutScriptBindingAiSearchNamespaceType = "ai_search_namespace";
 export const PutScriptBindingAiSearchNamespaceType = S.String;
@@ -9305,9 +9256,7 @@ export const PutScriptBindingAssets = /*@__PURE__*/ S.suspend(() =>
     name: S.String,
     type: PutScriptBindingAssetsType,
   }),
-).annotate({
-  identifier: "PutScriptBindingAssets",
-}) as any as S.Schema<PutScriptBindingAssets>;
+).annotate({ identifier: "PutScriptBindingAssets" }) as any as S.Schema<PutScriptBindingAssets>;
 
 export type PutScriptBindingBrowserType = "browser";
 export const PutScriptBindingBrowserType = S.String;
@@ -9321,9 +9270,7 @@ export const PutScriptBindingBrowser = /*@__PURE__*/ S.suspend(() =>
     name: S.String,
     type: PutScriptBindingBrowserType,
   }),
-).annotate({
-  identifier: "PutScriptBindingBrowser",
-}) as any as S.Schema<PutScriptBindingBrowser>;
+).annotate({ identifier: "PutScriptBindingBrowser" }) as any as S.Schema<PutScriptBindingBrowser>;
 
 export type PutScriptBindingD1Type = "d1";
 export const PutScriptBindingD1Type = S.String;
@@ -9341,9 +9288,7 @@ export const PutScriptBindingD1 = /*@__PURE__*/ S.suspend(() =>
     id: S.optional(S.String),
     type: PutScriptBindingD1Type,
   }),
-).annotate({
-  identifier: "PutScriptBindingD1",
-}) as any as S.Schema<PutScriptBindingD1>;
+).annotate({ identifier: "PutScriptBindingD1" }) as any as S.Schema<PutScriptBindingD1>;
 
 export type PutScriptBindingDataBlobType = "data_blob";
 export const PutScriptBindingDataBlobType = S.String;
@@ -9359,9 +9304,7 @@ export const PutScriptBindingDataBlob = /*@__PURE__*/ S.suspend(() =>
     part: S.String,
     type: PutScriptBindingDataBlobType,
   }),
-).annotate({
-  identifier: "PutScriptBindingDataBlob",
-}) as any as S.Schema<PutScriptBindingDataBlob>;
+).annotate({ identifier: "PutScriptBindingDataBlob" }) as any as S.Schema<PutScriptBindingDataBlob>;
 
 export type PutScriptBindingDispatchNamespaceOutboundParam = PreviewTailConsumer;
 export const PutScriptBindingDispatchNamespaceOutboundParam = PreviewTailConsumer;
@@ -9479,9 +9422,7 @@ export const PutScriptBindingInherit = /*@__PURE__*/ S.suspend(() =>
     versionId: S.optional(S.String.pipe(T.Body("version_id"))),
     type: PutScriptBindingInheritType,
   }),
-).annotate({
-  identifier: "PutScriptBindingInherit",
-}) as any as S.Schema<PutScriptBindingInherit>;
+).annotate({ identifier: "PutScriptBindingInherit" }) as any as S.Schema<PutScriptBindingInherit>;
 
 export type PutScriptBindingImagesType = "images";
 export const PutScriptBindingImagesType = S.String;
@@ -9495,9 +9436,7 @@ export const PutScriptBindingImages = /*@__PURE__*/ S.suspend(() =>
     name: S.String,
     type: PutScriptBindingImagesType,
   }),
-).annotate({
-  identifier: "PutScriptBindingImages",
-}) as any as S.Schema<PutScriptBindingImages>;
+).annotate({ identifier: "PutScriptBindingImages" }) as any as S.Schema<PutScriptBindingImages>;
 
 export type PutScriptBindingJsonType = "json";
 export const PutScriptBindingJsonType = S.String;
@@ -9513,9 +9452,7 @@ export const PutScriptBindingJson = /*@__PURE__*/ S.suspend(() =>
     name: S.String,
     type: PutScriptBindingJsonType,
   }),
-).annotate({
-  identifier: "PutScriptBindingJson",
-}) as any as S.Schema<PutScriptBindingJson>;
+).annotate({ identifier: "PutScriptBindingJson" }) as any as S.Schema<PutScriptBindingJson>;
 
 export type PutScriptBindingKvNamespaceType = "kv_namespace";
 export const PutScriptBindingKvNamespaceType = S.String;
@@ -9547,9 +9484,7 @@ export const PutScriptBindingMedia = /*@__PURE__*/ S.suspend(() =>
     name: S.String,
     type: PutScriptBindingMediaType,
   }),
-).annotate({
-  identifier: "PutScriptBindingMedia",
-}) as any as S.Schema<PutScriptBindingMedia>;
+).annotate({ identifier: "PutScriptBindingMedia" }) as any as S.Schema<PutScriptBindingMedia>;
 
 export type PutScriptBindingMtlsCertificateType = "mtls_certificate";
 export const PutScriptBindingMtlsCertificateType = S.String;
@@ -9619,9 +9554,7 @@ export const PutScriptBindingQueue = /*@__PURE__*/ S.suspend(() =>
     queueName: S.String.pipe(T.Body("queue_name")),
     type: PutScriptBindingQueueType,
   }),
-).annotate({
-  identifier: "PutScriptBindingQueue",
-}) as any as S.Schema<PutScriptBindingQueue>;
+).annotate({ identifier: "PutScriptBindingQueue" }) as any as S.Schema<PutScriptBindingQueue>;
 
 export interface PutScriptBindingRatelimitSimple {
   limit: number;
@@ -9677,9 +9610,7 @@ export const PutScriptBindingR2Bucket = /*@__PURE__*/ S.suspend(() =>
     jurisdiction: S.optional(PutScriptBindingR2BucketJurisdiction),
     type: PutScriptBindingR2BucketType,
   }),
-).annotate({
-  identifier: "PutScriptBindingR2Bucket",
-}) as any as S.Schema<PutScriptBindingR2Bucket>;
+).annotate({ identifier: "PutScriptBindingR2Bucket" }) as any as S.Schema<PutScriptBindingR2Bucket>;
 
 export type PutScriptBindingSecretTextType = "secret_text";
 export const PutScriptBindingSecretTextType = S.String;
@@ -9743,9 +9674,7 @@ export const PutScriptBindingService = /*@__PURE__*/ S.suspend(() =>
     environment: S.optional(S.String),
     type: PutScriptBindingServiceType,
   }),
-).annotate({
-  identifier: "PutScriptBindingService",
-}) as any as S.Schema<PutScriptBindingService>;
+).annotate({ identifier: "PutScriptBindingService" }) as any as S.Schema<PutScriptBindingService>;
 
 export type PutScriptBindingTextBlobType = "text_blob";
 export const PutScriptBindingTextBlobType = S.String;
@@ -9761,9 +9690,7 @@ export const PutScriptBindingTextBlob = /*@__PURE__*/ S.suspend(() =>
     part: S.String,
     type: PutScriptBindingTextBlobType,
   }),
-).annotate({
-  identifier: "PutScriptBindingTextBlob",
-}) as any as S.Schema<PutScriptBindingTextBlob>;
+).annotate({ identifier: "PutScriptBindingTextBlob" }) as any as S.Schema<PutScriptBindingTextBlob>;
 
 export type PutScriptBindingVectorizeType = "vectorize";
 export const PutScriptBindingVectorizeType = S.String;
@@ -9833,9 +9760,7 @@ export const PutScriptBindingFlagship = /*@__PURE__*/ S.suspend(() =>
     name: S.String,
     type: PutScriptBindingFlagshipType,
   }),
-).annotate({
-  identifier: "PutScriptBindingFlagship",
-}) as any as S.Schema<PutScriptBindingFlagship>;
+).annotate({ identifier: "PutScriptBindingFlagship" }) as any as S.Schema<PutScriptBindingFlagship>;
 
 export type PutScriptBindingSecretKeyFormat = "raw" | "pkcs8" | "spki" | "jwk";
 export const PutScriptBindingSecretKeyFormat = S.String;
@@ -9902,9 +9827,7 @@ export const PutScriptBindingWorkflow = /*@__PURE__*/ S.suspend(() =>
     scriptName: S.optional(S.String.pipe(T.Body("script_name"))),
     type: PutScriptBindingWorkflowType,
   }),
-).annotate({
-  identifier: "PutScriptBindingWorkflow",
-}) as any as S.Schema<PutScriptBindingWorkflow>;
+).annotate({ identifier: "PutScriptBindingWorkflow" }) as any as S.Schema<PutScriptBindingWorkflow>;
 
 export type PutScriptBindingWasmModuleType = "wasm_module";
 export const PutScriptBindingWasmModuleType = S.String;
@@ -10008,9 +9931,7 @@ export const PutScriptBindingStream = /*@__PURE__*/ S.suspend(() =>
     name: S.String,
     type: PutScriptBindingStreamType,
   }),
-).annotate({
-  identifier: "PutScriptBindingStream",
-}) as any as S.Schema<PutScriptBindingStream>;
+).annotate({ identifier: "PutScriptBindingStream" }) as any as S.Schema<PutScriptBindingStream>;
 
 export type PutScriptBinding =
   | PutScriptBindingAi
@@ -10237,9 +10158,7 @@ export const PutScriptMigrationStep = /*@__PURE__*/ S.suspend(() =>
       PutScriptMigrationTransferredClassesList.pipe(T.Body("transferred_classes")),
     ),
   }),
-).annotate({
-  identifier: "PutScriptMigrationStep",
-}) as any as S.Schema<PutScriptMigrationStep>;
+).annotate({ identifier: "PutScriptMigrationStep" }) as any as S.Schema<PutScriptMigrationStep>;
 
 export type PutScriptMigrationStepsList = Array<PutScriptMigrationStep>;
 export const PutScriptMigrationStepsList = /*@__PURE__*/ S.Array(
@@ -10322,18 +10241,32 @@ export const PutScriptObservabilityTraces = /*@__PURE__*/ S.suspend(() =>
   identifier: "PutScriptObservabilityTraces",
 }) as any as S.Schema<PutScriptObservabilityTraces>;
 
-export interface PutScriptMetadataObservability {
+export interface PutScriptObservabilityIssues {
+  /** Whether Workers Issues error monitoring is enabled. */
   enabled: boolean;
+}
+export const PutScriptObservabilityIssues = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    enabled: S.Boolean,
+  }),
+).annotate({
+  identifier: "PutScriptObservabilityIssues",
+}) as any as S.Schema<PutScriptObservabilityIssues>;
+
+export interface PutScriptMetadataObservability {
+  enabled?: boolean;
   headSamplingRate?: number | null;
   logs?: PutScriptObservabilityLogs | null;
   traces?: PutScriptObservabilityTraces | null;
+  issues?: PutScriptObservabilityIssues;
 }
 export const PutScriptMetadataObservability = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    enabled: S.Boolean,
+    enabled: S.optional(S.Boolean),
     headSamplingRate: S.optional(S.NullOr(S.Number).pipe(T.Body("head_sampling_rate"))),
     logs: S.optional(S.NullOr(PutScriptObservabilityLogs)),
     traces: S.optional(S.NullOr(PutScriptObservabilityTraces)),
+    issues: S.optional(PutScriptObservabilityIssues),
   }),
 ).annotate({
   identifier: "PutScriptMetadataObservability",
@@ -10349,9 +10282,7 @@ export const PutScriptPlacementSmart = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     mode: PutScriptPlacementSmartMode,
   }),
-).annotate({
-  identifier: "PutScriptPlacementSmart",
-}) as any as S.Schema<PutScriptPlacementSmart>;
+).annotate({ identifier: "PutScriptPlacementSmart" }) as any as S.Schema<PutScriptPlacementSmart>;
 
 export type PutScriptPlacementRegion = CreateScriptEdgePreviewMetadataPlacementRegion;
 export const PutScriptPlacementRegion = CreateScriptEdgePreviewMetadataPlacementRegion;
@@ -10472,9 +10403,7 @@ export const PutScriptTailConsumer = /*@__PURE__*/ S.suspend(() =>
     environment: S.optional(S.String),
     namespace: S.optional(S.String),
   }),
-).annotate({
-  identifier: "PutScriptTailConsumer",
-}) as any as S.Schema<PutScriptTailConsumer>;
+).annotate({ identifier: "PutScriptTailConsumer" }) as any as S.Schema<PutScriptTailConsumer>;
 
 export type PutScriptMetadataTailConsumersList = Array<PutScriptTailConsumer>;
 export const PutScriptMetadataTailConsumersList = /*@__PURE__*/ S.Array(
@@ -10493,9 +10422,7 @@ export const PutScriptMetadataCache = /*@__PURE__*/ S.suspend(() =>
     enabled: S.optional(S.Boolean),
     crossVersionCache: S.optional(S.Boolean.pipe(T.Body("cross_version_cache"))),
   }),
-).annotate({
-  identifier: "PutScriptMetadataCache",
-}) as any as S.Schema<PutScriptMetadataCache>;
+).annotate({ identifier: "PutScriptMetadataCache" }) as any as S.Schema<PutScriptMetadataCache>;
 
 export type PutScriptMetadataStreamingTailConsumersList = Array<PutScriptTailConsumer>;
 export const PutScriptMetadataStreamingTailConsumersList = /*@__PURE__*/ S.Array(
@@ -10553,9 +10480,7 @@ export const PutScriptMetadata = /*@__PURE__*/ S.suspend(() =>
       ),
     ),
   }),
-).annotate({
-  identifier: "PutScriptMetadata",
-}) as any as S.Schema<PutScriptMetadata>;
+).annotate({ identifier: "PutScriptMetadata" }) as any as S.Schema<PutScriptMetadata>;
 
 export interface CreateScriptVersionRequest {
   /** Identifier. */
@@ -11489,13 +11414,7 @@ export const CreateZoneEdgePreviewSessionRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     zoneId: S.String.pipe(T.Label("zone_id")),
   })
-    .pipe(
-      T.Http({
-        method: "GET",
-        uri: "/zones/{zone_id}/workers/edge-preview",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "GET", uri: "/zones/{zone_id}/workers/edge-preview", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
 ).annotate({
   identifier: "CreateZoneEdgePreviewSessionRequest",
@@ -11535,16 +11454,12 @@ export const DeleteBetaWorkerRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteBetaWorkerRequest",
-}) as any as S.Schema<DeleteBetaWorkerRequest>;
+).annotate({ identifier: "DeleteBetaWorkerRequest" }) as any as S.Schema<DeleteBetaWorkerRequest>;
 
 export interface DeleteBetaWorkerResponse {}
 export const DeleteBetaWorkerResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({}).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteBetaWorkerResponse",
-}) as any as S.Schema<DeleteBetaWorkerResponse>;
+).annotate({ identifier: "DeleteBetaWorkerResponse" }) as any as S.Schema<DeleteBetaWorkerResponse>;
 
 export interface DeleteBetaWorkerVersionRequest {
   /** Identifier. */
@@ -11598,16 +11513,12 @@ export const DeleteDomainRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteDomainRequest",
-}) as any as S.Schema<DeleteDomainRequest>;
+).annotate({ identifier: "DeleteDomainRequest" }) as any as S.Schema<DeleteDomainRequest>;
 
 export interface DeleteDomainResponse {}
 export const DeleteDomainResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({}).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteDomainResponse",
-}) as any as S.Schema<DeleteDomainResponse>;
+).annotate({ identifier: "DeleteDomainResponse" }) as any as S.Schema<DeleteDomainResponse>;
 
 export interface DeleteObservabilityDestinationRequest {
   accountId: string;
@@ -11702,16 +11613,12 @@ export const DeletePreviewRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeletePreviewRequest",
-}) as any as S.Schema<DeletePreviewRequest>;
+).annotate({ identifier: "DeletePreviewRequest" }) as any as S.Schema<DeletePreviewRequest>;
 
 export interface DeletePreviewResponse {}
 export const DeletePreviewResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({}).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeletePreviewResponse",
-}) as any as S.Schema<DeletePreviewResponse>;
+).annotate({ identifier: "DeletePreviewResponse" }) as any as S.Schema<DeletePreviewResponse>;
 
 export interface DeleteRouteRequest {
   /** Identifier. */
@@ -11725,16 +11632,10 @@ export const DeleteRouteRequest = /*@__PURE__*/ S.suspend(() =>
     routeId: S.String.pipe(T.Label("route_id")),
   })
     .pipe(
-      T.Http({
-        method: "DELETE",
-        uri: "/zones/{zone_id}/workers/routes/{route_id}",
-        code: 200,
-      }),
+      T.Http({ method: "DELETE", uri: "/zones/{zone_id}/workers/routes/{route_id}", code: 200 }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteRouteRequest",
-}) as any as S.Schema<DeleteRouteRequest>;
+).annotate({ identifier: "DeleteRouteRequest" }) as any as S.Schema<DeleteRouteRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface DeleteRouteResponse {
@@ -11745,9 +11646,7 @@ export const DeleteRouteResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     id: S.optional(S.NullOr(S.String)),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteRouteResponse",
-}) as any as S.Schema<DeleteRouteResponse>;
+).annotate({ identifier: "DeleteRouteResponse" }) as any as S.Schema<DeleteRouteResponse>;
 
 export interface DeleteScriptRequest {
   /** Identifier. */
@@ -11771,16 +11670,12 @@ export const DeleteScriptRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteScriptRequest",
-}) as any as S.Schema<DeleteScriptRequest>;
+).annotate({ identifier: "DeleteScriptRequest" }) as any as S.Schema<DeleteScriptRequest>;
 
 export type DeleteScriptResponse = unknown;
 export const DeleteScriptResponse = /*@__PURE__*/ S.suspend(() =>
   S.Unknown.pipe(T.EnvelopePayloadRoot(), T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteScriptResponse",
-}) as any as S.Schema<DeleteScriptResponse>;
+).annotate({ identifier: "DeleteScriptResponse" }) as any as S.Schema<DeleteScriptResponse>;
 
 export interface DeleteScriptDeploymentRequest {
   /** Identifier. */
@@ -11911,16 +11806,12 @@ export const DeleteScriptTailRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteScriptTailRequest",
-}) as any as S.Schema<DeleteScriptTailRequest>;
+).annotate({ identifier: "DeleteScriptTailRequest" }) as any as S.Schema<DeleteScriptTailRequest>;
 
 export interface DeleteScriptTailResponse {}
 export const DeleteScriptTailResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({}).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteScriptTailResponse",
-}) as any as S.Schema<DeleteScriptTailResponse>;
+).annotate({ identifier: "DeleteScriptTailResponse" }) as any as S.Schema<DeleteScriptTailResponse>;
 
 export interface DeleteSubdomainRequest {
   /** Identifier. */
@@ -11930,24 +11821,14 @@ export const DeleteSubdomainRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     accountId: S.String.pipe(T.Label("account_id")),
   })
-    .pipe(
-      T.Http({
-        method: "DELETE",
-        uri: "/accounts/{account_id}/workers/subdomain",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "DELETE", uri: "/accounts/{account_id}/workers/subdomain", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteSubdomainRequest",
-}) as any as S.Schema<DeleteSubdomainRequest>;
+).annotate({ identifier: "DeleteSubdomainRequest" }) as any as S.Schema<DeleteSubdomainRequest>;
 
 export interface DeleteSubdomainResponse {}
 export const DeleteSubdomainResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({}).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "DeleteSubdomainResponse",
-}) as any as S.Schema<DeleteSubdomainResponse>;
+).annotate({ identifier: "DeleteSubdomainResponse" }) as any as S.Schema<DeleteSubdomainResponse>;
 
 export interface GetAccountSettingRequest {
   /** Identifier. */
@@ -11958,16 +11839,10 @@ export const GetAccountSettingRequest = /*@__PURE__*/ S.suspend(() =>
     accountId: S.String.pipe(T.Label("account_id")),
   })
     .pipe(
-      T.Http({
-        method: "GET",
-        uri: "/accounts/{account_id}/workers/account-settings",
-        code: 200,
-      }),
+      T.Http({ method: "GET", uri: "/accounts/{account_id}/workers/account-settings", code: 200 }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetAccountSettingRequest",
-}) as any as S.Schema<GetAccountSettingRequest>;
+).annotate({ identifier: "GetAccountSettingRequest" }) as any as S.Schema<GetAccountSettingRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface GetAccountSettingResponse {
@@ -12002,9 +11877,7 @@ export const GetBetaWorkerRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetBetaWorkerRequest",
-}) as any as S.Schema<GetBetaWorkerRequest>;
+).annotate({ identifier: "GetBetaWorkerRequest" }) as any as S.Schema<GetBetaWorkerRequest>;
 
 export type BetaWorkersGetResponseObservabilityLogsDestinationsList = Array<string>;
 export const BetaWorkersGetResponseObservabilityLogsDestinationsList = /*@__PURE__*/ S.Array(
@@ -12234,9 +12107,7 @@ export const GetBetaWorkerResponse = /*@__PURE__*/ S.suspend(() =>
     updatedOn: S.String.pipe(T.Body("updated_on")),
     deployedOn: S.optional(S.NullOr(S.String).pipe(T.Body("deployed_on"))),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetBetaWorkerResponse",
-}) as any as S.Schema<GetBetaWorkerResponse>;
+).annotate({ identifier: "GetBetaWorkerResponse" }) as any as S.Schema<GetBetaWorkerResponse>;
 
 export type BetaWorkersVersionsGetRequestInclude = "modules";
 export const BetaWorkersVersionsGetRequestInclude = S.String;
@@ -14420,9 +14291,7 @@ export const GetDomainRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetDomainRequest",
-}) as any as S.Schema<GetDomainRequest>;
+).annotate({ identifier: "GetDomainRequest" }) as any as S.Schema<GetDomainRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface GetDomainResponse {
@@ -14454,9 +14323,7 @@ export const GetDomainResponse = /*@__PURE__*/ S.suspend(() =>
     zoneName: S.String.pipe(T.Body("zone_name")),
     previewsEnabled: S.optional(S.NullOr(S.Boolean).pipe(T.Body("previews_enabled"))),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetDomainResponse",
-}) as any as S.Schema<GetDomainResponse>;
+).annotate({ identifier: "GetDomainResponse" }) as any as S.Schema<GetDomainResponse>;
 
 export type ObservabilitySharedQueriesGetRequestView = "events" | "invocations" | "calculations";
 export const ObservabilitySharedQueriesGetRequestView = S.String;
@@ -16474,9 +16341,7 @@ export const GetPreviewRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetPreviewRequest",
-}) as any as S.Schema<GetPreviewRequest>;
+).annotate({ identifier: "GetPreviewRequest" }) as any as S.Schema<GetPreviewRequest>;
 
 export interface GetPreviewDeploymentRequest {
   accountId: string;
@@ -16515,17 +16380,9 @@ export const GetRouteRequest = /*@__PURE__*/ S.suspend(() =>
     zoneId: S.String.pipe(T.Label("zone_id")),
     routeId: S.String.pipe(T.Label("route_id")),
   })
-    .pipe(
-      T.Http({
-        method: "GET",
-        uri: "/zones/{zone_id}/workers/routes/{route_id}",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "GET", uri: "/zones/{zone_id}/workers/routes/{route_id}", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetRouteRequest",
-}) as any as S.Schema<GetRouteRequest>;
+).annotate({ identifier: "GetRouteRequest" }) as any as S.Schema<GetRouteRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface GetRouteResponse {
@@ -16542,9 +16399,7 @@ export const GetRouteResponse = /*@__PURE__*/ S.suspend(() =>
     pattern: S.String,
     script: S.optional(S.NullOr(S.String)),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetRouteResponse",
-}) as any as S.Schema<GetRouteResponse>;
+).annotate({ identifier: "GetRouteResponse" }) as any as S.Schema<GetRouteResponse>;
 
 export interface GetScriptRequest {
   /** Identifier. */
@@ -16565,16 +16420,12 @@ export const GetScriptRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptRequest",
-}) as any as S.Schema<GetScriptRequest>;
+).annotate({ identifier: "GetScriptRequest" }) as any as S.Schema<GetScriptRequest>;
 
 export interface GetScriptResponse {}
 export const GetScriptResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({}).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptResponse",
-}) as any as S.Schema<GetScriptResponse>;
+).annotate({ identifier: "GetScriptResponse" }) as any as S.Schema<GetScriptResponse>;
 
 export interface GetScriptContentRequest {
   /** Identifier. */
@@ -16595,16 +16446,12 @@ export const GetScriptContentRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptContentRequest",
-}) as any as S.Schema<GetScriptContentRequest>;
+).annotate({ identifier: "GetScriptContentRequest" }) as any as S.Schema<GetScriptContentRequest>;
 
 export interface GetScriptContentResponse {}
 export const GetScriptContentResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({}).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptContentResponse",
-}) as any as S.Schema<GetScriptContentResponse>;
+).annotate({ identifier: "GetScriptContentResponse" }) as any as S.Schema<GetScriptContentResponse>;
 
 export interface GetScriptDeploymentRequest {
   /** Identifier. */
@@ -16690,9 +16537,7 @@ export const GetScriptScheduleRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptScheduleRequest",
-}) as any as S.Schema<GetScriptScheduleRequest>;
+).annotate({ identifier: "GetScriptScheduleRequest" }) as any as S.Schema<GetScriptScheduleRequest>;
 
 export interface ScriptsSchedulesGetResponseSchedulesItem {
   cron: string;
@@ -18701,6 +18546,9 @@ export const ScriptsScriptAndVersionSettingsGetResponseObservabilityTraces =
     identifier: "ScriptsScriptAndVersionSettingsGetResponseObservabilityTraces",
   }) as any as S.Schema<ScriptsScriptAndVersionSettingsGetResponseObservabilityTraces>;
 
+export type ObservabilityIssues = PutScriptObservabilityIssues;
+export const ObservabilityIssues = PutScriptObservabilityIssues;
+
 export interface ScriptsScriptAndVersionSettingsGetResponseObservability {
   /** Whether observability is enabled for the Worker. */
   enabled: boolean;
@@ -18712,6 +18560,7 @@ export interface ScriptsScriptAndVersionSettingsGetResponseObservability {
   redactQueryString?: boolean | null;
   /** Trace settings for the Worker. */
   traces?: ScriptsScriptAndVersionSettingsGetResponseObservabilityTraces | null;
+  issues?: PutScriptObservabilityIssues | null;
 }
 export const ScriptsScriptAndVersionSettingsGetResponseObservability = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -18720,6 +18569,7 @@ export const ScriptsScriptAndVersionSettingsGetResponseObservability = /*@__PURE
     logs: S.optional(S.NullOr(ScriptsScriptAndVersionSettingsGetResponseObservabilityLogs)),
     redactQueryString: S.optional(S.NullOr(S.Boolean).pipe(T.Body("redact_query_string"))),
     traces: S.optional(S.NullOr(ScriptsScriptAndVersionSettingsGetResponseObservabilityTraces)),
+    issues: S.optional(S.NullOr(PutScriptObservabilityIssues)),
   }),
 ).annotate({
   identifier: "ScriptsScriptAndVersionSettingsGetResponseObservability",
@@ -19014,9 +18864,7 @@ export const GetScriptSecretRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptSecretRequest",
-}) as any as S.Schema<GetScriptSecretRequest>;
+).annotate({ identifier: "GetScriptSecretRequest" }) as any as S.Schema<GetScriptSecretRequest>;
 
 export type ScriptsSecretsGetResultSecretTextType = "secret_text";
 export const ScriptsSecretsGetResultSecretTextType = S.String;
@@ -19108,9 +18956,7 @@ export const ScriptsSecretsGetResult = /*@__PURE__*/ S.Unknown.pipe(
 export type GetScriptSecretResponse = ScriptsSecretsGetResult;
 export const GetScriptSecretResponse = /*@__PURE__*/ S.suspend(() =>
   ScriptsSecretsGetResult.pipe(T.EnvelopePayloadRoot(), T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptSecretResponse",
-}) as any as S.Schema<GetScriptSecretResponse>;
+).annotate({ identifier: "GetScriptSecretResponse" }) as any as S.Schema<GetScriptSecretResponse>;
 
 export interface GetScriptSettingRequest {
   /** Identifier. */
@@ -19131,9 +18977,7 @@ export const GetScriptSettingRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptSettingRequest",
-}) as any as S.Schema<GetScriptSettingRequest>;
+).annotate({ identifier: "GetScriptSettingRequest" }) as any as S.Schema<GetScriptSettingRequest>;
 
 export type ScriptsSettingsGetResponseObservabilityLogsDestinationsList = Array<string>;
 export const ScriptsSettingsGetResponseObservabilityLogsDestinationsList = /*@__PURE__*/ S.Array(
@@ -19215,6 +19059,7 @@ export interface ScriptsSettingsGetResponseObservability {
   redactQueryString?: boolean | null;
   /** Trace settings for the Worker. */
   traces?: ScriptsSettingsGetResponseObservabilityTraces | null;
+  issues?: PutScriptObservabilityIssues | null;
 }
 export const ScriptsSettingsGetResponseObservability = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -19223,6 +19068,7 @@ export const ScriptsSettingsGetResponseObservability = /*@__PURE__*/ S.suspend((
     logs: S.optional(S.NullOr(ScriptsSettingsGetResponseObservabilityLogs)),
     redactQueryString: S.optional(S.NullOr(S.Boolean).pipe(T.Body("redact_query_string"))),
     traces: S.optional(S.NullOr(ScriptsSettingsGetResponseObservabilityTraces)),
+    issues: S.optional(S.NullOr(PutScriptObservabilityIssues)),
   }),
 ).annotate({
   identifier: "ScriptsSettingsGetResponseObservability",
@@ -19264,9 +19110,7 @@ export const GetScriptSettingResponse = /*@__PURE__*/ S.suspend(() =>
       S.NullOr(ScriptsSettingsGetResponseTailConsumersList).pipe(T.Body("tail_consumers")),
     ),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptSettingResponse",
-}) as any as S.Schema<GetScriptSettingResponse>;
+).annotate({ identifier: "GetScriptSettingResponse" }) as any as S.Schema<GetScriptSettingResponse>;
 
 export interface GetScriptSubdomainRequest {
   /** Identifier. */
@@ -19326,9 +19170,7 @@ export const GetScriptTailRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptTailRequest",
-}) as any as S.Schema<GetScriptTailRequest>;
+).annotate({ identifier: "GetScriptTailRequest" }) as any as S.Schema<GetScriptTailRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface GetScriptTailResponse {
@@ -19343,9 +19185,7 @@ export const GetScriptTailResponse = /*@__PURE__*/ S.suspend(() =>
     expiresAt: S.String.pipe(T.Body("expires_at")),
     url: S.String,
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptTailResponse",
-}) as any as S.Schema<GetScriptTailResponse>;
+).annotate({ identifier: "GetScriptTailResponse" }) as any as S.Schema<GetScriptTailResponse>;
 
 export interface GetScriptVersionRequest {
   /** Identifier. */
@@ -19368,9 +19208,7 @@ export const GetScriptVersionRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptVersionRequest",
-}) as any as S.Schema<GetScriptVersionRequest>;
+).annotate({ identifier: "GetScriptVersionRequest" }) as any as S.Schema<GetScriptVersionRequest>;
 
 export type ScriptsVersionsGetResponseResourcesScriptHandlersList = Array<string>;
 export const ScriptsVersionsGetResponseResourcesScriptHandlersList = /*@__PURE__*/ S.Array(
@@ -19787,9 +19625,7 @@ export const GetScriptVersionResponse = /*@__PURE__*/ S.suspend(() =>
     metadata: S.optional(S.NullOr(ScriptsVersionsGetResponseMetadata)),
     number: S.optional(S.NullOr(S.Number)),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetScriptVersionResponse",
-}) as any as S.Schema<GetScriptVersionResponse>;
+).annotate({ identifier: "GetScriptVersionResponse" }) as any as S.Schema<GetScriptVersionResponse>;
 
 export interface GetSubdomainRequest {
   /** Identifier. */
@@ -19799,17 +19635,9 @@ export const GetSubdomainRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     accountId: S.String.pipe(T.Label("account_id")),
   })
-    .pipe(
-      T.Http({
-        method: "GET",
-        uri: "/accounts/{account_id}/workers/subdomain",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "GET", uri: "/accounts/{account_id}/workers/subdomain", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetSubdomainRequest",
-}) as any as S.Schema<GetSubdomainRequest>;
+).annotate({ identifier: "GetSubdomainRequest" }) as any as S.Schema<GetSubdomainRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface GetSubdomainResponse {
@@ -19819,9 +19647,7 @@ export const GetSubdomainResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     subdomain: S.String,
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "GetSubdomainResponse",
-}) as any as S.Schema<GetSubdomainResponse>;
+).annotate({ identifier: "GetSubdomainResponse" }) as any as S.Schema<GetSubdomainResponse>;
 
 export type ObservabilityTelemetryKeysRequestDatasetsList = Array<string>;
 export const ObservabilityTelemetryKeysRequestDatasetsList = /*@__PURE__*/ S.Array(
@@ -20258,17 +20084,9 @@ export const ListBetaWorkersRequest = /*@__PURE__*/ S.suspend(() =>
     page: S.optional(S.Number.pipe(T.Query())),
     perPage: S.optional(S.Number.pipe(T.Query("per_page"))),
   })
-    .pipe(
-      T.Http({
-        method: "GET",
-        uri: "/accounts/{account_id}/workers/workers",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "GET", uri: "/accounts/{account_id}/workers/workers", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "ListBetaWorkersRequest",
-}) as any as S.Schema<ListBetaWorkersRequest>;
+).annotate({ identifier: "ListBetaWorkersRequest" }) as any as S.Schema<ListBetaWorkersRequest>;
 
 export type BetaWorkersListResultItemObservabilityLogsDestinationsList = Array<string>;
 export const BetaWorkersListResultItemObservabilityLogsDestinationsList = /*@__PURE__*/ S.Array(
@@ -20523,9 +20341,7 @@ export const ListBetaWorkersResponse = /*@__PURE__*/ S.suspend(() =>
     result: BetaWorkersListResultList.pipe(T.EnvelopePayload()),
     resultInfo: S.optional(S.NullOr(ResultInfo).pipe(T.ResultInfo())),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "ListBetaWorkersResponse",
-}) as any as S.Schema<ListBetaWorkersResponse>;
+).annotate({ identifier: "ListBetaWorkersResponse" }) as any as S.Schema<ListBetaWorkersResponse>;
 
 export interface ListBetaWorkerVersionsRequest {
   /** Identifier. */
@@ -22749,17 +22565,9 @@ export const ListDomainsRequest = /*@__PURE__*/ S.suspend(() =>
     zoneId: S.optional(S.String.pipe(T.Query("zone_id"))),
     zoneName: S.optional(S.String.pipe(T.Query("zone_name"))),
   })
-    .pipe(
-      T.Http({
-        method: "GET",
-        uri: "/accounts/{account_id}/workers/domains",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "GET", uri: "/accounts/{account_id}/workers/domains", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "ListDomainsRequest",
-}) as any as S.Schema<ListDomainsRequest>;
+).annotate({ identifier: "ListDomainsRequest" }) as any as S.Schema<ListDomainsRequest>;
 
 export interface DomainsListResultItem {
   /** Immutable ID of the domain. */
@@ -22790,9 +22598,7 @@ export const DomainsListResultItem = /*@__PURE__*/ S.suspend(() =>
     zoneName: S.String.pipe(T.Body("zone_name")),
     previewsEnabled: S.optional(S.NullOr(S.Boolean).pipe(T.Body("previews_enabled"))),
   }),
-).annotate({
-  identifier: "DomainsListResultItem",
-}) as any as S.Schema<DomainsListResultItem>;
+).annotate({ identifier: "DomainsListResultItem" }) as any as S.Schema<DomainsListResultItem>;
 
 export type DomainsListResultList = Array<DomainsListResultItem>;
 export const DomainsListResultList = /*@__PURE__*/ S.Array(
@@ -22810,9 +22616,7 @@ export const ListDomainsResponse = /*@__PURE__*/ S.suspend(() =>
     result: DomainsListResultList.pipe(T.EnvelopePayload()),
     resultInfo: S.optional(S.NullOr(ResultInfo).pipe(T.ResultInfo())),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "ListDomainsResponse",
-}) as any as S.Schema<ListDomainsResponse>;
+).annotate({ identifier: "ListDomainsResponse" }) as any as S.Schema<ListDomainsResponse>;
 
 export type ObservabilityDestinationsListRequestOrder = "asc" | "desc";
 export const ObservabilityDestinationsListRequestOrder = S.String;
@@ -23438,17 +23242,9 @@ export const ListRoutesRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     zoneId: S.String.pipe(T.Label("zone_id")),
   })
-    .pipe(
-      T.Http({
-        method: "GET",
-        uri: "/zones/{zone_id}/workers/routes",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "GET", uri: "/zones/{zone_id}/workers/routes", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "ListRoutesRequest",
-}) as any as S.Schema<ListRoutesRequest>;
+).annotate({ identifier: "ListRoutesRequest" }) as any as S.Schema<ListRoutesRequest>;
 
 export interface RoutesListResultItem {
   /** Identifier. */
@@ -23464,9 +23260,7 @@ export const RoutesListResultItem = /*@__PURE__*/ S.suspend(() =>
     pattern: S.String,
     script: S.optional(S.NullOr(S.String)),
   }),
-).annotate({
-  identifier: "RoutesListResultItem",
-}) as any as S.Schema<RoutesListResultItem>;
+).annotate({ identifier: "RoutesListResultItem" }) as any as S.Schema<RoutesListResultItem>;
 
 export type RoutesListResultList = Array<RoutesListResultItem>;
 export const RoutesListResultList = /*@__PURE__*/ S.Array(
@@ -23484,9 +23278,7 @@ export const ListRoutesResponse = /*@__PURE__*/ S.suspend(() =>
     result: RoutesListResultList.pipe(T.EnvelopePayload()),
     resultInfo: S.optional(S.NullOr(ResultInfo).pipe(T.ResultInfo())),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "ListRoutesResponse",
-}) as any as S.Schema<ListRoutesResponse>;
+).annotate({ identifier: "ListRoutesResponse" }) as any as S.Schema<ListRoutesResponse>;
 
 export interface ListScriptDeploymentsRequest {
   /** Identifier. */
@@ -23582,17 +23374,9 @@ export const ListScriptsRequest = /*@__PURE__*/ S.suspend(() =>
     accountId: S.String.pipe(T.Label("account_id")),
     tags: S.optional(S.String.pipe(T.Query())),
   })
-    .pipe(
-      T.Http({
-        method: "GET",
-        uri: "/accounts/{account_id}/workers/scripts",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "GET", uri: "/accounts/{account_id}/workers/scripts", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "ListScriptsRequest",
-}) as any as S.Schema<ListScriptsRequest>;
+).annotate({ identifier: "ListScriptsRequest" }) as any as S.Schema<ListScriptsRequest>;
 
 export type ScriptsListResultItemCacheOptions = BetaWorkersVersionsCreateResponseCacheOptions;
 export const ScriptsListResultItemCacheOptions = BetaWorkersVersionsCreateResponseCacheOptions;
@@ -24304,9 +24088,7 @@ export const ScriptsListResultItem = /*@__PURE__*/ S.suspend(() =>
     ),
     usageModel: S.optional(S.NullOr(ScriptsListResultItemUsageModel).pipe(T.Body("usage_model"))),
   }),
-).annotate({
-  identifier: "ScriptsListResultItem",
-}) as any as S.Schema<ScriptsListResultItem>;
+).annotate({ identifier: "ScriptsListResultItem" }) as any as S.Schema<ScriptsListResultItem>;
 
 export type ScriptsListResultList = Array<ScriptsListResultItem>;
 export const ScriptsListResultList = /*@__PURE__*/ S.Array(
@@ -24324,9 +24106,7 @@ export const ListScriptsResponse = /*@__PURE__*/ S.suspend(() =>
     result: ScriptsListResultList.pipe(T.EnvelopePayload()),
     resultInfo: S.optional(S.NullOr(ResultInfo).pipe(T.ResultInfo())),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "ListScriptsResponse",
-}) as any as S.Schema<ListScriptsResponse>;
+).annotate({ identifier: "ListScriptsResponse" }) as any as S.Schema<ListScriptsResponse>;
 
 export interface ListScriptSecretsRequest {
   /** Identifier. */
@@ -24347,9 +24127,7 @@ export const ListScriptSecretsRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "ListScriptSecretsRequest",
-}) as any as S.Schema<ListScriptSecretsRequest>;
+).annotate({ identifier: "ListScriptSecretsRequest" }) as any as S.Schema<ListScriptSecretsRequest>;
 
 export type ScriptsSecretsListResultItemSecretTextType = "secret_text";
 export const ScriptsSecretsListResultItemSecretTextType = S.String;
@@ -25060,9 +24838,7 @@ export const PatchBetaWorkerRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PatchBetaWorkerRequest",
-}) as any as S.Schema<PatchBetaWorkerRequest>;
+).annotate({ identifier: "PatchBetaWorkerRequest" }) as any as S.Schema<PatchBetaWorkerRequest>;
 
 export type BetaWorkersEditResponseObservabilityLogsDestinationsList = Array<string>;
 export const BetaWorkersEditResponseObservabilityLogsDestinationsList = /*@__PURE__*/ S.Array(
@@ -25296,9 +25072,7 @@ export const PatchBetaWorkerResponse = /*@__PURE__*/ S.suspend(() =>
     updatedOn: S.String.pipe(T.Body("updated_on")),
     deployedOn: S.optional(S.NullOr(S.String).pipe(T.Body("deployed_on"))),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PatchBetaWorkerResponse",
-}) as any as S.Schema<PatchBetaWorkerResponse>;
+).annotate({ identifier: "PatchBetaWorkerResponse" }) as any as S.Schema<PatchBetaWorkerResponse>;
 
 export type ObservabilityDestinationsUpdateRequestConfigurationHeadersMap = {
   [key: string]: string | undefined;
@@ -27375,6 +27149,7 @@ export interface ScriptsScriptAndVersionSettingsEditResponseObservability {
   redactQueryString?: boolean | null;
   /** Trace settings for the Worker. */
   traces?: ScriptsScriptAndVersionSettingsEditResponseObservabilityTraces | null;
+  issues?: PutScriptObservabilityIssues | null;
 }
 export const ScriptsScriptAndVersionSettingsEditResponseObservability = /*@__PURE__*/ S.suspend(
   () =>
@@ -27384,6 +27159,7 @@ export const ScriptsScriptAndVersionSettingsEditResponseObservability = /*@__PUR
       logs: S.optional(S.NullOr(ScriptsScriptAndVersionSettingsEditResponseObservabilityLogs)),
       redactQueryString: S.optional(S.NullOr(S.Boolean).pipe(T.Body("redact_query_string"))),
       traces: S.optional(S.NullOr(ScriptsScriptAndVersionSettingsEditResponseObservabilityTraces)),
+      issues: S.optional(S.NullOr(PutScriptObservabilityIssues)),
     }),
 ).annotate({
   identifier: "ScriptsScriptAndVersionSettingsEditResponseObservability",
@@ -27711,7 +27487,7 @@ export const ScriptsSettingsEditRequestObservabilityTraces = /*@__PURE__*/ S.sus
 
 export interface ScriptsSettingsEditRequestObservability {
   /** Whether observability is enabled for the Worker. */
-  enabled: boolean;
+  enabled?: boolean;
   /** The sampling rate for incoming requests. From 0 to 1 (1 = 100%, 0.1 = 10%). Default is 1. */
   headSamplingRate?: number;
   /** Log settings for the Worker. */
@@ -27720,14 +27496,16 @@ export interface ScriptsSettingsEditRequestObservability {
   redactQueryString?: boolean;
   /** Trace settings for the Worker. */
   traces?: ScriptsSettingsEditRequestObservabilityTraces;
+  issues?: PutScriptObservabilityIssues;
 }
 export const ScriptsSettingsEditRequestObservability = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    enabled: S.Boolean,
+    enabled: S.optional(S.Boolean),
     headSamplingRate: S.optional(S.Number.pipe(T.Body("head_sampling_rate"))),
     logs: S.optional(ScriptsSettingsEditRequestObservabilityLogs),
     redactQueryString: S.optional(S.Boolean.pipe(T.Body("redact_query_string"))),
     traces: S.optional(ScriptsSettingsEditRequestObservabilityTraces),
+    issues: S.optional(PutScriptObservabilityIssues),
   }),
 ).annotate({
   identifier: "ScriptsSettingsEditRequestObservability",
@@ -27881,6 +27659,7 @@ export interface ScriptsSettingsEditResponseObservability {
   redactQueryString?: boolean | null;
   /** Trace settings for the Worker. */
   traces?: ScriptsSettingsEditResponseObservabilityTraces | null;
+  issues?: PutScriptObservabilityIssues | null;
 }
 export const ScriptsSettingsEditResponseObservability = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -27889,6 +27668,7 @@ export const ScriptsSettingsEditResponseObservability = /*@__PURE__*/ S.suspend(
     logs: S.optional(S.NullOr(ScriptsSettingsEditResponseObservabilityLogs)),
     redactQueryString: S.optional(S.NullOr(S.Boolean).pipe(T.Body("redact_query_string"))),
     traces: S.optional(S.NullOr(ScriptsSettingsEditResponseObservabilityTraces)),
+    issues: S.optional(S.NullOr(PutScriptObservabilityIssues)),
   }),
 ).annotate({
   identifier: "ScriptsSettingsEditResponseObservability",
@@ -27947,16 +27727,10 @@ export const PutAccountSettingRequest = /*@__PURE__*/ S.suspend(() =>
     greenCompute: S.optional(S.Boolean.pipe(T.Body("green_compute"))),
   })
     .pipe(
-      T.Http({
-        method: "PUT",
-        uri: "/accounts/{account_id}/workers/account-settings",
-        code: 200,
-      }),
+      T.Http({ method: "PUT", uri: "/accounts/{account_id}/workers/account-settings", code: 200 }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutAccountSettingRequest",
-}) as any as S.Schema<PutAccountSettingRequest>;
+).annotate({ identifier: "PutAccountSettingRequest" }) as any as S.Schema<PutAccountSettingRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface PutAccountSettingResponse {
@@ -27995,17 +27769,9 @@ export const PutDomainRequest = /*@__PURE__*/ S.suspend(() =>
     zoneName: S.optional(S.String.pipe(T.Body("zone_name"))),
     previewsEnabled: S.optional(S.Boolean.pipe(T.Body("previews_enabled"))),
   })
-    .pipe(
-      T.Http({
-        method: "PUT",
-        uri: "/accounts/{account_id}/workers/domains",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "PUT", uri: "/accounts/{account_id}/workers/domains", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutDomainRequest",
-}) as any as S.Schema<PutDomainRequest>;
+).annotate({ identifier: "PutDomainRequest" }) as any as S.Schema<PutDomainRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface PutDomainResponse {
@@ -28037,9 +27803,7 @@ export const PutDomainResponse = /*@__PURE__*/ S.suspend(() =>
     zoneName: S.String.pipe(T.Body("zone_name")),
     previewsEnabled: S.optional(S.NullOr(S.Boolean).pipe(T.Body("previews_enabled"))),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutDomainResponse",
-}) as any as S.Schema<PutDomainResponse>;
+).annotate({ identifier: "PutDomainResponse" }) as any as S.Schema<PutDomainResponse>;
 
 export type ScriptsUpdateRequestBindingsInherit = "strict";
 export const ScriptsUpdateRequestBindingsInherit = S.String;
@@ -28177,9 +27941,7 @@ export const PutScriptRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutScriptRequest",
-}) as any as S.Schema<PutScriptRequest>;
+).annotate({ identifier: "PutScriptRequest" }) as any as S.Schema<PutScriptRequest>;
 
 export type ScriptsUpdateResponseCacheOptions = BetaWorkersVersionsCreateResponseCacheOptions;
 export const ScriptsUpdateResponseCacheOptions = BetaWorkersVersionsCreateResponseCacheOptions;
@@ -28485,6 +28247,7 @@ export interface ScriptsUpdateResponseObservability {
   redactQueryString?: boolean | null;
   /** Trace settings for the Worker. */
   traces?: ScriptsUpdateResponseObservabilityTraces | null;
+  issues?: PutScriptObservabilityIssues | null;
 }
 export const ScriptsUpdateResponseObservability = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -28493,6 +28256,7 @@ export const ScriptsUpdateResponseObservability = /*@__PURE__*/ S.suspend(() =>
     logs: S.optional(S.NullOr(ScriptsUpdateResponseObservabilityLogs)),
     redactQueryString: S.optional(S.NullOr(S.Boolean).pipe(T.Body("redact_query_string"))),
     traces: S.optional(S.NullOr(ScriptsUpdateResponseObservabilityTraces)),
+    issues: S.optional(S.NullOr(PutScriptObservabilityIssues)),
   }),
 ).annotate({
   identifier: "ScriptsUpdateResponseObservability",
@@ -28900,9 +28664,7 @@ export const PutScriptResponse = /*@__PURE__*/ S.suspend(() =>
     ),
     usageModel: S.optional(S.NullOr(ScriptsUpdateResponseUsageModel).pipe(T.Body("usage_model"))),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutScriptResponse",
-}) as any as S.Schema<PutScriptResponse>;
+).annotate({ identifier: "PutScriptResponse" }) as any as S.Schema<PutScriptResponse>;
 
 export interface ScriptsContentUpdateRequestMetadata {
   /** Name of the uploaded file that contains the Worker script (e.g. the file adding a listener to the `fetch` event). Indicates a `service worker syntax` Worker. */
@@ -28953,9 +28715,7 @@ export const PutScriptContentRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutScriptContentRequest",
-}) as any as S.Schema<PutScriptContentRequest>;
+).annotate({ identifier: "PutScriptContentRequest" }) as any as S.Schema<PutScriptContentRequest>;
 
 export type ScriptsContentUpdateResponseCacheOptions =
   BetaWorkersVersionsCreateResponseCacheOptions;
@@ -29685,9 +29445,7 @@ export const PutScriptContentResponse = /*@__PURE__*/ S.suspend(() =>
       S.NullOr(ScriptsContentUpdateResponseUsageModel).pipe(T.Body("usage_model")),
     ),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutScriptContentResponse",
-}) as any as S.Schema<PutScriptContentResponse>;
+).annotate({ identifier: "PutScriptContentResponse" }) as any as S.Schema<PutScriptContentResponse>;
 
 export interface ScriptsSchedulesUpdateRequestBodyItem {
   cron: string;
@@ -29730,9 +29488,7 @@ export const PutScriptScheduleRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutScriptScheduleRequest",
-}) as any as S.Schema<PutScriptScheduleRequest>;
+).annotate({ identifier: "PutScriptScheduleRequest" }) as any as S.Schema<PutScriptScheduleRequest>;
 
 export type ScriptsSchedulesUpdateResponseSchedulesItem = ScriptsSchedulesGetResponseSchedulesItem;
 export const ScriptsSchedulesUpdateResponseSchedulesItem = ScriptsSchedulesGetResponseSchedulesItem;
@@ -29822,9 +29578,7 @@ export const PutScriptSecretRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutScriptSecretRequest",
-}) as any as S.Schema<PutScriptSecretRequest>;
+).annotate({ identifier: "PutScriptSecretRequest" }) as any as S.Schema<PutScriptSecretRequest>;
 
 export type ScriptsSecretsUpdateResultSecretTextType = "secret_text";
 export const ScriptsSecretsUpdateResultSecretTextType = S.String;
@@ -29916,9 +29670,7 @@ export const ScriptsSecretsUpdateResult = /*@__PURE__*/ S.Unknown.pipe(
 export type PutScriptSecretResponse = ScriptsSecretsUpdateResult;
 export const PutScriptSecretResponse = /*@__PURE__*/ S.suspend(() =>
   ScriptsSecretsUpdateResult.pipe(T.EnvelopePayloadRoot(), T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutScriptSecretResponse",
-}) as any as S.Schema<PutScriptSecretResponse>;
+).annotate({ identifier: "PutScriptSecretResponse" }) as any as S.Schema<PutScriptSecretResponse>;
 
 export interface PutSubdomainRequest {
   /** Identifier. */
@@ -29930,17 +29682,9 @@ export const PutSubdomainRequest = /*@__PURE__*/ S.suspend(() =>
     accountId: S.String.pipe(T.Label("account_id")),
     subdomain: S.String,
   })
-    .pipe(
-      T.Http({
-        method: "PUT",
-        uri: "/accounts/{account_id}/workers/subdomain",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "PUT", uri: "/accounts/{account_id}/workers/subdomain", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutSubdomainRequest",
-}) as any as S.Schema<PutSubdomainRequest>;
+).annotate({ identifier: "PutSubdomainRequest" }) as any as S.Schema<PutSubdomainRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface PutSubdomainResponse {
@@ -29950,9 +29694,7 @@ export const PutSubdomainResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     subdomain: S.String,
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "PutSubdomainResponse",
-}) as any as S.Schema<PutSubdomainResponse>;
+).annotate({ identifier: "PutSubdomainResponse" }) as any as S.Schema<PutSubdomainResponse>;
 
 export type ObservabilityTelemetryQueryRequestTimeframe =
   ObservabilitySharedQueriesCreateRequestTimeframe;
@@ -32393,16 +32135,10 @@ export const SearchScriptRequest = /*@__PURE__*/ S.suspend(() =>
     perPage: S.optional(S.Number.pipe(T.Query("per_page"))),
   })
     .pipe(
-      T.Http({
-        method: "GET",
-        uri: "/accounts/{account_id}/workers/scripts-search",
-        code: 200,
-      }),
+      T.Http({ method: "GET", uri: "/accounts/{account_id}/workers/scripts-search", code: 200 }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "SearchScriptRequest",
-}) as any as S.Schema<SearchScriptRequest>;
+).annotate({ identifier: "SearchScriptRequest" }) as any as S.Schema<SearchScriptRequest>;
 
 export interface ScriptsSearchResultItem {
   /** Identifier. */
@@ -32430,9 +32166,7 @@ export const ScriptsSearchResultItem = /*@__PURE__*/ S.suspend(() =>
     environmentName: S.optional(S.NullOr(S.String).pipe(T.Body("environment_name"))),
     serviceName: S.optional(S.NullOr(S.String).pipe(T.Body("service_name"))),
   }),
-).annotate({
-  identifier: "ScriptsSearchResultItem",
-}) as any as S.Schema<ScriptsSearchResultItem>;
+).annotate({ identifier: "ScriptsSearchResultItem" }) as any as S.Schema<ScriptsSearchResultItem>;
 
 export type ScriptsSearchResultList = Array<ScriptsSearchResultItem>;
 export const ScriptsSearchResultList = /*@__PURE__*/ S.Array(
@@ -32442,9 +32176,7 @@ export const ScriptsSearchResultList = /*@__PURE__*/ S.Array(
 export type SearchScriptResponse = ScriptsSearchResultList;
 export const SearchScriptResponse = /*@__PURE__*/ S.suspend(() =>
   ScriptsSearchResultList.pipe(T.EnvelopePayloadRoot(), T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "SearchScriptResponse",
-}) as any as S.Schema<SearchScriptResponse>;
+).annotate({ identifier: "SearchScriptResponse" }) as any as S.Schema<SearchScriptResponse>;
 
 export type BetaWorkersUpdateRequestObservabilityLogsDestinationsList = Array<string>;
 export const BetaWorkersUpdateRequestObservabilityLogsDestinationsList = /*@__PURE__*/ S.Array(
@@ -32593,9 +32325,7 @@ export const UpdateBetaWorkerRequest = /*@__PURE__*/ S.suspend(() =>
       }),
     )
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "UpdateBetaWorkerRequest",
-}) as any as S.Schema<UpdateBetaWorkerRequest>;
+).annotate({ identifier: "UpdateBetaWorkerRequest" }) as any as S.Schema<UpdateBetaWorkerRequest>;
 
 export type BetaWorkersUpdateResponseObservabilityLogsDestinationsList = Array<string>;
 export const BetaWorkersUpdateResponseObservabilityLogsDestinationsList = /*@__PURE__*/ S.Array(
@@ -32831,9 +32561,7 @@ export const UpdateBetaWorkerResponse = /*@__PURE__*/ S.suspend(() =>
     updatedOn: S.String.pipe(T.Body("updated_on")),
     deployedOn: S.optional(S.NullOr(S.String).pipe(T.Body("deployed_on"))),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "UpdateBetaWorkerResponse",
-}) as any as S.Schema<UpdateBetaWorkerResponse>;
+).annotate({ identifier: "UpdateBetaWorkerResponse" }) as any as S.Schema<UpdateBetaWorkerResponse>;
 
 export interface UpdateRouteRequest {
   /** Identifier. */
@@ -32852,17 +32580,9 @@ export const UpdateRouteRequest = /*@__PURE__*/ S.suspend(() =>
     pattern: S.String,
     script: S.optional(S.String),
   })
-    .pipe(
-      T.Http({
-        method: "PUT",
-        uri: "/zones/{zone_id}/workers/routes/{route_id}",
-        code: 200,
-      }),
-    )
+    .pipe(T.Http({ method: "PUT", uri: "/zones/{zone_id}/workers/routes/{route_id}", code: 200 }))
     .pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "UpdateRouteRequest",
-}) as any as S.Schema<UpdateRouteRequest>;
+).annotate({ identifier: "UpdateRouteRequest" }) as any as S.Schema<UpdateRouteRequest>;
 
 /** Unwrapped `result` payload of the Cloudflare v4 response envelope. */
 export interface UpdateRouteResponse {
@@ -32879,9 +32599,7 @@ export const UpdateRouteResponse = /*@__PURE__*/ S.suspend(() =>
     pattern: S.String,
     script: S.optional(S.NullOr(S.String)),
   }).pipe(T.KeyDictionary(KEY_DICTIONARY)),
-).annotate({
-  identifier: "UpdateRouteResponse",
-}) as any as S.Schema<UpdateRouteResponse>;
+).annotate({ identifier: "UpdateRouteResponse" }) as any as S.Schema<UpdateRouteResponse>;
 
 export type ObservabilityTelemetryValuesRequestDatasetsList = Array<string>;
 export const ObservabilityTelemetryValuesRequestDatasetsList = /*@__PURE__*/ S.Array(

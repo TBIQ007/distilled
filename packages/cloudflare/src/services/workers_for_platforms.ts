@@ -11419,18 +11419,32 @@ export const PutDispatchNamespaceScriptObservabilityTraces = /*@__PURE__*/ S.sus
   identifier: "PutDispatchNamespaceScriptObservabilityTraces",
 }) as any as S.Schema<PutDispatchNamespaceScriptObservabilityTraces>;
 
-export interface PutDispatchNamespaceScriptMetadataObservability {
+export interface PutDispatchNamespaceScriptObservabilityIssues {
+  /** Whether Workers Issues error monitoring is enabled. */
   enabled: boolean;
+}
+export const PutDispatchNamespaceScriptObservabilityIssues = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    enabled: S.Boolean,
+  }),
+).annotate({
+  identifier: "PutDispatchNamespaceScriptObservabilityIssues",
+}) as any as S.Schema<PutDispatchNamespaceScriptObservabilityIssues>;
+
+export interface PutDispatchNamespaceScriptMetadataObservability {
+  enabled?: boolean;
   headSamplingRate?: number | null;
   logs?: PutDispatchNamespaceScriptObservabilityLogs | null;
   traces?: PutDispatchNamespaceScriptObservabilityTraces | null;
+  issues?: PutDispatchNamespaceScriptObservabilityIssues;
 }
 export const PutDispatchNamespaceScriptMetadataObservability = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    enabled: S.Boolean,
+    enabled: S.optional(S.Boolean),
     headSamplingRate: S.optional(S.NullOr(S.Number).pipe(T.Body("head_sampling_rate"))),
     logs: S.optional(S.NullOr(PutDispatchNamespaceScriptObservabilityLogs)),
     traces: S.optional(S.NullOr(PutDispatchNamespaceScriptObservabilityTraces)),
+    issues: S.optional(PutDispatchNamespaceScriptObservabilityIssues),
   }),
 ).annotate({
   identifier: "PutDispatchNamespaceScriptMetadataObservability",
