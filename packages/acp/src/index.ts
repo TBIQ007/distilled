@@ -9,32 +9,28 @@
  * `Acp.sessionNew`, `Acp.sessionPrompt`, `Acp.sessionCancel`, …); the
  * agent's `session/update` notifications are the `Acp.sessionUpdates`
  * stream; the agent's callbacks into the client are typed handlers passed to
- * the connection layer.
+ * `Acp.connect`.
  *
  * @example
  * ```ts
- * import * as NodeServices from "@effect/platform-node/NodeServices";
- * import { Effect, Layer } from "effect";
+ * import * as JsonRpc from "@distilled.cloud/core/jsonrpc";
+ * import { Effect } from "effect";
  * import * as Acp from "@distilled.cloud/acp";
  *
+ * // `stdout` / `stdin` of an agent you started (`opencode acp`), or use
+ * // `JsonRpc.fromSocket` for a socket endpoint.
  * const program = Effect.gen(function* () {
- *   yield* Acp.initialize({ protocolVersion: Acp.ACP_PROTOCOL_VERSION });
- *   const { sessionId } = yield* Acp.sessionNew({ cwd: process.cwd(), mcpServers: [] });
- *   return sessionId;
+ *   const peer = yield* Acp.connect(JsonRpc.fromStreams({ readable: stdout, writable: stdin }));
+ *   return yield* Effect.gen(function* () {
+ *     yield* Acp.initialize({ protocolVersion: Acp.ACP_PROTOCOL_VERSION });
+ *     const { sessionId } = yield* Acp.sessionNew({ cwd: process.cwd(), mcpServers: [] });
+ *     return sessionId;
+ *   }).pipe(Effect.provideService(Acp.AcpConnection, peer));
  * });
- *
- * program.pipe(
- *   Effect.provide(
- *     Acp.layerChildProcess({ command: "opencode", args: ["acp"] }).pipe(
- *       Layer.provide(NodeServices.layer),
- *     ),
- *   ),
- *   Effect.runPromise,
- * );
  * ```
  */
 export * from "./services/acp.ts";
 export * from "./errors.ts";
 export * as T from "./traits.ts";
 export { ACP_PROTOCOL_VERSION, AcpConnection, AcpProtocol, type AcpOpError } from "./protocol.ts";
-export { layerChildProcess, layerTransport, type ChildProcessOptions } from "./connection.ts";
+export { connect, type ConnectOptions } from "./connection.ts";

@@ -367,7 +367,7 @@ export const jsonRpcEmission = (
       `export const inbound = {\n${entries.join("\n")}\n} as const satisfies Record<string, JsonRpc.InboundMethod>;\n`,
       `/** Implementations for the methods the peer calls on us. Unimplemented requests are answered MethodNotFound. */`,
       `export interface InboundHandlers<R = never> {\n${members.join("\n")}\n}\n`,
-      `/** Bind typed inbound handlers for a connection layer (\`JsonRpc.layer(tag, transport, handlers({...}))\`). */`,
+      `/** Bind typed inbound handlers for a connection (\`JsonRpc.connect(transport, handlers({...}))\`). */`,
       `export const handlers = <R = never>(impl: InboundHandlers<R>): Effect.Effect<JsonRpc.PeerHandlers, never, R> =>\n` +
         `  JsonRpc.bindHandlers<R>(inbound, impl as any);\n`,
     ];

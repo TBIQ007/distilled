@@ -21,8 +21,11 @@ The app-server is the `codex` CLI (`npm install -g @openai/codex`).
 
 ```ts
 import * as Codex from "@distilled.cloud/codex";
+import * as JsonRpc from "@distilled.cloud/core/jsonrpc";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { Effect, Fiber, Layer, Stream } from "effect";
+import { Effect, Fiber, Stream } from "effect";
+import * as ChildProcess from "effect/process/ChildProcess";
+import { ChildProcessSpawner } from "effect/process/ChildProcessSpawner";
 
 const program = Effect.gen(function* () {
   yield* Codex.initialize({ clientInfo: { name: "my-app", version: "1.0.0" } });
@@ -44,26 +47,39 @@ const program = Effect.gen(function* () {
   return yield* Fiber.join(reply);
 });
 
-// Spawn `codex app-server` and answer its approval requests.
-const Live = Codex.layerChildProcess({
-  handlers: Codex.handlers({
-    itemCommandExecutionRequestApproval: (request) =>
-      Effect.succeed({ decision: request.command?.startsWith("git ") ? "accept" : "decline" }),
-    itemFileChangeRequestApproval: () => Effect.succeed({ decision: "decline" }),
-  }),
-}).pipe(Layer.provide(NodeServices.layer));
+// Start `codex app-server` yourself; the SDK only needs its stdio.
+const connectCodex = Effect.gen(function* () {
+  const spawner = yield* ChildProcessSpawner;
+  const server = yield* spawner.spawn(ChildProcess.make("codex", ["app-server"]));
+  return yield* Codex.connect(
+    JsonRpc.fromStreams({ readable: server.stdout, writable: server.stdin }),
+    {
+      handlers: {
+        itemCommandExecutionRequestApproval: (request) =>
+          Effect.succeed({ decision: request.command?.startsWith("git ") ? "accept" : "decline" }),
+        itemFileChangeRequestApproval: () => Effect.succeed({ decision: "decline" }),
+      },
+    },
+  );
+});
 
-program.pipe(Effect.provide(Live), Effect.scoped, Effect.runPromise).then(console.log);
+program.pipe(
+  Effect.provideServiceEffect(Codex.CodexConnection, connectCodex),
+  Effect.scoped,
+  Effect.provide(NodeServices.layer),
+  Effect.runPromise,
+).then(console.log);
 ```
 
 ## Connections
 
-| Layer | Use |
-| --- | --- |
-| `Codex.layerChildProcess({ command?, args?, cwd?, env?, handlers? })` | Spawns `codex app-server` (defaults: `command: "codex"`, `args: ["app-server"]`) and talks NDJSON over its stdio. Needs a `ChildProcessSpawner` (`NodeServices.layer`). |
-| `Codex.layerTransport(transport, handlers?)` | Any `JsonRpc.Transport` — e.g. one end of `JsonRpc.memoryPair` for a fake app-server in tests. |
+`Codex.connect(transport, { handlers })` opens a connection over any
+`JsonRpc.Transport` for the enclosing scope: a process's stdio
+(`JsonRpc.fromStreams`), a socket (`JsonRpc.fromSocket`), or one end of
+`JsonRpc.memoryPair` for a fake app-server in tests. The SDK never spawns
+anything. Provide the result as `Codex.CodexConnection`.
 
-Codex omits the `"jsonrpc": "2.0"` member, so both layers run the peer with
+Codex omits the `"jsonrpc": "2.0"` member, so the peer runs with
 `omitVersion: true`. Server→client requests with no handler are answered
 `MethodNotFound`. Methods without params (`Codex.initialized()`,
 `Codex.accountLogout()`, …) take no argument and send no `params` member.
@@ -94,13 +110,6 @@ DISTILLED_SPECS_LOCAL=1 pnpm generate codex
 (`ClientRequest`, `ClientNotification`, `ServerRequest`, `ServerNotification`) and every
 `*Response.json`, failing on conflicting duplicates, and resolves each request's result
 type (`FooParams` → `FooResponse`, else `<Method>Response`, plus an override table).
-
-### Known gaps
-
-`scripts/generate.ts` post-processes two shapes the generic JSON-RPC emitter does not
-yet handle: methods without params get a `void` input (instead of an empty struct that
-would send `"params": {}`), and union-typed params (`account/login/start`) are sent as
-the union itself instead of under a synthetic `body` key.
 
 ## Credits
 

@@ -7,8 +7,9 @@ from the latest stable `schema-v1.*` release of
 
 ACP is JSON-RPC 2.0 over newline-delimited JSON on a coding agent's stdio
 (`opencode acp`, Gemini CLI, Claude Code via `claude-code-acp`, …). This SDK
-is the **client** side: it spawns the agent, calls it, and answers its
-callbacks.
+is the **client** side: it calls the agent and answers its callbacks over
+whatever endpoint you connect it to. It never spawns or hosts the agent —
+starting the process (or opening the socket) is your code's job.
 
 ## Installation
 
@@ -19,8 +20,11 @@ npm install @distilled.cloud/acp effect @effect/platform-node
 ## Quick start
 
 ```ts
+import * as JsonRpc from "@distilled.cloud/core/jsonrpc";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { Effect, Layer, Stream } from "effect";
+import { Effect, Stream } from "effect";
+import * as ChildProcess from "effect/process/ChildProcess";
+import { ChildProcessSpawner } from "effect/process/ChildProcessSpawner";
 import * as Acp from "@distilled.cloud/acp";
 
 const program = Effect.gen(function* () {
@@ -50,22 +54,33 @@ const program = Effect.gen(function* () {
   return stopReason;
 });
 
-const Agent = Acp.layerChildProcess({
-  command: "opencode",
-  args: ["acp"],
-  handlers: {
-    // The agent asks before running a tool; pick the first "allow" option.
-    sessionRequestPermission: ({ options }) =>
-      Effect.succeed({
-        outcome: {
-          outcome: "selected",
-          optionId: (options.find((o) => o.kind === "allow_once") ?? options[0]!).optionId,
-        },
-      }),
-  },
-}).pipe(Layer.provide(NodeServices.layer));
+// Start the agent yourself; the SDK only needs its stdio.
+const connectAgent = Effect.gen(function* () {
+  const spawner = yield* ChildProcessSpawner;
+  const agent = yield* spawner.spawn(ChildProcess.make("opencode", ["acp"]));
+  return yield* Acp.connect(
+    JsonRpc.fromStreams({ readable: agent.stdout, writable: agent.stdin }),
+    {
+      handlers: {
+        // The agent asks before running a tool; pick the first "allow" option.
+        sessionRequestPermission: ({ options }) =>
+          Effect.succeed({
+            outcome: {
+              outcome: "selected",
+              optionId: (options.find((o) => o.kind === "allow_once") ?? options[0]!).optionId,
+            },
+          }),
+      },
+    },
+  );
+});
 
-program.pipe(Effect.scoped, Effect.provide(Agent), Effect.runPromise);
+program.pipe(
+  Effect.provideServiceEffect(Acp.AcpConnection, connectAgent),
+  Effect.scoped,
+  Effect.provide(NodeServices.layer),
+  Effect.runPromise,
+);
 ```
 
 ## How it maps
@@ -75,11 +90,12 @@ program.pipe(Effect.scoped, Effect.provide(Agent), Effect.runPromise);
 | Client → agent requests (`initialize`, `session/new`, `session/prompt`, …) | `Acp.initialize`, `Acp.sessionNew`, `Acp.sessionPrompt`, … |
 | Client → agent notifications (`session/cancel`, `$/cancel_request`) | `Acp.sessionCancel`, `Acp.cancelRequest` |
 | Agent → client notifications (`session/update`, …) | `Acp.sessionUpdates` stream (also a handler key) |
-| Agent → client requests (`session/request_permission`, `fs/*`, `terminal/*`, `elicitation/create`) | typed `handlers` on the connection layer |
+| Agent → client requests (`session/request_permission`, `fs/*`, `terminal/*`, `elicitation/create`) | typed `handlers` passed to `Acp.connect` |
 
-- `Acp.layerChildProcess({ command, args, cwd, env, handlers })` spawns the
-  agent in the layer's scope; `Acp.layerTransport(transport, handlers)`
-  connects over any `JsonRpc.Transport` (tests use `JsonRpc.memoryPair`).
+- `Acp.connect(transport, { handlers })` opens a connection over any
+  `JsonRpc.Transport` for the enclosing scope: a process's stdio
+  (`JsonRpc.fromStreams`), a socket (`JsonRpc.fromSocket`), or
+  `JsonRpc.memoryPair` in tests. Provide the result as `Acp.AcpConnection`.
 - An agent request with no handler is answered `MethodNotFound` — advertise
   in `clientCapabilities` only what you implement.
 - `Acp.sessionUpdates` delivers notifications from subscription onward; fork

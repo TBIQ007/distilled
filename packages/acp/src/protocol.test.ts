@@ -38,7 +38,8 @@ const withFakeAgent = <A, E>(
         ]),
       ),
     });
-    return yield* body.pipe(Effect.provide(Acp.layerTransport(sdkSide, handlers)));
+    const peer = yield* Acp.connect(sdkSide, handlers ? { handlers } : {});
+    return yield* body.pipe(Effect.provideService(Acp.AcpConnection, peer));
   });
 
 const initializeResult = {
@@ -187,7 +188,7 @@ describe("ACP over a fake agent", () => {
           yield* Acp.sessionCancel({ sessionId: "sess-1" });
           yield* Acp.cancelRequest({ requestId: 7 });
           return Array.from(yield* Fiber.join(received));
-        }).pipe(Effect.provide(Acp.layerTransport(sdkSide)));
+        }).pipe(Effect.provideServiceEffect(Acp.AcpConnection, Acp.connect(sdkSide)));
       }),
     );
     expect(result.success).toEqual([
@@ -201,9 +202,10 @@ describe("ACP over a fake agent", () => {
       Effect.gen(function* () {
         const [sdkSide, agentSide] = yield* JsonRpc.memoryPair;
         const agent = yield* JsonRpc.makePeer(agentSide);
+        yield* Acp.connect(sdkSide);
         return yield* agent
           .request("fs/read_text_file", { sessionId: "s", path: "/a" })
-          .pipe(Effect.provide(Acp.layerTransport(sdkSide)), Effect.flip);
+          .pipe(Effect.flip);
       }),
     );
     expect(result.success.error.code).toBe(JsonRpc.ErrorCode.MethodNotFound);

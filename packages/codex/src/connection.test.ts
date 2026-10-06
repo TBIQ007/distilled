@@ -144,15 +144,14 @@ const fakeServer = (transport: JsonRpc.Transport) =>
 /** Connect the SDK to a fresh fake server; returns the server and the SDK's raw frames. */
 const withFakeServer = <A, E>(
   body: (server: FakeServer) => Effect.Effect<A, E, Codex.CodexConnection>,
-  handlers?: Codex.CodexHandlers,
+  handlers?: Codex.InboundHandlers,
 ) =>
   Effect.gen(function* () {
     const [sdkSide, serverSide] = yield* JsonRpc.memoryPair;
     const frames: string[] = [];
     const server = yield* fakeServer(serverSide);
-    const result = yield* body(server).pipe(
-      Effect.provide(Codex.layerTransport(recording(sdkSide, frames), handlers)),
-    );
+    const peer = yield* Codex.connect(recording(sdkSide, frames), handlers ? { handlers } : {});
+    const result = yield* body(server).pipe(Effect.provideService(Codex.CodexConnection, peer));
     return { result, server, frames };
   });
 
@@ -193,12 +192,12 @@ describe("Codex connection (fake app-server)", () => {
               completed: Array.from(yield* Fiber.join(completed)),
             };
           }),
-        Codex.handlers({
+        {
           itemCommandExecutionRequestApproval: (params) =>
             Effect.succeed({
               decision: params.command?.startsWith("rm ") ? ("decline" as const) : "accept",
             }),
-        }),
+        },
       ),
     );
     expect(outcome._tag).toBe("Success");

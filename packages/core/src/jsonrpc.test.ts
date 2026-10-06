@@ -1,7 +1,8 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
-import * as Layer from "effect/Layer";
+import * as ChildProcess from "effect/process/ChildProcess";
+import { ChildProcessSpawner } from "effect/process/ChildProcessSpawner";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import { describe, expect, test } from "vitest";
@@ -94,12 +95,8 @@ const withAgent = <A, E>(
     const agent = yield* JsonRpc.makePeer(agentSide, {
       requests: new Map(Object.entries(agentRequests)),
     });
-    const connection = JsonRpc.layer(
-      TestConnection,
-      Effect.succeed(sdkSide),
-      JsonRpc.bindHandlers(inbound, handlers),
-    );
-    return yield* body(agent).pipe(Effect.provide(connection));
+    const connection = yield* JsonRpc.connect(sdkSide, JsonRpc.bindHandlers(inbound, handlers));
+    return yield* body(agent).pipe(Effect.provideService(TestConnection, connection));
   });
 
 // =============================================================================
@@ -233,13 +230,13 @@ describe("JsonRpc peer + operations", () => {
         const agentScope = yield* Effect.scope;
         void agentScope;
         const closeAgent = agentSide.send(Stream.empty);
-        const connection = JsonRpc.layer(TestConnection, Effect.succeed(sdkSide));
+        const connection = yield* JsonRpc.connect(sdkSide);
         return yield* Effect.gen(function* () {
           const fiber = yield* prompt({ sessionId: "s1", text: "hi" }).pipe(Effect.forkChild);
           yield* Effect.yieldNow;
           yield* closeAgent;
           return yield* Fiber.join(fiber);
-        }).pipe(Effect.provide(connection));
+        }).pipe(Effect.provideService(TestConnection, connection));
       }),
     );
     expect(result._tag).toBe("Failure");
@@ -248,9 +245,10 @@ describe("JsonRpc peer + operations", () => {
   });
 });
 
-describe("JsonRpc.childProcess", () => {
+describe("JsonRpc.fromStreams", () => {
   // A real NDJSON peer over stdio: answers `echo` requests and sends one
-  // notification first.
+  // notification first. Spawning is the caller's job; distilled only speaks
+  // the protocol over the streams it is handed.
   const agentScript = `
     const rl = require("node:readline").createInterface({ input: process.stdin });
     process.stdout.write(JSON.stringify({ jsonrpc: "2.0", method: "hello", params: {} }) + "\\n");
@@ -262,18 +260,26 @@ describe("JsonRpc.childProcess", () => {
     });
   `;
 
-  test("talks NDJSON JSON-RPC to a spawned process", async () => {
+  test("talks NDJSON JSON-RPC over a spawned process's stdio", async () => {
     const echo = JsonRpc.request(() => ({
       method: "echo",
       input: S.Struct({ text: S.String }),
       output: S.Struct({ echoed: S.String }),
       protocol: TestProtocol,
     }));
-    const connection = JsonRpc.layer(
-      TestConnection,
-      JsonRpc.childProcess({ command: process.execPath, args: ["-e", agentScript] }),
-    ).pipe(Layer.provide(NodeServices.layer));
-    const result = await run(echo({ text: "over stdio" }).pipe(Effect.provide(connection)));
+    const program = Effect.gen(function* () {
+      const spawner = yield* ChildProcessSpawner;
+      const handle = yield* spawner.spawn(
+        ChildProcess.make(process.execPath, ["-e", agentScript], { stderr: "inherit" }),
+      );
+      const connection = yield* JsonRpc.connect(
+        JsonRpc.fromStreams({ readable: handle.stdout, writable: handle.stdin }),
+      );
+      return yield* echo({ text: "over stdio" }).pipe(
+        Effect.provideService(TestConnection, connection),
+      );
+    }).pipe(Effect.provide(NodeServices.layer));
+    const result = await run(program);
     expect(result._tag).toBe("Success");
     expect(result.success).toEqual({ echoed: "over stdio" });
   });

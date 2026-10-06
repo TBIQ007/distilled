@@ -6,8 +6,11 @@
  *
  *   • framing    — how messages are delimited on a byte stream
  *                  ({@link ndjson}; `Content-Length` headers for LSP later)
- *   • transport  — where the bytes flow ({@link childProcess} stdio,
- *                  {@link memoryPair} for tests; HTTP / WebSocket later)
+ *   • transport  — the endpoint the messages flow over: any byte stream
+ *                  pair ({@link fromStreams}: stdio, TCP), a socket
+ *                  ({@link fromSocket}: WebSocket), or {@link memoryPair}
+ *                  for tests. Distilled never spawns or hosts the peer —
+ *                  callers hand it an endpoint.
  *   • direction  — outbound calls we make ({@link request}, {@link notify})
  *                  and inbound calls the peer makes back into us
  *                  ({@link bindHandlers}, {@link notifications})
@@ -30,17 +33,17 @@ import * as Data from "effect/Data";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
-import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import { pipeArguments } from "effect/Pipeable";
-import * as ChildProcess from "effect/process/ChildProcess";
-import { ChildProcessSpawner } from "effect/process/ChildProcessSpawner";
 import * as PubSub from "effect/PubSub";
 import * as Queue from "effect/Queue";
 import * as Ref from "effect/Ref";
+import * as Schedule from "effect/Schedule";
 import type * as S from "effect/Schema";
 import type * as AST from "effect/SchemaAST";
 import * as Scope from "effect/Scope";
+import type * as Sink from "effect/Sink";
+import * as Socket from "effect/socket/Socket";
 import * as Stream from "effect/Stream";
 import { SingleShotGen } from "effect/Utils";
 import type { ApiErrorClass } from "./api.ts";
@@ -136,56 +139,87 @@ export interface Transport {
 }
 
 /**
- * A transport over a child process's stdio: frames are written to stdin and
- * read from stdout. The process lives in the ambient `Scope`.
+ * A transport over any byte-stream endpoint: frames are decoded from
+ * `readable` and encoded into `writable`. Stdio of a process the caller
+ * spawned, a TCP connection, a pipe — distilled only speaks the protocol.
  */
-export const childProcess = (options: {
-  readonly command: string;
-  readonly args?: ReadonlyArray<string>;
-  readonly cwd?: string;
-  readonly env?: Record<string, string | undefined>;
+export const fromStreams = <RE, WE>(options: {
+  readonly readable: Stream.Stream<Uint8Array, RE>;
+  readonly writable: Sink.Sink<unknown, Uint8Array, unknown, WE>;
   readonly framing?: Framing;
-  /** Inherit the parent's environment (default true; `env` entries override). */
-  readonly extendEnv?: boolean;
-}): Effect.Effect<Transport, JsonRpcTransportError, ChildProcessSpawner | Scope.Scope> =>
-  Effect.gen(function* () {
-    const framing = options.framing ?? ndjson;
-    const spawner = yield* ChildProcessSpawner;
-    const handle = yield* spawner
-      .spawn(
-        ChildProcess.make(options.command, [...(options.args ?? [])], {
-          ...(options.cwd ? { cwd: options.cwd } : {}),
-          ...(options.env ? { env: options.env as Record<string, string> } : {}),
-          extendEnv: options.extendEnv ?? true,
-          stderr: "inherit",
-        }),
-      )
+}): Transport => {
+  const framing = options.framing ?? ndjson;
+  return {
+    incoming: framing
+      .decode(options.readable)
       .pipe(
+        Stream.mapError(
+          (cause) => new JsonRpcTransportError({ reason: "read", message: "read failed", cause }),
+        ),
+      ),
+    send: (outgoing) =>
+      outgoing.pipe(
+        Stream.map(framing.encode),
+        Stream.run(options.writable),
+        Effect.asVoid,
         Effect.mapError(
-          (cause) =>
-            new JsonRpcTransportError({
-              reason: "closed",
-              message: `failed to spawn ${options.command}`,
-              cause,
-            }),
+          (cause) => new JsonRpcTransportError({ reason: "write", message: "write failed", cause }),
         ),
-      );
-    return {
-      incoming: framing
-        .decode(handle.stdout)
-        .pipe(
-          Stream.mapError(
-            (cause) =>
-              new JsonRpcTransportError({ reason: "read", message: "stdout read failed", cause }),
+      ),
+  };
+};
+
+const textDecoder = new TextDecoder();
+
+/**
+ * A transport over an Effect `Socket` — e.g. a WebSocket endpoint
+ * (`Socket.makeWebSocket(url)`). Message-oriented sockets carry one
+ * JSON-RPC message per message (the default); pass `framing` for a raw
+ * byte socket. The socket's reader and writer live in the ambient `Scope`.
+ */
+export const fromSocket = (
+  socket: Socket.Socket,
+  options?: { readonly framing?: Framing },
+): Effect.Effect<Transport, JsonRpcTransportError, Scope.Scope> =>
+  Effect.gen(function* () {
+    const reader = yield* socket.reader.pipe(
+      Effect.mapError(
+        (cause) =>
+          new JsonRpcTransportError({ reason: "closed", message: "socket failed to open", cause }),
+      ),
+    );
+    const writer = yield* socket.writer;
+    const chunks = Stream.repeat(Stream.fromEffect(reader.pull), Schedule.forever).pipe(
+      Stream.flatMap((batch) => Stream.fromIterable(batch)),
+      // A clean close ends the stream; anything else is a read failure.
+      Stream.catchIf(
+        (e) => Socket.isSocketError(e) && e.reason._tag === "SocketCloseError",
+        () => Stream.empty,
+      ),
+      Stream.mapError(
+        (cause) =>
+          new JsonRpcTransportError({ reason: "read", message: "socket read failed", cause }),
+      ),
+    );
+    const incoming: Stream.Stream<string, JsonRpcTransportError> = options?.framing
+      ? options.framing.decode(
+          chunks.pipe(
+            Stream.map((chunk) => (typeof chunk === "string" ? encoder.encode(chunk) : chunk)),
           ),
-        ),
+        )
+      : chunks.pipe(
+          Stream.map((chunk) => (typeof chunk === "string" ? chunk : textDecoder.decode(chunk))),
+        );
+    return {
+      incoming,
       send: (outgoing) =>
         outgoing.pipe(
-          Stream.map(framing.encode),
-          Stream.run(handle.stdin),
+          Stream.runForEach((frame) =>
+            writer.write(options?.framing ? options.framing.encode(frame) : frame),
+          ),
           Effect.mapError(
             (cause) =>
-              new JsonRpcTransportError({ reason: "write", message: "stdin write failed", cause }),
+              new JsonRpcTransportError({ reason: "write", message: "socket write failed", cause }),
           ),
         ),
     } satisfies Transport;
@@ -488,21 +522,19 @@ export interface Protocol<Conn> {
 export const protocol = <Conn>(p: Protocol<Conn>): Protocol<Conn> => p;
 
 /**
- * Build a connection layer: open the transport, run a peer over it with the
- * given inbound handlers, and provide it under the package's tag.
+ * Connect to a peer over a transport: run the protocol with the given
+ * inbound handlers in the ambient `Scope`, and return the {@link Peer} a
+ * package's operations run against (provide it under the package's
+ * connection tag). Closing the scope closes the connection.
  */
-export const layer = <Self, E, R, HR = never>(
-  tag: ConnectionTag<Self>,
-  transport: Effect.Effect<Transport, E, R>,
+export const connect = <HR = never>(
+  transport: Transport,
   options?: PeerOptions | Effect.Effect<PeerOptions, never, HR>,
-): Layer.Layer<Self, E, Exclude<R, Scope.Scope> | HR> =>
-  Layer.effect(tag)(
-    Effect.gen(function* () {
-      const peerOptions = Effect.isEffect(options) ? yield* options : options;
-      const t = yield* transport;
-      return yield* makePeer(t, peerOptions);
-    }),
-  ) as Layer.Layer<Self, E, Exclude<R, Scope.Scope> | HR>;
+): Effect.Effect<Peer, never, Scope.Scope | HR> =>
+  Effect.gen(function* () {
+    const peerOptions = Effect.isEffect(options) ? yield* options : options;
+    return yield* makePeer(transport, peerOptions);
+  });
 
 //#endregion
 

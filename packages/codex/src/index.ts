@@ -9,35 +9,29 @@
  * Outbound requests are typed callables (`Codex.threadStart({ ... })`),
  * server notifications are streams (`Codex.itemAgentMessageDelta`), and
  * server→client requests (approvals, user input) are answered by the
- * handlers passed to the connection layer (`Codex.handlers({ ... })`).
+ * handlers passed to `Codex.connect`.
  *
  * @example
  * ```ts
  * import * as Codex from "@distilled.cloud/codex";
- * import * as NodeServices from "@effect/platform-node/NodeServices";
- * import { Effect, Layer } from "effect";
+ * import * as JsonRpc from "@distilled.cloud/core/jsonrpc";
+ * import { Effect } from "effect";
  *
+ * // `stdout` / `stdin` of a `codex app-server` you started.
  * const program = Effect.gen(function* () {
- *   const init = yield* Codex.initialize({ clientInfo: { name: "my-app", version: "1.0.0" } });
- *   yield* Codex.initialized();
- *   return init.userAgent;
+ *   const peer = yield* Codex.connect(JsonRpc.fromStreams({ readable: stdout, writable: stdin }));
+ *   return yield* Effect.gen(function* () {
+ *     const init = yield* Codex.initialize({ clientInfo: { name: "my-app", version: "1.0.0" } });
+ *     yield* Codex.initialized();
+ *     return init.userAgent;
+ *   }).pipe(Effect.provideService(Codex.CodexConnection, peer));
  * });
- *
- * program.pipe(
- *   Effect.provide(Codex.layerChildProcess().pipe(Layer.provide(NodeServices.layer))),
- *   Effect.runPromise,
- * );
  * ```
  */
 export * from "./errors.ts";
 export * as T from "./traits.ts";
 export { CodexConnection, CodexProtocol, type CodexOpError } from "./protocol.ts";
-export {
-  layerChildProcess,
-  layerTransport,
-  type ChildProcessOptions,
-  type CodexHandlers,
-} from "./connection.ts";
+export { connect, type ConnectOptions } from "./connection.ts";
 // Operations, notification streams, the inbound handler table and their
 // request/response types are importable straight off the package root.
 export * from "./services/codex.ts";

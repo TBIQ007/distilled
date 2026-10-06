@@ -3815,7 +3815,7 @@ export interface InboundHandlers<R = never> {
   ) => Effect.Effect<WaitForTerminalExitResponse, JsonRpc.HandlerError, R>;
 }
 
-/** Bind typed inbound handlers for a connection layer (`JsonRpc.layer(tag, transport, handlers({...}))`). */
+/** Bind typed inbound handlers for a connection (`JsonRpc.connect(transport, handlers({...}))`). */
 export const handlers = <R = never>(
   impl: InboundHandlers<R>,
 ): Effect.Effect<JsonRpc.PeerHandlers, never, R> => JsonRpc.bindHandlers<R>(inbound, impl as any);
