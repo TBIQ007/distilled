@@ -6409,10 +6409,16 @@
       "type": "structure",
       "members": {
         "id": {
-          "target": "smithy.api#Integer"
+          "target": "smithy.api#Integer",
+          "traits": {
+            "smithy.api#required": {}
+          }
         },
         "fingerprint": {
-          "target": "smithy.api#String"
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#required": {}
+          }
         },
         "public_key": {
           "target": "smithy.api#String",
@@ -6572,7 +6578,10 @@
       "type": "structure",
       "members": {
         "ssh_key": {
-          "target": "com.digitalocean.api#SshKeys"
+          "target": "com.digitalocean.api#SshKeys",
+          "traits": {
+            "smithy.api#required": {}
+          }
         }
       },
       "traits": {
@@ -6587,6 +6596,11 @@
       "output": {
         "target": "com.digitalocean.api#CreateSshKeyResponse"
       },
+      "errors": [
+        {
+          "target": "com.digitalocean.api#UnprocessableEntity"
+        }
+      ],
       "traits": {
         "smithy.api#http": {
           "method": "POST",
@@ -6616,7 +6630,10 @@
       "type": "structure",
       "members": {
         "ssh_key": {
-          "target": "com.digitalocean.api#SshKeys"
+          "target": "com.digitalocean.api#SshKeys",
+          "traits": {
+            "smithy.api#required": {}
+          }
         }
       },
       "traits": {
@@ -6668,7 +6685,10 @@
       "type": "structure",
       "members": {
         "ssh_key": {
-          "target": "com.digitalocean.api#SshKeys"
+          "target": "com.digitalocean.api#SshKeys",
+          "traits": {
+            "smithy.api#required": {}
+          }
         }
       },
       "traits": {
@@ -6763,13 +6783,15 @@
         "id": {
           "target": "smithy.api#Integer",
           "traits": {
-            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action."
+            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action.",
+            "smithy.api#required": {}
           }
         },
         "status": {
           "target": "com.digitalocean.api#ActionStatus",
           "traits": {
-            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\"."
+            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\".",
+            "smithy.api#required": {}
           }
         },
         "type": {
@@ -6979,7 +7001,10 @@
       "type": "structure",
       "members": {
         "action": {
-          "target": "com.digitalocean.api#Action"
+          "target": "com.digitalocean.api#Action",
+          "traits": {
+            "smithy.api#required": {}
+          }
         }
       },
       "traits": {
@@ -29354,13 +29379,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#PatchDedicatedInferenceResponse": {
+      "type": "structure",
+      "members": {
+        "dedicated_inference": {
+          "target": "com.digitalocean.api#DedicatedInference"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#PatchDedicatedInference": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#PatchDedicatedInferenceRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#PatchDedicatedInferenceResponse"
       },
       "errors": [
         {
@@ -29589,13 +29625,62 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#DedicatedInferenceAccessToken": {
+      "type": "structure",
+      "members": {
+        "id": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "Unique ID of the token."
+          }
+        },
+        "name": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "Name of the token."
+          }
+        },
+        "value": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "Token value; only returned once on create. Store securely."
+          }
+        },
+        "created_at": {
+          "target": "smithy.api#String"
+        },
+        "is_managed": {
+          "target": "smithy.api#Boolean",
+          "traits": {
+            "smithy.api#documentation": "When true, the token is managed by DigitalOcean (for example, system-provisioned). When false, the token was created by the user."
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "Access token for authenticating to Dedicated Inference endpoints."
+      }
+    },
+    "com.digitalocean.api#CreateDedicatedInferenceResponse": {
+      "type": "structure",
+      "members": {
+        "dedicated_inference": {
+          "target": "com.digitalocean.api#DedicatedInference"
+        },
+        "token": {
+          "target": "com.digitalocean.api#DedicatedInferenceAccessToken"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateDedicatedInference": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateDedicatedInferenceRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateDedicatedInferenceResponse"
       },
       "traits": {
         "smithy.api#http": {
@@ -29875,41 +29960,6 @@
         "smithy.api#input": {}
       }
     },
-    "com.digitalocean.api#DedicatedInferenceAccessToken": {
-      "type": "structure",
-      "members": {
-        "id": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#documentation": "Unique ID of the token."
-          }
-        },
-        "name": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#documentation": "Name of the token."
-          }
-        },
-        "value": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#documentation": "Token value; only returned once on create. Store securely."
-          }
-        },
-        "created_at": {
-          "target": "smithy.api#String"
-        },
-        "is_managed": {
-          "target": "smithy.api#Boolean",
-          "traits": {
-            "smithy.api#documentation": "When true, the token is managed by DigitalOcean (for example, system-provisioned). When false, the token was created by the user."
-          }
-        }
-      },
-      "traits": {
-        "smithy.api#documentation": "Access token for authenticating to Dedicated Inference endpoints."
-      }
-    },
     "com.digitalocean.api#ListDedicatedInferenceTokensResponseTokensList": {
       "type": "list",
       "member": {
@@ -29995,13 +30045,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateDedicatedInferenceTokensResponse": {
+      "type": "structure",
+      "members": {
+        "token": {
+          "target": "com.digitalocean.api#DedicatedInferenceAccessToken"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateDedicatedInferenceTokens": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateDedicatedInferenceTokensRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateDedicatedInferenceTokensResponse"
       },
       "errors": [
         {
@@ -33453,13 +33514,79 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateDropletResponseDropletsList": {
+      "type": "list",
+      "member": {
+        "target": "com.digitalocean.api#Droplet"
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#ActionLink": {
+      "type": "structure",
+      "members": {
+        "id": {
+          "target": "smithy.api#Integer",
+          "traits": {
+            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action."
+          }
+        },
+        "rel": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "A string specifying the type of the related action."
+          }
+        },
+        "href": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "A URL that can be used to access the action."
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "The linked actions can be used to check the status of a Droplet's create event."
+      }
+    },
+    "com.digitalocean.api#CreateDropletResponseLinksActionsList": {
+      "type": "list",
+      "member": {
+        "target": "com.digitalocean.api#ActionLink"
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#CreateDropletResponseLinks": {
+      "type": "structure",
+      "members": {
+        "actions": {
+          "target": "com.digitalocean.api#CreateDropletResponseLinksActionsList"
+        }
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#CreateDropletResponse": {
+      "type": "structure",
+      "members": {
+        "droplet": {
+          "target": "com.digitalocean.api#Droplet"
+        },
+        "droplets": {
+          "target": "com.digitalocean.api#CreateDropletResponseDropletsList"
+        },
+        "links": {
+          "target": "com.digitalocean.api#CreateDropletResponseLinks"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateDroplet": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateDropletRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateDropletResponse"
       },
       "traits": {
         "smithy.api#http": {
@@ -33528,7 +33655,10 @@
       "type": "structure",
       "members": {
         "droplet": {
-          "target": "com.digitalocean.api#Droplet"
+          "target": "com.digitalocean.api#Droplet",
+          "traits": {
+            "smithy.api#required": {}
+          }
         }
       },
       "traits": {
@@ -35783,7 +35913,10 @@
       "type": "structure",
       "members": {
         "action": {
-          "target": "com.digitalocean.api#Action"
+          "target": "com.digitalocean.api#Action",
+          "traits": {
+            "smithy.api#required": {}
+          }
         }
       },
       "traits": {
@@ -35908,7 +36041,10 @@
       "type": "structure",
       "members": {
         "action": {
-          "target": "com.digitalocean.api#Action"
+          "target": "com.digitalocean.api#Action",
+          "traits": {
+            "smithy.api#required": {}
+          }
         }
       },
       "traits": {
@@ -36068,19 +36204,22 @@
         "id": {
           "target": "smithy.api#String",
           "traits": {
-            "smithy.api#documentation": "A unique ID that can be used to identify and reference a firewall."
+            "smithy.api#documentation": "A unique ID that can be used to identify and reference a firewall.",
+            "smithy.api#required": {}
           }
         },
         "status": {
           "target": "com.digitalocean.api#FirewallStatus",
           "traits": {
-            "smithy.api#documentation": "A status string indicating the current state of the firewall. This can be \"waiting\", \"succeeded\", or \"failed\"."
+            "smithy.api#documentation": "A status string indicating the current state of the firewall. This can be \"waiting\", \"succeeded\", or \"failed\".",
+            "smithy.api#required": {}
           }
         },
         "created_at": {
           "target": "smithy.api#String",
           "traits": {
-            "smithy.api#documentation": "A time value given in ISO8601 combined date and time format that represents when the firewall was created."
+            "smithy.api#documentation": "A time value given in ISO8601 combined date and time format that represents when the firewall was created.",
+            "smithy.api#required": {}
           }
         },
         "pending_changes": {
@@ -36092,7 +36231,8 @@
         "name": {
           "target": "smithy.api#String",
           "traits": {
-            "smithy.api#documentation": "A human-readable name for a firewall. The name must begin with an alphanumeric character. Subsequent characters must either be alphanumeric characters, a period (.), or a dash (-)."
+            "smithy.api#documentation": "A human-readable name for a firewall. The name must begin with an alphanumeric character. Subsequent characters must either be alphanumeric characters, a period (.), or a dash (-).",
+            "smithy.api#required": {}
           }
         },
         "droplet_ids": {
@@ -36103,7 +36243,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#FirewallTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope.",
+            "com.distilled.openapi#nullable": {}
+          }
         },
         "inbound_rules": {
           "target": "com.digitalocean.api#FirewallInboundRulesList",
@@ -36177,6 +36321,15 @@
       },
       "traits": {
         "smithy.api#documentation": "An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope."
+      }
+    },
+    "com.digitalocean.api#FirewallTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope."
       }
     },
     "com.digitalocean.api#FirewallInboundRulesItemProtocol": {
@@ -36261,6 +36414,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#FirewallInboundRulesItemSourcesTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#FirewallInboundRulesItemSources": {
       "type": "structure",
       "members": {
@@ -36289,7 +36451,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#FirewallInboundRulesItemSourcesTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -36415,6 +36581,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#FirewallOutboundRulesItemDestinationsTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#FirewallOutboundRulesItemDestinations": {
       "type": "structure",
       "members": {
@@ -36443,7 +36618,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#FirewallOutboundRulesItemDestinationsTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -37594,13 +37773,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateAutoscalepoolResponse": {
+      "type": "structure",
+      "members": {
+        "autoscale_pool": {
+          "target": "com.digitalocean.api#AutoscalePool"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateAutoscalepool": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateAutoscalepoolRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateAutoscalepoolResponse"
       },
       "traits": {
         "smithy.api#http": {
@@ -38321,6 +38511,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope."
       }
     },
+    "com.digitalocean.api#CreateFirewallRequestTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope."
+      }
+    },
     "com.digitalocean.api#CreateFirewallRequestInboundRulesItemProtocol": {
       "type": "enum",
       "members": {
@@ -38403,6 +38602,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#CreateFirewallRequestInboundRulesItemSourcesTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#CreateFirewallRequestInboundRulesItemSources": {
       "type": "structure",
       "members": {
@@ -38431,7 +38639,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#CreateFirewallRequestInboundRulesItemSourcesTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -38557,6 +38769,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#CreateFirewallRequestOutboundRulesItemDestinationsTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#CreateFirewallRequestOutboundRulesItemDestinations": {
       "type": "structure",
       "members": {
@@ -38585,7 +38806,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#CreateFirewallRequestOutboundRulesItemDestinationsTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -38647,7 +38872,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#CreateFirewallRequestTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope.",
+            "com.distilled.openapi#nullable": {}
+          }
         },
         "inbound_rules": {
           "target": "com.digitalocean.api#CreateFirewallRequestInboundRulesList",
@@ -38666,13 +38895,27 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateFirewallResponse": {
+      "type": "structure",
+      "members": {
+        "firewall": {
+          "target": "com.digitalocean.api#Firewall",
+          "traits": {
+            "smithy.api#required": {}
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateFirewall": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateFirewallRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateFirewallResponse"
       },
       "errors": [
         {
@@ -38708,7 +38951,10 @@
       "type": "structure",
       "members": {
         "firewall": {
-          "target": "com.digitalocean.api#Firewall"
+          "target": "com.digitalocean.api#Firewall",
+          "traits": {
+            "smithy.api#required": {}
+          }
         }
       },
       "traits": {
@@ -38744,6 +38990,15 @@
       },
       "traits": {
         "smithy.api#documentation": "An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope."
+      }
+    },
+    "com.digitalocean.api#UpdateFirewallRequestTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope."
       }
     },
     "com.digitalocean.api#UpdateFirewallRequestInboundRulesItemProtocol": {
@@ -38828,6 +39083,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#UpdateFirewallRequestInboundRulesItemSourcesTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#UpdateFirewallRequestInboundRulesItemSources": {
       "type": "structure",
       "members": {
@@ -38856,7 +39120,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#UpdateFirewallRequestInboundRulesItemSourcesTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -38982,6 +39250,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#UpdateFirewallRequestOutboundRulesItemDestinationsTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#UpdateFirewallRequestOutboundRulesItemDestinations": {
       "type": "structure",
       "members": {
@@ -39010,7 +39287,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#UpdateFirewallRequestOutboundRulesItemDestinationsTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -39080,7 +39361,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#UpdateFirewallRequestTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope.",
+            "com.distilled.openapi#nullable": {}
+          }
         },
         "inbound_rules": {
           "target": "com.digitalocean.api#UpdateFirewallRequestInboundRulesList",
@@ -39103,7 +39388,10 @@
       "type": "structure",
       "members": {
         "firewall": {
-          "target": "com.digitalocean.api#Firewall"
+          "target": "com.digitalocean.api#Firewall",
+          "traits": {
+            "smithy.api#required": {}
+          }
         }
       },
       "traits": {
@@ -39287,6 +39575,15 @@
         "smithy.api#documentation": "Remove Droplets from a Firewall\n\nTo remove a Droplet from a firewall, send a DELETE request to\n`/v2/firewalls/$FIREWALL_ID/droplets`. In the body of the request, there should\nbe a `droplet_ids` attribute containing a list of Droplet IDs.\n\nNo response body will be sent back, but the response code will indicate\nsuccess. Specifically, the response code will be a 204, which means that the\naction was successful with no returned body data."
       }
     },
+    "com.digitalocean.api#AddFirewallTagsRequestTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of the Tags to be assigned to the firewall."
+      }
+    },
     "com.digitalocean.api#AddFirewallTagsRequest": {
       "type": "structure",
       "members": {
@@ -39299,8 +39596,9 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document",
+          "target": "com.digitalocean.api#AddFirewallTagsRequestTagsList",
           "traits": {
+            "smithy.api#documentation": "An array containing the names of the Tags to be assigned to the firewall.",
             "smithy.api#required": {}
           }
         }
@@ -39334,6 +39632,15 @@
         "smithy.api#documentation": "Add Tags to a Firewall\n\nTo assign a tag representing a group of Droplets to a firewall, send a POST\nrequest to `/v2/firewalls/$FIREWALL_ID/tags`. In the body of the request,\nthere should be a `tags` attribute containing a list of tag names.\n\nNo response body will be sent back, but the response code will indicate\nsuccess. Specifically, the response code will be a 204, which means that the\naction was successful with no returned body data."
       }
     },
+    "com.digitalocean.api#DeleteFirewallTagsRequestTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of the Tags to be removed from the firewall."
+      }
+    },
     "com.digitalocean.api#DeleteFirewallTagsRequest": {
       "type": "structure",
       "members": {
@@ -39346,8 +39653,9 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document",
+          "target": "com.digitalocean.api#DeleteFirewallTagsRequestTagsList",
           "traits": {
+            "smithy.api#documentation": "An array containing the names of the Tags to be removed from the firewall.",
             "smithy.api#required": {}
           }
         }
@@ -39463,6 +39771,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#AddFirewallRulesRequestInboundRulesItemSourcesTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#AddFirewallRulesRequestInboundRulesItemSources": {
       "type": "structure",
       "members": {
@@ -39491,7 +39808,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#AddFirewallRulesRequestInboundRulesItemSourcesTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -39617,6 +39938,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#AddFirewallRulesRequestOutboundRulesItemDestinationsTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#AddFirewallRulesRequestOutboundRulesItemDestinations": {
       "type": "structure",
       "members": {
@@ -39645,7 +39975,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#AddFirewallRulesRequestOutboundRulesItemDestinationsTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -39824,6 +40158,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#DeleteFirewallRulesRequestInboundRulesItemSourcesTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#DeleteFirewallRulesRequestInboundRulesItemSources": {
       "type": "structure",
       "members": {
@@ -39852,7 +40195,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#DeleteFirewallRulesRequestInboundRulesItemSourcesTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -39978,6 +40325,15 @@
         "smithy.api#documentation": "An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic."
       }
     },
+    "com.digitalocean.api#DeleteFirewallRulesRequestOutboundRulesItemDestinationsTagsList": {
+      "type": "list",
+      "member": {
+        "target": "smithy.api#String"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic."
+      }
+    },
     "com.digitalocean.api#DeleteFirewallRulesRequestOutboundRulesItemDestinations": {
       "type": "structure",
       "members": {
@@ -40006,7 +40362,11 @@
           }
         },
         "tags": {
-          "target": "smithy.api#Document"
+          "target": "com.digitalocean.api#DeleteFirewallRulesRequestOutboundRulesItemDestinationsTagsList",
+          "traits": {
+            "smithy.api#documentation": "An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic.",
+            "com.distilled.openapi#nullable": {}
+          }
         }
       },
       "traits": {}
@@ -40347,13 +40707,53 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateFloatingIPResponseLinksDropletsList": {
+      "type": "list",
+      "member": {
+        "target": "com.digitalocean.api#ActionLink"
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#CreateFloatingIPResponseLinksActionsList": {
+      "type": "list",
+      "member": {
+        "target": "com.digitalocean.api#ActionLink"
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#CreateFloatingIPResponseLinks": {
+      "type": "structure",
+      "members": {
+        "droplets": {
+          "target": "com.digitalocean.api#CreateFloatingIPResponseLinksDropletsList"
+        },
+        "actions": {
+          "target": "com.digitalocean.api#CreateFloatingIPResponseLinksActionsList"
+        }
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#CreateFloatingIPResponse": {
+      "type": "structure",
+      "members": {
+        "floating_ip": {
+          "target": "com.digitalocean.api#FloatingIp"
+        },
+        "links": {
+          "target": "com.digitalocean.api#CreateFloatingIPResponseLinks"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateFloatingIP": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateFloatingIPRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateFloatingIPResponse"
       },
       "traits": {
         "smithy.api#http": {
@@ -40668,13 +41068,15 @@
         "id": {
           "target": "smithy.api#Integer",
           "traits": {
-            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action."
+            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action.",
+            "smithy.api#required": {}
           }
         },
         "status": {
           "target": "com.digitalocean.api#PostFloatingIPsActionResponseActionStatus",
           "traits": {
-            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\"."
+            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\".",
+            "smithy.api#required": {}
           }
         },
         "type": {
@@ -40817,13 +41219,15 @@
         "id": {
           "target": "smithy.api#Integer",
           "traits": {
-            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action."
+            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action.",
+            "smithy.api#required": {}
           }
         },
         "status": {
           "target": "com.digitalocean.api#GetFloatingIPsActionResponseActionStatus",
           "traits": {
-            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\"."
+            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\".",
+            "smithy.api#required": {}
           }
         },
         "type": {
@@ -42230,13 +42634,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateImageCustomResponse": {
+      "type": "structure",
+      "members": {
+        "image": {
+          "target": "com.digitalocean.api#Image"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateImageCustom": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateImageCustomRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateImageCustomResponse"
       },
       "traits": {
         "smithy.api#http": {
@@ -47629,13 +48044,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#UpdateKubernetesClusterResponse": {
+      "type": "structure",
+      "members": {
+        "kubernetes_cluster": {
+          "target": "com.digitalocean.api#Cluster"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#UpdateKubernetesCluster": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#UpdateKubernetesClusterRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#UpdateKubernetesClusterResponse"
       },
       "errors": [
         {
@@ -48571,13 +48997,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#UpdateKubernetesNodePoolResponse": {
+      "type": "structure",
+      "members": {
+        "node_pool": {
+          "target": "com.digitalocean.api#KubernetesNodePool"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#UpdateKubernetesNodePool": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#UpdateKubernetesNodePoolRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#UpdateKubernetesNodePoolResponse"
       },
       "errors": [
         {
@@ -49100,13 +49537,27 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#RunKubernetesClusterLintResponse": {
+      "type": "structure",
+      "members": {
+        "run_id": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "ID of the clusterlint run that can be used later to fetch the diagnostics."
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#RunKubernetesClusterLint": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#RunKubernetesClusterLintRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#RunKubernetesClusterLintResponse"
       },
       "errors": [
         {
@@ -50969,13 +51420,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateLoadBalancerResponse": {
+      "type": "structure",
+      "members": {
+        "load_balancer": {
+          "target": "com.digitalocean.api#LoadBalancer"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateLoadBalancer": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateLoadBalancerRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateLoadBalancerResponse"
       },
       "traits": {
         "smithy.api#http": {
@@ -60029,13 +60491,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreatePartnerAttachmentResponse": {
+      "type": "structure",
+      "members": {
+        "partner_attachment": {
+          "target": "com.digitalocean.api#PartnerAttachment"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreatePartnerAttachment": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreatePartnerAttachmentRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreatePartnerAttachmentResponse"
       },
       "errors": [
         {
@@ -60223,13 +60696,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#PatchPartnerAttachmentResponse": {
+      "type": "structure",
+      "members": {
+        "partner_attachment": {
+          "target": "com.digitalocean.api#PartnerAttachment"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#PatchPartnerAttachment": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#PatchPartnerAttachmentRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#PatchPartnerAttachmentResponse"
       },
       "errors": [
         {
@@ -60261,13 +60745,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#DeletePartnerAttachmentResponse": {
+      "type": "structure",
+      "members": {
+        "partner_attachment": {
+          "target": "com.digitalocean.api#PartnerAttachment"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#DeletePartnerAttachment": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#DeletePartnerAttachmentRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#DeletePartnerAttachmentResponse"
       },
       "errors": [
         {
@@ -60501,13 +60996,28 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreatePartnerAttachmentServiceKeyResponse": {
+      "type": "structure",
+      "members": {
+        "body": {
+          "target": "smithy.api#Document",
+          "traits": {
+            "com.distilled.openapi#rawResponse": {},
+            "smithy.api#required": {}
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreatePartnerAttachmentServiceKey": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreatePartnerAttachmentServiceKeyRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreatePartnerAttachmentServiceKeyResponse"
       },
       "errors": [
         {
@@ -63827,13 +64337,53 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateReservedIPResponseLinksDropletsList": {
+      "type": "list",
+      "member": {
+        "target": "com.digitalocean.api#ActionLink"
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#CreateReservedIPResponseLinksActionsList": {
+      "type": "list",
+      "member": {
+        "target": "com.digitalocean.api#ActionLink"
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#CreateReservedIPResponseLinks": {
+      "type": "structure",
+      "members": {
+        "droplets": {
+          "target": "com.digitalocean.api#CreateReservedIPResponseLinksDropletsList"
+        },
+        "actions": {
+          "target": "com.digitalocean.api#CreateReservedIPResponseLinksActionsList"
+        }
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#CreateReservedIPResponse": {
+      "type": "structure",
+      "members": {
+        "reserved_ip": {
+          "target": "com.digitalocean.api#ReservedIp"
+        },
+        "links": {
+          "target": "com.digitalocean.api#CreateReservedIPResponseLinks"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateReservedIP": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateReservedIPRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateReservedIPResponse"
       },
       "traits": {
         "smithy.api#http": {
@@ -64148,13 +64698,15 @@
         "id": {
           "target": "smithy.api#Integer",
           "traits": {
-            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action."
+            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action.",
+            "smithy.api#required": {}
           }
         },
         "status": {
           "target": "com.digitalocean.api#PostReservedIPsActionResponseActionStatus",
           "traits": {
-            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\"."
+            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\".",
+            "smithy.api#required": {}
           }
         },
         "type": {
@@ -64297,13 +64849,15 @@
         "id": {
           "target": "smithy.api#Integer",
           "traits": {
-            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action."
+            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action.",
+            "smithy.api#required": {}
           }
         },
         "status": {
           "target": "com.digitalocean.api#GetReservedIPsActionResponseActionStatus",
           "traits": {
-            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\"."
+            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\".",
+            "smithy.api#required": {}
           }
         },
         "type": {
@@ -64842,13 +65396,15 @@
         "id": {
           "target": "smithy.api#Integer",
           "traits": {
-            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action."
+            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action.",
+            "smithy.api#required": {}
           }
         },
         "status": {
           "target": "com.digitalocean.api#PostReservedIPv6ActionResponseActionStatus",
           "traits": {
-            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\"."
+            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\".",
+            "smithy.api#required": {}
           }
         },
         "type": {
@@ -65136,13 +65692,39 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateByoipPrefixResponse": {
+      "type": "structure",
+      "members": {
+        "uuid": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The unique identifier for the BYOIP prefix"
+          }
+        },
+        "region": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The region where the prefix is created"
+          }
+        },
+        "status": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The status of the BYOIP prefix"
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateByoipPrefix": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateByoipPrefixRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateByoipPrefixResponse"
       },
       "errors": [
         {
@@ -65232,13 +65814,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#PatchByoipPrefixResponse": {
+      "type": "structure",
+      "members": {
+        "byoip_prefix": {
+          "target": "com.digitalocean.api#ByoipPrefix"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#PatchByoipPrefix": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#PatchByoipPrefixRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#PatchByoipPrefixResponse"
       },
       "errors": [
         {
@@ -69414,13 +70007,111 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#VolumeAction": {
+      "type": "structure",
+      "members": {
+        "type": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "This is the type of action that the object represents. For example, this could be \"attach_volume\" to represent the state of a volume attach action."
+          }
+        },
+        "resource_id": {
+          "target": "smithy.api#Integer",
+          "traits": {
+            "com.distilled.openapi#nullable": {}
+          }
+        },
+        "id": {
+          "target": "smithy.api#Integer",
+          "traits": {
+            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action.",
+            "smithy.api#required": {}
+          }
+        },
+        "status": {
+          "target": "com.digitalocean.api#VolumeActionStatus",
+          "traits": {
+            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\".",
+            "smithy.api#required": {}
+          }
+        },
+        "started_at": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "A time value given in ISO8601 combined date and time format that represents when the action was initiated."
+          }
+        },
+        "completed_at": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "A time value given in ISO8601 combined date and time format that represents when the action was completed.",
+            "com.distilled.openapi#nullable": {}
+          }
+        },
+        "resource_type": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The type of resource that the action is associated with."
+          }
+        },
+        "region": {
+          "target": "com.digitalocean.api#Region"
+        },
+        "region_slug": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "A human-readable string that is used as a unique identifier for each region.",
+            "com.distilled.openapi#nullable": {}
+          }
+        }
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#VolumeActionStatus": {
+      "type": "enum",
+      "members": {
+        "IN_PROGRESS": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "in-progress"
+          }
+        },
+        "COMPLETED": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "completed"
+          }
+        },
+        "ERRORED": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "errored"
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\"."
+      }
+    },
+    "com.digitalocean.api#PostVolumeActionResponse": {
+      "type": "structure",
+      "members": {
+        "action": {
+          "target": "com.digitalocean.api#VolumeAction"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#PostVolumeAction": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#PostVolumeActionRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#PostVolumeActionResponse"
       },
       "errors": [
         {
@@ -69640,91 +70331,6 @@
         "smithy.api#input": {}
       }
     },
-    "com.digitalocean.api#VolumeAction": {
-      "type": "structure",
-      "members": {
-        "type": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#documentation": "This is the type of action that the object represents. For example, this could be \"attach_volume\" to represent the state of a volume attach action."
-          }
-        },
-        "resource_id": {
-          "target": "smithy.api#Integer",
-          "traits": {
-            "com.distilled.openapi#nullable": {}
-          }
-        },
-        "id": {
-          "target": "smithy.api#Integer",
-          "traits": {
-            "smithy.api#documentation": "A unique numeric ID that can be used to identify and reference an action."
-          }
-        },
-        "status": {
-          "target": "com.digitalocean.api#VolumeActionStatus",
-          "traits": {
-            "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\"."
-          }
-        },
-        "started_at": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#documentation": "A time value given in ISO8601 combined date and time format that represents when the action was initiated."
-          }
-        },
-        "completed_at": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#documentation": "A time value given in ISO8601 combined date and time format that represents when the action was completed.",
-            "com.distilled.openapi#nullable": {}
-          }
-        },
-        "resource_type": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#documentation": "The type of resource that the action is associated with."
-          }
-        },
-        "region": {
-          "target": "com.digitalocean.api#Region"
-        },
-        "region_slug": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#documentation": "A human-readable string that is used as a unique identifier for each region.",
-            "com.distilled.openapi#nullable": {}
-          }
-        }
-      },
-      "traits": {}
-    },
-    "com.digitalocean.api#VolumeActionStatus": {
-      "type": "enum",
-      "members": {
-        "IN_PROGRESS": {
-          "target": "smithy.api#Unit",
-          "traits": {
-            "smithy.api#enumValue": "in-progress"
-          }
-        },
-        "COMPLETED": {
-          "target": "smithy.api#Unit",
-          "traits": {
-            "smithy.api#enumValue": "completed"
-          }
-        },
-        "ERRORED": {
-          "target": "smithy.api#Unit",
-          "traits": {
-            "smithy.api#enumValue": "errored"
-          }
-        }
-      },
-      "traits": {
-        "smithy.api#documentation": "The current status of the action. This can be \"in-progress\", \"completed\", or \"errored\"."
-      }
-    },
     "com.digitalocean.api#ListVolumeActionsResponseActionsList": {
       "type": "list",
       "member": {
@@ -69888,13 +70494,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#PostVolumeActionByIdResponse": {
+      "type": "structure",
+      "members": {
+        "action": {
+          "target": "com.digitalocean.api#VolumeAction"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#PostVolumeActionById": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#PostVolumeActionByIdRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#PostVolumeActionByIdResponse"
       },
       "errors": [
         {
@@ -70911,13 +71528,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateVpcPeeringsResponse": {
+      "type": "structure",
+      "members": {
+        "peering": {
+          "target": "com.digitalocean.api#VpcPeering"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateVpcPeerings": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateVpcPeeringsRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateVpcPeeringsResponse"
       },
       "errors": [
         {
@@ -72222,13 +72850,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#CreateVpcPeeringResponse": {
+      "type": "structure",
+      "members": {
+        "vpc_peering": {
+          "target": "com.digitalocean.api#VpcPeering"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateVpcPeering": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateVpcPeeringRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateVpcPeeringResponse"
       },
       "traits": {
         "smithy.api#http": {
@@ -72360,13 +72999,24 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#DeleteVpcPeeringResponse": {
+      "type": "structure",
+      "members": {
+        "vpc_peering": {
+          "target": "com.digitalocean.api#VpcPeering"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#DeleteVpcPeering": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#DeleteVpcPeeringRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#DeleteVpcPeeringResponse"
       },
       "errors": [
         {
@@ -73203,13 +73853,278 @@
         "smithy.api#input": {}
       }
     },
+    "com.digitalocean.api#VpcNatGatewayCreate": {
+      "type": "structure",
+      "members": {
+        "name": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The human-readable name of the VPC NAT gateway.",
+            "smithy.api#required": {}
+          }
+        },
+        "type": {
+          "target": "com.digitalocean.api#VpcNatGatewayCreateType",
+          "traits": {
+            "smithy.api#documentation": "The type of the VPC NAT gateway.",
+            "smithy.api#required": {}
+          }
+        },
+        "region": {
+          "target": "com.digitalocean.api#VpcNatGatewayCreateRegion",
+          "traits": {
+            "smithy.api#documentation": "The region in which the VPC NAT gateway is created.",
+            "smithy.api#required": {}
+          }
+        },
+        "size": {
+          "target": "smithy.api#Integer",
+          "traits": {
+            "smithy.api#documentation": "The size of the VPC NAT gateway.",
+            "smithy.api#required": {}
+          }
+        },
+        "vpcs": {
+          "target": "com.digitalocean.api#VpcNatGatewayCreateVpcsList",
+          "traits": {
+            "smithy.api#documentation": "An array of VPCs associated with the VPC NAT gateway.",
+            "smithy.api#required": {}
+          }
+        },
+        "udp_timeout_seconds": {
+          "target": "smithy.api#Integer",
+          "traits": {
+            "smithy.api#documentation": "The UDP timeout in seconds for the VPC NAT gateway."
+          }
+        },
+        "icmp_timeout_seconds": {
+          "target": "smithy.api#Integer",
+          "traits": {
+            "smithy.api#documentation": "The ICMP timeout in seconds for the VPC NAT gateway."
+          }
+        },
+        "tcp_timeout_seconds": {
+          "target": "smithy.api#Integer",
+          "traits": {
+            "smithy.api#documentation": "The TCP timeout in seconds for the VPC NAT gateway."
+          }
+        },
+        "egresses": {
+          "target": "com.digitalocean.api#VpcNatGatewayCreateEgresses",
+          "traits": {
+            "smithy.api#documentation": "An optional object specifying the public egress IP address to assign to the VPC NAT gateway. Provide this only to use a specific address. If omitted, DigitalOcean allocates a public IP address automatically."
+          }
+        }
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#VpcNatGatewayCreateType": {
+      "type": "enum",
+      "members": {
+        "PUBLIC": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "PUBLIC"
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "The type of the VPC NAT gateway."
+      }
+    },
+    "com.digitalocean.api#VpcNatGatewayCreateRegion": {
+      "type": "enum",
+      "members": {
+        "NYC1": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "nyc1"
+          }
+        },
+        "NYC2": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "nyc2"
+          }
+        },
+        "NYC3": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "nyc3"
+          }
+        },
+        "AMS2": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "ams2"
+          }
+        },
+        "AMS3": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "ams3"
+          }
+        },
+        "SFO1": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "sfo1"
+          }
+        },
+        "SFO2": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "sfo2"
+          }
+        },
+        "SFO3": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "sfo3"
+          }
+        },
+        "SGP1": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "sgp1"
+          }
+        },
+        "LON1": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "lon1"
+          }
+        },
+        "FRA1": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "fra1"
+          }
+        },
+        "TOR1": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "tor1"
+          }
+        },
+        "BLR1": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "blr1"
+          }
+        },
+        "SYD1": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "syd1"
+          }
+        },
+        "ATL1": {
+          "target": "smithy.api#Unit",
+          "traits": {
+            "smithy.api#enumValue": "atl1"
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "The region in which the VPC NAT gateway is created."
+      }
+    },
+    "com.digitalocean.api#VpcNatGatewayCreateVpcsItem": {
+      "type": "structure",
+      "members": {
+        "vpc_uuid": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The unique identifier of the VPC to which the NAT gateway is attached.",
+            "smithy.api#required": {}
+          }
+        },
+        "subnet_uuid": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The unique identifier of the VPC subnet to which the NAT gateway is attached."
+          }
+        },
+        "default_gateway": {
+          "target": "smithy.api#Boolean",
+          "traits": {
+            "smithy.api#documentation": "The classification of the NAT gateway as the default egress route for the VPC traffic."
+          }
+        }
+      },
+      "traits": {}
+    },
+    "com.digitalocean.api#VpcNatGatewayCreateVpcsList": {
+      "type": "list",
+      "member": {
+        "target": "com.digitalocean.api#VpcNatGatewayCreateVpcsItem"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array of VPCs associated with the VPC NAT gateway."
+      }
+    },
+    "com.digitalocean.api#VpcNatGatewayCreateEgressesPublicGatewaysItem": {
+      "type": "structure",
+      "members": {
+        "ip": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The public egress IP address to assign to the VPC NAT gateway, and the preferred field for setting it. Provide an unassigned Bring Your Own IP (BYOIP) address on your account in the same region to use your own IP address. This field is only applied when creating the gateway and cannot be changed afterward. The assigned address is returned as `ipv4` in GET and list responses."
+          }
+        },
+        "ipv4": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "An alternative to `ip` for setting the public egress IP address on create. Accepts the same value as `ip`, which takes precedence if both are provided. This field is only applied when creating the gateway and cannot be changed afterward."
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "Specify the address using either `ip` or `ipv4`. Both fields accept the same value and `ip` takes precedence if both are provided. The assigned address is returned in the `ipv4` field of GET and list responses."
+      }
+    },
+    "com.digitalocean.api#VpcNatGatewayCreateEgressesPublicGatewaysList": {
+      "type": "list",
+      "member": {
+        "target": "com.digitalocean.api#VpcNatGatewayCreateEgressesPublicGatewaysItem"
+      },
+      "traits": {
+        "smithy.api#documentation": "An array containing a single public gateway object that sets the gateway's public egress IP address."
+      }
+    },
+    "com.digitalocean.api#VpcNatGatewayCreateEgresses": {
+      "type": "structure",
+      "members": {
+        "public_gateways": {
+          "target": "com.digitalocean.api#VpcNatGatewayCreateEgressesPublicGatewaysList",
+          "traits": {
+            "smithy.api#documentation": "An array containing a single public gateway object that sets the gateway's public egress IP address."
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "An optional object specifying the public egress IP address to assign to the VPC NAT gateway. Provide this only to use a specific address. If omitted, DigitalOcean allocates a public IP address automatically."
+      }
+    },
+    "com.digitalocean.api#CreateVpcnatgatewayResponse": {
+      "type": "structure",
+      "members": {
+        "vpc_nat_gateway": {
+          "target": "com.digitalocean.api#VpcNatGatewayCreate"
+        }
+      },
+      "traits": {
+        "smithy.api#output": {}
+      }
+    },
     "com.digitalocean.api#CreateVpcnatgateway": {
       "type": "operation",
       "input": {
         "target": "com.digitalocean.api#CreateVpcnatgatewayRequest"
       },
       "output": {
-        "target": "smithy.api#Unit"
+        "target": "com.digitalocean.api#CreateVpcnatgatewayResponse"
       },
       "traits": {
         "smithy.api#http": {

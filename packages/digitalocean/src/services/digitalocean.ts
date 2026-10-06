@@ -438,6 +438,12 @@ export const AddFirewallRulesRequestInboundRulesItemSourcesKubernetesIdsList =
     S.String,
   ) as any as S.Schema<AddFirewallRulesRequestInboundRulesItemSourcesKubernetesIdsList>;
 
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type AddFirewallRulesRequestInboundRulesItemSourcesTagsList = Array<string>;
+export const AddFirewallRulesRequestInboundRulesItemSourcesTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<AddFirewallRulesRequestInboundRulesItemSourcesTagsList>;
+
 export interface AddFirewallRulesRequestInboundRulesItemSources {
   /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
   addresses?: AddFirewallRulesRequestInboundRulesItemSourcesAddressesList;
@@ -447,7 +453,8 @@ export interface AddFirewallRulesRequestInboundRulesItemSources {
   load_balancer_uids?: AddFirewallRulesRequestInboundRulesItemSourcesLoadBalancerUidsList;
   /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
   kubernetes_ids?: AddFirewallRulesRequestInboundRulesItemSourcesKubernetesIdsList;
-  tags?: unknown;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: AddFirewallRulesRequestInboundRulesItemSourcesTagsList | null;
 }
 export const AddFirewallRulesRequestInboundRulesItemSources = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -457,7 +464,7 @@ export const AddFirewallRulesRequestInboundRulesItemSources = /*@__PURE__*/ S.su
       AddFirewallRulesRequestInboundRulesItemSourcesLoadBalancerUidsList,
     ),
     kubernetes_ids: S.optional(AddFirewallRulesRequestInboundRulesItemSourcesKubernetesIdsList),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(AddFirewallRulesRequestInboundRulesItemSourcesTagsList)),
   }),
 ).annotate({
   identifier: "AddFirewallRulesRequestInboundRulesItemSources",
@@ -526,6 +533,12 @@ export const AddFirewallRulesRequestOutboundRulesItemDestinationsKubernetesIdsLi
     S.String,
   ) as any as S.Schema<AddFirewallRulesRequestOutboundRulesItemDestinationsKubernetesIdsList>;
 
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type AddFirewallRulesRequestOutboundRulesItemDestinationsTagsList = Array<string>;
+export const AddFirewallRulesRequestOutboundRulesItemDestinationsTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<AddFirewallRulesRequestOutboundRulesItemDestinationsTagsList>;
+
 export interface AddFirewallRulesRequestOutboundRulesItemDestinations {
   /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
   addresses?: AddFirewallRulesRequestOutboundRulesItemDestinationsAddressesList;
@@ -535,7 +548,8 @@ export interface AddFirewallRulesRequestOutboundRulesItemDestinations {
   load_balancer_uids?: AddFirewallRulesRequestOutboundRulesItemDestinationsLoadBalancerUidsList;
   /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
   kubernetes_ids?: AddFirewallRulesRequestOutboundRulesItemDestinationsKubernetesIdsList;
-  tags?: unknown;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: AddFirewallRulesRequestOutboundRulesItemDestinationsTagsList | null;
 }
 export const AddFirewallRulesRequestOutboundRulesItemDestinations = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -547,7 +561,7 @@ export const AddFirewallRulesRequestOutboundRulesItemDestinations = /*@__PURE__*
     kubernetes_ids: S.optional(
       AddFirewallRulesRequestOutboundRulesItemDestinationsKubernetesIdsList,
     ),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(AddFirewallRulesRequestOutboundRulesItemDestinationsTagsList)),
   }),
 ).annotate({
   identifier: "AddFirewallRulesRequestOutboundRulesItemDestinations",
@@ -598,15 +612,22 @@ export const AddFirewallRulesResponse = /*@__PURE__*/ S.suspend(() => S.Struct({
   identifier: "AddFirewallRulesResponse",
 }) as any as S.Schema<AddFirewallRulesResponse>;
 
+/** An array containing the names of the Tags to be assigned to the firewall. */
+export type AddFirewallTagsRequestTagsList = Array<string>;
+export const AddFirewallTagsRequestTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<AddFirewallTagsRequestTagsList>;
+
 export interface AddFirewallTagsRequest {
   /** A unique ID that can be used to identify and reference a firewall. */
   firewall_id: string;
-  tags: unknown;
+  /** An array containing the names of the Tags to be assigned to the firewall. */
+  tags: AddFirewallTagsRequestTagsList;
 }
 export const AddFirewallTagsRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     firewall_id: S.String.pipe(T.Label()),
-    tags: S.Unknown,
+    tags: AddFirewallTagsRequestTagsList,
   }).pipe(T.Http({ method: "POST", uri: "/v2/firewalls/{firewall_id}/tags", code: 200 })),
 ).annotate({ identifier: "AddFirewallTagsRequest" }) as any as S.Schema<AddFirewallTagsRequest>;
 
@@ -6541,8 +6562,67 @@ export const CreateAutoscalepoolRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "CreateAutoscalepoolRequest",
 }) as any as S.Schema<CreateAutoscalepoolRequest>;
 
-export interface CreateAutoscalepoolResponse {}
-export const CreateAutoscalepoolResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
+/** The scaling configuration for an autoscale pool, which is how the pool scales up and down (either by resource utilization or static configuration). */
+export type AutoscalePoolConfig = AutoscalePoolStaticConfig | AutoscalePoolDynamicConfig;
+export const AutoscalePoolConfig = S.Unknown as any as S.Schema<AutoscalePoolConfig>;
+
+export interface CurrentUtilization {
+  /** The average memory utilization of the autoscale pool. */
+  memory?: number;
+  /** The average CPU utilization of the autoscale pool. */
+  cpu?: number;
+}
+export const CurrentUtilization = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    memory: S.optional(S.Number),
+    cpu: S.optional(S.Number),
+  }),
+).annotate({ identifier: "CurrentUtilization" }) as any as S.Schema<CurrentUtilization>;
+
+/** The current status of the autoscale pool. */
+export type AutoscalePoolStatus = "active" | "deleting" | "error";
+export const AutoscalePoolStatus = S.String;
+
+export interface AutoscalePool {
+  /** A unique identifier for each autoscale pool instance. This is automatically generated upon autoscale pool creation. */
+  id: string;
+  /** The human-readable name set for the autoscale pool. */
+  name: string;
+  /** The scaling configuration for an autoscale pool, which is how the pool scales up and down (either by resource utilization or static configuration). */
+  config: AutoscalePoolConfig;
+  droplet_template: AutoscalePoolDropletTemplate;
+  current_utilization?: CurrentUtilization;
+  /** A time value given in ISO8601 combined date and time format that represents when the autoscale pool was created. */
+  created_at: string;
+  /** A time value given in ISO8601 combined date and time format that represents when the autoscale pool was last updated. */
+  updated_at: string;
+  /** The current status of the autoscale pool. */
+  status: AutoscalePoolStatus;
+  /** The number of active Droplets in the autoscale pool. */
+  active_resources_count: number;
+}
+export const AutoscalePool = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.String,
+    name: S.String,
+    config: AutoscalePoolConfig,
+    droplet_template: AutoscalePoolDropletTemplate,
+    current_utilization: S.optional(CurrentUtilization),
+    created_at: S.String,
+    updated_at: S.String,
+    status: AutoscalePoolStatus,
+    active_resources_count: S.Number,
+  }),
+).annotate({ identifier: "AutoscalePool" }) as any as S.Schema<AutoscalePool>;
+
+export interface CreateAutoscalepoolResponse {
+  autoscale_pool?: AutoscalePool;
+}
+export const CreateAutoscalepoolResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    autoscale_pool: S.optional(AutoscalePool),
+  }),
+).annotate({
   identifier: "CreateAutoscalepoolResponse",
 }) as any as S.Schema<CreateAutoscalepoolResponse>;
 
@@ -6562,8 +6642,21 @@ export const CreateByoipPrefixRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v2/byoip_prefixes", code: 200 })),
 ).annotate({ identifier: "CreateByoipPrefixRequest" }) as any as S.Schema<CreateByoipPrefixRequest>;
 
-export interface CreateByoipPrefixResponse {}
-export const CreateByoipPrefixResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
+export interface CreateByoipPrefixResponse {
+  /** The unique identifier for the BYOIP prefix */
+  uuid?: string;
+  /** The region where the prefix is created */
+  region?: string;
+  /** The status of the BYOIP prefix */
+  status?: string;
+}
+export const CreateByoipPrefixResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    uuid: S.optional(S.String),
+    region: S.optional(S.String),
+    status: S.optional(S.String),
+  }),
+).annotate({
   identifier: "CreateByoipPrefixResponse",
 }) as any as S.Schema<CreateByoipPrefixResponse>;
 
@@ -8328,9 +8421,233 @@ export const CreateDedicatedInferenceRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "CreateDedicatedInferenceRequest",
 }) as any as S.Schema<CreateDedicatedInferenceRequest>;
 
-export interface CreateDedicatedInferenceResponse {}
+/** Current state of the Dedicated Inference. */
+export type DedicatedInferenceStatus =
+  | "active"
+  | "new"
+  | "provisioning"
+  | "updating"
+  | "deleting"
+  | "error";
+export const DedicatedInferenceStatus = S.String;
+
+/** DigitalOcean region where the Dedicated Inference is hosted. */
+export type DedicatedInferenceSpecRegion = "atl1" | "nyc2" | "tor1";
+export const DedicatedInferenceSpecRegion = S.String;
+
+export type DedicatedInferenceSpecVpc = DedicatedInferenceSpecInputVpc;
+export const DedicatedInferenceSpecVpc = DedicatedInferenceSpecInputVpc;
+
+/** Model provider. */
+export type ModelDeploymentSpecModelProvider = "hugging_face";
+export const ModelDeploymentSpecModelProvider = S.String;
+
+/** Current state of the Accelerator. */
+export type AcceleratorConfigSpecStatus = "new" | "provisioning" | "active";
+export const AcceleratorConfigSpecStatus = S.String;
+
+export interface AcceleratorConfigSpec {
+  /** Number of accelerator instances. */
+  scale: number;
+  /** Accelerator type (e.g. prefill_decode). */
+  type: string;
+  /** DigitalOcean GPU slug. */
+  accelerator_slug: string;
+  /** Current state of the Accelerator. */
+  status?: AcceleratorConfigSpecStatus;
+}
+export const AcceleratorConfigSpec = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    scale: S.Number,
+    type: S.String,
+    accelerator_slug: S.String,
+    status: S.optional(AcceleratorConfigSpecStatus),
+  }),
+).annotate({ identifier: "AcceleratorConfigSpec" }) as any as S.Schema<AcceleratorConfigSpec>;
+
+/** Accelerator configuration for this deployment. */
+export type ModelDeploymentSpecAcceleratorsList = Array<AcceleratorConfigSpec>;
+export const ModelDeploymentSpecAcceleratorsList = /*@__PURE__*/ S.Array(
+  AcceleratorConfigSpec,
+) as any as S.Schema<ModelDeploymentSpecAcceleratorsList>;
+
+/** Configuration for a single model deployment. */
+export interface ModelDeploymentSpec {
+  /** Used to identify an existing deployment when updating; empty means create new. */
+  model_id?: string;
+  /** Model identifier (e.g. Hugging Face slug). */
+  model_slug?: string;
+  /** Model provider. */
+  model_provider?: ModelDeploymentSpecModelProvider;
+  /** Workload-specific configuration (e.g. ISL/OSL in future). */
+  workload_config?: unknown;
+  /** Accelerator configuration for this deployment. */
+  accelerators?: ModelDeploymentSpecAcceleratorsList;
+}
+export const ModelDeploymentSpec = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    model_id: S.optional(S.String),
+    model_slug: S.optional(S.String),
+    model_provider: S.optional(ModelDeploymentSpecModelProvider),
+    workload_config: S.optional(S.Unknown),
+    accelerators: S.optional(ModelDeploymentSpecAcceleratorsList),
+  }),
+).annotate({ identifier: "ModelDeploymentSpec" }) as any as S.Schema<ModelDeploymentSpec>;
+
+/** At least one model deployment is required. */
+export type DedicatedInferenceSpecModelDeploymentsList = Array<ModelDeploymentSpec>;
+export const DedicatedInferenceSpecModelDeploymentsList = /*@__PURE__*/ S.Array(
+  ModelDeploymentSpec,
+) as any as S.Schema<DedicatedInferenceSpecModelDeploymentsList>;
+
+/** Structured configuration for a Dedicated Inference deployment. */
+export interface DedicatedInferenceSpec {
+  /** Spec version. */
+  version: number;
+  /** Name of the Dedicated Inference. Must be unique within the team. */
+  name: string;
+  /** DigitalOcean region where the Dedicated Inference is hosted. */
+  region: DedicatedInferenceSpecRegion;
+  vpc: DedicatedInferenceSpecInputVpc;
+  /** Whether to expose a public LLM endpoint. */
+  enable_public_endpoint: boolean;
+  /** At least one model deployment is required. */
+  model_deployments: DedicatedInferenceSpecModelDeploymentsList;
+}
+export const DedicatedInferenceSpec = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    version: S.Number,
+    name: S.String,
+    region: DedicatedInferenceSpecRegion,
+    vpc: DedicatedInferenceSpecInputVpc,
+    enable_public_endpoint: S.Boolean,
+    model_deployments: DedicatedInferenceSpecModelDeploymentsList,
+  }),
+).annotate({ identifier: "DedicatedInferenceSpec" }) as any as S.Schema<DedicatedInferenceSpec>;
+
+export type PendingDeploymentSpecStatus = "provisioning" | "updating";
+export const PendingDeploymentSpecStatus = S.String;
+
+export type PendingDeploymentSpecVpc = DedicatedInferenceSpecInputVpc;
+export const PendingDeploymentSpecVpc = DedicatedInferenceSpecInputVpc;
+
+/** At least one model deployment is required. */
+export type PendingDeploymentSpecModelDeploymentsList = Array<ModelDeploymentSpec>;
+export const PendingDeploymentSpecModelDeploymentsList = /*@__PURE__*/ S.Array(
+  ModelDeploymentSpec,
+) as any as S.Schema<PendingDeploymentSpecModelDeploymentsList>;
+
+/** Pending deployment when status is provisioning or updating. */
+export interface PendingDeploymentSpec {
+  /** Deployment UUID. */
+  id?: string;
+  /** Spec version. */
+  version?: number;
+  /** Name of the Dedicated Inference. Must be unique within the team. */
+  name?: string;
+  status?: PendingDeploymentSpecStatus;
+  vpc?: DedicatedInferenceSpecInputVpc;
+  /** Whether to expose a public LLM endpoint. */
+  enable_public_endpoint?: boolean;
+  /** At least one model deployment is required. */
+  model_deployments?: PendingDeploymentSpecModelDeploymentsList;
+  created_at?: string;
+  updated_at?: string;
+}
+export const PendingDeploymentSpec = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.String),
+    version: S.optional(S.Number),
+    name: S.optional(S.String),
+    status: S.optional(PendingDeploymentSpecStatus),
+    vpc: S.optional(DedicatedInferenceSpecInputVpc),
+    enable_public_endpoint: S.optional(S.Boolean),
+    model_deployments: S.optional(PendingDeploymentSpecModelDeploymentsList),
+    created_at: S.optional(S.String),
+    updated_at: S.optional(S.String),
+  }),
+).annotate({ identifier: "PendingDeploymentSpec" }) as any as S.Schema<PendingDeploymentSpec>;
+
+export interface DedicatedInferenceEndpoints {
+  /** Public FQDN of the Dedicated Inference instance. */
+  public_endpoint_fqdn?: string;
+  /** Private VPC FQDN of the Dedicated Inference instance. */
+  private_endpoint_fqdn?: string;
+}
+export const DedicatedInferenceEndpoints = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    public_endpoint_fqdn: S.optional(S.String),
+    private_endpoint_fqdn: S.optional(S.String),
+  }),
+).annotate({
+  identifier: "DedicatedInferenceEndpoints",
+}) as any as S.Schema<DedicatedInferenceEndpoints>;
+
+/** A Dedicated Inference instance. */
+export interface DedicatedInference {
+  /** Unique ID of the Dedicated Inference. */
+  id?: string;
+  /** Current state of the Dedicated Inference. */
+  status?: DedicatedInferenceStatus;
+  /** DigitalOcean region where the Dedicated Inference is hosted. */
+  region?: string;
+  /** VPC UUID of the Dedicated Inference. */
+  vpc_uuid?: string;
+  spec?: DedicatedInferenceSpec;
+  pending_deployment_spec?: PendingDeploymentSpec;
+  endpoints?: DedicatedInferenceEndpoints;
+  /** When the Dedicated Inference was created. */
+  created_at?: string;
+  /** When the Dedicated Inference was last updated. */
+  updated_at?: string;
+}
+export const DedicatedInference = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.String),
+    status: S.optional(DedicatedInferenceStatus),
+    region: S.optional(S.String),
+    vpc_uuid: S.optional(S.String),
+    spec: S.optional(DedicatedInferenceSpec),
+    pending_deployment_spec: S.optional(PendingDeploymentSpec),
+    endpoints: S.optional(DedicatedInferenceEndpoints),
+    created_at: S.optional(S.String),
+    updated_at: S.optional(S.String),
+  }),
+).annotate({ identifier: "DedicatedInference" }) as any as S.Schema<DedicatedInference>;
+
+/** Access token for authenticating to Dedicated Inference endpoints. */
+export interface DedicatedInferenceAccessToken {
+  /** Unique ID of the token. */
+  id?: string;
+  /** Name of the token. */
+  name?: string;
+  /** Token value; only returned once on create. Store securely. */
+  value?: string;
+  created_at?: string;
+  /** When true, the token is managed by DigitalOcean (for example, system-provisioned). When false, the token was created by the user. */
+  is_managed?: boolean;
+}
+export const DedicatedInferenceAccessToken = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.String),
+    name: S.optional(S.String),
+    value: S.optional(S.String),
+    created_at: S.optional(S.String),
+    is_managed: S.optional(S.Boolean),
+  }),
+).annotate({
+  identifier: "DedicatedInferenceAccessToken",
+}) as any as S.Schema<DedicatedInferenceAccessToken>;
+
+export interface CreateDedicatedInferenceResponse {
+  dedicated_inference?: DedicatedInference;
+  token?: DedicatedInferenceAccessToken;
+}
 export const CreateDedicatedInferenceResponse = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({}),
+  S.Struct({
+    dedicated_inference: S.optional(DedicatedInference),
+    token: S.optional(DedicatedInferenceAccessToken),
+  }),
 ).annotate({
   identifier: "CreateDedicatedInferenceResponse",
 }) as any as S.Schema<CreateDedicatedInferenceResponse>;
@@ -8356,9 +8673,13 @@ export const CreateDedicatedInferenceTokensRequest = /*@__PURE__*/ S.suspend(() 
   identifier: "CreateDedicatedInferenceTokensRequest",
 }) as any as S.Schema<CreateDedicatedInferenceTokensRequest>;
 
-export interface CreateDedicatedInferenceTokensResponse {}
+export interface CreateDedicatedInferenceTokensResponse {
+  token?: DedicatedInferenceAccessToken;
+}
 export const CreateDedicatedInferenceTokensResponse = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({}),
+  S.Struct({
+    token: S.optional(DedicatedInferenceAccessToken),
+  }),
 ).annotate({
   identifier: "CreateDedicatedInferenceTokensResponse",
 }) as any as S.Schema<CreateDedicatedInferenceTokensResponse>;
@@ -8918,16 +9239,515 @@ export const CreateDropletRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v2/droplets", code: 200 })),
 ).annotate({ identifier: "CreateDropletRequest" }) as any as S.Schema<CreateDropletRequest>;
 
-export interface CreateDropletResponse {}
-export const CreateDropletResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
-  identifier: "CreateDropletResponse",
-}) as any as S.Schema<CreateDropletResponse>;
+/** The type of disk. All Droplets contain a `local` or `boot` disk. Additionally, GPU Droplets can also have a `scratch` disk for non-persistent data. */
+export type DiskInfoType = "local" | "boot" | "scratch";
+export const DiskInfoType = S.String;
+
+export interface DiskInfoSize {
+  /** The amount of space allocated to the disk. */
+  amount?: number;
+  /** The unit of measure for the disk size. */
+  unit?: string;
+}
+export const DiskInfoSize = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    amount: S.optional(S.Number),
+    unit: S.optional(S.String),
+  }),
+).annotate({ identifier: "DiskInfoSize" }) as any as S.Schema<DiskInfoSize>;
+
+export interface DiskInfo {
+  /** The type of disk. All Droplets contain a `local` or `boot` disk. Additionally, GPU Droplets can also have a `scratch` disk for non-persistent data. */
+  type?: DiskInfoType;
+  size?: DiskInfoSize;
+}
+export const DiskInfo = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    type: S.optional(DiskInfoType),
+    size: S.optional(DiskInfoSize),
+  }),
+).annotate({ identifier: "DiskInfo" }) as any as S.Schema<DiskInfo>;
+
+/** An array of objects containing information about the disks available to the Droplet. */
+export type DropletDiskInfoList = Array<DiskInfo>;
+export const DropletDiskInfoList = /*@__PURE__*/ S.Array(
+  DiskInfo,
+) as any as S.Schema<DropletDiskInfoList>;
+
+/** A status string indicating the state of the Droplet instance. This may be "new", "active", "off", or "archive". */
+export type DropletStatus = "new" | "active" | "off" | "archive";
+export const DropletStatus = S.String;
+
+/** **Note**: All Droplets created after March 2017 use internal kernels by default. These Droplets will have this attribute set to `null`. The current [kernel](https://docs.digitalocean.com/products/droplets/how-to/kernel/) for Droplets with externally managed kernels. This will initially be set to the kernel of the base image when the Droplet is created. */
+export interface Kernel {
+  /** A unique number used to identify and reference a specific kernel. */
+  id?: number;
+  /** The display name of the kernel. This is shown in the web UI and is generally a descriptive title for the kernel in question. */
+  name?: string;
+  /** A standard kernel version string representing the version, patch, and release information. */
+  version?: string;
+}
+export const Kernel = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.Number),
+    name: S.optional(S.String),
+    version: S.optional(S.String),
+  }),
+).annotate({ identifier: "Kernel" }) as any as S.Schema<Kernel>;
+
+/** An array of features enabled on this Droplet. */
+export type DropletFeaturesList = Array<string>;
+export const DropletFeaturesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<DropletFeaturesList>;
+
+/** An array of backup IDs of any backups that have been taken of the Droplet instance. Droplet backups are enabled at the time of the instance creation.<br>Requires `image:read` scope. */
+export type DropletBackupIdsList = Array<number>;
+export const DropletBackupIdsList = /*@__PURE__*/ S.Array(
+  S.Number,
+) as any as S.Schema<DropletBackupIdsList>;
+
+export interface DropletNextBackupWindow {
+  /** A time value given in ISO8601 combined date and time format specifying the start of the Droplet's backup window. */
+  start?: string;
+  /** A time value given in ISO8601 combined date and time format specifying the end of the Droplet's backup window. */
+  end?: string;
+}
+export const DropletNextBackupWindow = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    start: S.optional(S.String),
+    end: S.optional(S.String),
+  }),
+).annotate({ identifier: "DropletNextBackupWindow" }) as any as S.Schema<DropletNextBackupWindow>;
+
+/** An array of snapshot IDs of any snapshots created from the Droplet instance.<br>Requires `image:read` scope. */
+export type DropletSnapshotIdsList = Array<number>;
+export const DropletSnapshotIdsList = /*@__PURE__*/ S.Array(
+  S.Number,
+) as any as S.Schema<DropletSnapshotIdsList>;
+
+/** Describes the kind of image. It may be one of `base`, `snapshot`, `backup`, `custom`, or `admin`. Respectively, this specifies whether an image is a DigitalOcean base OS image, user-generated Droplet snapshot, automatically created Droplet backup, user-provided virtual machine image, or an image used for DigitalOcean managed resources (e.g. DOKS worker nodes). */
+export type DropletImageType = "base" | "snapshot" | "backup" | "custom" | "admin";
+export const DropletImageType = S.String;
+
+/** The name of a custom image's distribution. Currently, the valid values are `Arch Linux`, `CentOS`, `CoreOS`, `Debian`, `Fedora`, `Fedora Atomic`, `FreeBSD`, `Gentoo`, `openSUSE`, `RancherOS`, `Rocky Linux`, `Ubuntu`, and `Unknown`. Any other value will be accepted but ignored, and `Unknown` will be used in its place. */
+export type Distribution =
+  | "Arch Linux"
+  | "CentOS"
+  | "CoreOS"
+  | "Debian"
+  | "Fedora"
+  | "Fedora Atomic"
+  | "FreeBSD"
+  | "Gentoo"
+  | "openSUSE"
+  | "RancherOS"
+  | "Rocky Linux"
+  | "Ubuntu"
+  | "Unknown";
+export const Distribution = S.String;
+
+/** The slug identifier for the region where the resource will initially be available. */
+export type RegionSlug =
+  | "ams1"
+  | "ams2"
+  | "ams3"
+  | "blr1"
+  | "fra1"
+  | "lon1"
+  | "nyc1"
+  | "nyc2"
+  | "nyc3"
+  | "sfo1"
+  | "sfo2"
+  | "sfo3"
+  | "sgp1"
+  | "tor1"
+  | "syd1";
+export const RegionSlug = S.String;
+
+/** This attribute is an array of the regions that the image is available in. The regions are represented by their identifying slug values. */
+export type RegionsArray = Array<RegionSlug>;
+export const RegionsArray = /*@__PURE__*/ S.Array(RegionSlug) as any as S.Schema<RegionsArray>;
+
+/** A flat array of tag names as strings to be applied to the resource. Tag names may be for either existing or new tags. <br><br>Requires `tag:create` scope. */
+export type TagsArray = Array<string>;
+export const TagsArray = /*@__PURE__*/ S.Array(S.String) as any as S.Schema<TagsArray>;
+
+/** A status string indicating the state of a custom image. This may be `NEW`, `available`, `pending`, `deleted`, or `retired`. */
+export type DropletImageStatus = "NEW" | "available" | "pending" | "deleted" | "retired";
+export const DropletImageStatus = S.String;
+
+export interface DropletImage {
+  /** A unique number that can be used to identify and reference a specific image. */
+  id?: number;
+  name?: string;
+  /** Describes the kind of image. It may be one of `base`, `snapshot`, `backup`, `custom`, or `admin`. Respectively, this specifies whether an image is a DigitalOcean base OS image, user-generated Droplet snapshot, automatically created Droplet backup, user-provided virtual machine image, or an image used for DigitalOcean managed resources (e.g. DOKS worker nodes). */
+  type?: DropletImageType;
+  distribution?: Distribution;
+  /** A uniquely identifying string that is associated with each of the DigitalOcean-provided public images. These can be used to reference a public image as an alternative to the numeric id. */
+  slug?: string | null;
+  /** This is a boolean value that indicates whether the image in question is public or not. An image that is public is available to all accounts. A non-public image is only accessible from your account. */
+  public?: boolean;
+  regions?: RegionsArray;
+  /** A time value given in ISO8601 combined date and time format that represents when the image was created. */
+  created_at?: string;
+  /** The minimum disk size in GB required for a Droplet to use this image. */
+  min_disk_size?: number | null;
+  /** The size of the image in gigabytes. */
+  size_gigabytes?: number | null;
+  description?: string;
+  tags?: TagsArray | null;
+  /** A status string indicating the state of a custom image. This may be `NEW`, `available`, `pending`, `deleted`, or `retired`. */
+  status?: DropletImageStatus;
+  /** A string containing information about errors that may occur when importing a custom image. */
+  error_message?: string;
+}
+export const DropletImage = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.Number),
+    name: S.optional(S.String),
+    type: S.optional(DropletImageType),
+    distribution: S.optional(Distribution),
+    slug: S.optional(S.NullOr(S.String)),
+    public: S.optional(S.Boolean),
+    regions: S.optional(RegionsArray),
+    created_at: S.optional(S.String),
+    min_disk_size: S.optional(S.NullOr(S.Number)),
+    size_gigabytes: S.optional(S.NullOr(S.Number)),
+    description: S.optional(S.String),
+    tags: S.optional(S.NullOr(TagsArray)),
+    status: S.optional(DropletImageStatus),
+    error_message: S.optional(S.String),
+  }),
+).annotate({ identifier: "DropletImage" }) as any as S.Schema<DropletImage>;
+
+/** A flat array including the unique identifier for each Block Storage volume attached to the Droplet.<br>Requires `block_storage:read` scope. */
+export type DropletVolumeIdsList = Array<string>;
+export const DropletVolumeIdsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<DropletVolumeIdsList>;
+
+/** An array containing the region slugs where this size is available for Droplet creates. */
+export type SizeRegionsList = Array<string>;
+export const SizeRegionsList = /*@__PURE__*/ S.Array(S.String) as any as S.Schema<SizeRegionsList>;
+
+/** An array of objects containing information about the disks available to Droplets created with this size. */
+export type SizeDiskInfoList = Array<DiskInfo>;
+export const SizeDiskInfoList = /*@__PURE__*/ S.Array(
+  DiskInfo,
+) as any as S.Schema<SizeDiskInfoList>;
+
+export interface GpuInfoVram {
+  /** The amount of VRAM allocated to the GPU. */
+  amount?: number;
+  /** The unit of measure for the VRAM. */
+  unit?: string;
+}
+export const GpuInfoVram = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    amount: S.optional(S.Number),
+    unit: S.optional(S.String),
+  }),
+).annotate({ identifier: "GpuInfoVram" }) as any as S.Schema<GpuInfoVram>;
+
+/** An object containing information about the GPU capabilities of Droplets created with this size. */
+export interface GpuInfo {
+  /** The number of GPUs allocated to the Droplet. */
+  count?: number;
+  /** The model of the GPU. */
+  model?: string;
+  vram?: GpuInfoVram;
+}
+export const GpuInfo = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    count: S.optional(S.Number),
+    model: S.optional(S.String),
+    vram: S.optional(GpuInfoVram),
+  }),
+).annotate({ identifier: "GpuInfo" }) as any as S.Schema<GpuInfo>;
+
+export interface Size {
+  /** A human-readable string that is used to uniquely identify each size. */
+  slug: string;
+  /** The amount of RAM allocated to Droplets created of this size. The value is represented in megabytes. */
+  memory: number;
+  /** The number of CPUs allocated to Droplets of this size. */
+  vcpus: number;
+  /** The amount of disk space set aside for Droplets of this size. The value is represented in gigabytes. */
+  disk: number;
+  /** The amount of transfer bandwidth that is available for Droplets created in this size. This only counts traffic on the public interface. The value is given in terabytes. */
+  transfer: number;
+  /** This attribute describes the monthly cost of this Droplet size if the Droplet is kept for an entire month. The value is measured in US dollars. */
+  price_monthly: number;
+  /** This describes the price of the Droplet size as measured hourly. The value is measured in US dollars. */
+  price_hourly: number;
+  /** An array containing the region slugs where this size is available for Droplet creates. */
+  regions: SizeRegionsList;
+  /** This is a boolean value that represents whether new Droplets can be created with this size. */
+  available: boolean;
+  /** A string describing the class of Droplets created from this size. For example: Basic, General Purpose, CPU-Optimized, Memory-Optimized, or Storage-Optimized. */
+  description: string;
+  /** An array of objects containing information about the disks available to Droplets created with this size. */
+  disk_info?: SizeDiskInfoList;
+  gpu_info?: GpuInfo;
+}
+export const Size = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    slug: S.String,
+    memory: S.Number,
+    vcpus: S.Number,
+    disk: S.Number,
+    transfer: S.Number,
+    price_monthly: S.Number,
+    price_hourly: S.Number,
+    regions: SizeRegionsList,
+    available: S.Boolean,
+    description: S.String,
+    disk_info: S.optional(SizeDiskInfoList),
+    gpu_info: S.optional(GpuInfo),
+  }),
+).annotate({ identifier: "Size" }) as any as S.Schema<Size>;
+
+/** The type of the IPv4 network interface. */
+export type NetworkV4Type = "public" | "private";
+export const NetworkV4Type = S.String;
+
+export interface NetworkV4 {
+  /** The IP address of the IPv4 network interface. */
+  ip_address?: string;
+  /** The netmask of the IPv4 network interface. */
+  netmask?: string;
+  /** The gateway of the specified IPv4 network interface. For private interfaces, a gateway is not provided. This is denoted by returning `nil` as its value. */
+  gateway?: string;
+  /** The type of the IPv4 network interface. */
+  type?: NetworkV4Type;
+}
+export const NetworkV4 = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    ip_address: S.optional(S.String),
+    netmask: S.optional(S.String),
+    gateway: S.optional(S.String),
+    type: S.optional(NetworkV4Type),
+  }),
+).annotate({ identifier: "NetworkV4" }) as any as S.Schema<NetworkV4>;
+
+export type DropletNetworksV4List = Array<NetworkV4>;
+export const DropletNetworksV4List = /*@__PURE__*/ S.Array(
+  NetworkV4,
+) as any as S.Schema<DropletNetworksV4List>;
+
+/** The type of the IPv6 network interface. **Note**: IPv6 private networking is not currently supported. */
+export type NetworkV6Type = "public";
+export const NetworkV6Type = S.String;
+
+export interface NetworkV6 {
+  /** The IP address of the IPv6 network interface. */
+  ip_address?: string;
+  /** The netmask of the IPv6 network interface. */
+  netmask?: number;
+  /** The gateway of the specified IPv6 network interface. */
+  gateway?: string;
+  /** The type of the IPv6 network interface. **Note**: IPv6 private networking is not currently supported. */
+  type?: NetworkV6Type;
+}
+export const NetworkV6 = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    ip_address: S.optional(S.String),
+    netmask: S.optional(S.Number),
+    gateway: S.optional(S.String),
+    type: S.optional(NetworkV6Type),
+  }),
+).annotate({ identifier: "NetworkV6" }) as any as S.Schema<NetworkV6>;
+
+export type DropletNetworksV6List = Array<NetworkV6>;
+export const DropletNetworksV6List = /*@__PURE__*/ S.Array(
+  NetworkV6,
+) as any as S.Schema<DropletNetworksV6List>;
+
+/** The details of the network that are configured for the Droplet instance. This is an object that contains keys for IPv4 and IPv6. The value of each of these is an array that contains objects describing an individual IP resource allocated to the Droplet. These will define attributes like the IP address, netmask, and gateway of the specific network depending on the type of network it is. */
+export interface DropletNetworks {
+  v4?: DropletNetworksV4List;
+  v6?: DropletNetworksV6List;
+}
+export const DropletNetworks = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    v4: S.optional(DropletNetworksV4List),
+    v6: S.optional(DropletNetworksV6List),
+  }),
+).annotate({ identifier: "DropletNetworks" }) as any as S.Schema<DropletNetworks>;
+
+/** This attribute is set to an array which contains features available in this region */
+export type RegionFeaturesList = Array<string>;
+export const RegionFeaturesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<RegionFeaturesList>;
+
+/** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
+export type RegionSizesList = Array<string>;
+export const RegionSizesList = /*@__PURE__*/ S.Array(S.String) as any as S.Schema<RegionSizesList>;
+
+export interface Region {
+  /** The display name of the region. This will be a full name that is used in the control panel and other interfaces. */
+  name: string;
+  /** A human-readable string that is used as a unique identifier for each region. */
+  slug: string;
+  /** This attribute is set to an array which contains features available in this region */
+  features: RegionFeaturesList;
+  /** This is a boolean value that represents whether new Droplets can be created in this region. */
+  available: boolean;
+  /** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
+  sizes: RegionSizesList;
+}
+export const Region = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    name: S.String,
+    slug: S.String,
+    features: RegionFeaturesList,
+    available: S.Boolean,
+    sizes: RegionSizesList,
+  }),
+).annotate({ identifier: "Region" }) as any as S.Schema<Region>;
+
+/** An array of Tags the Droplet has been tagged with.<br>Requires `tag:read` scope. */
+export type DropletTagsList = Array<string>;
+export const DropletTagsList = /*@__PURE__*/ S.Array(S.String) as any as S.Schema<DropletTagsList>;
+
+export interface Droplet {
+  /** A unique identifier for each Droplet instance. This is automatically generated upon Droplet creation. */
+  id: number;
+  /** The human-readable name set for the Droplet instance. */
+  name: string;
+  /** Memory of the Droplet in megabytes. */
+  memory: number;
+  /** The number of virtual CPUs. */
+  vcpus: number;
+  /** The size of the Droplet's disk in gigabytes. */
+  disk: number;
+  /** An array of objects containing information about the disks available to the Droplet. */
+  disk_info?: DropletDiskInfoList;
+  /** A boolean value indicating whether the Droplet has been locked, preventing actions by users. */
+  locked: boolean;
+  /** A status string indicating the state of the Droplet instance. This may be "new", "active", "off", or "archive". */
+  status: DropletStatus;
+  kernel?: Kernel | null;
+  /** A time value given in ISO8601 combined date and time format that represents when the Droplet was created. */
+  created_at: string;
+  /** An array of features enabled on this Droplet. */
+  features: DropletFeaturesList;
+  /** An array of backup IDs of any backups that have been taken of the Droplet instance. Droplet backups are enabled at the time of the instance creation.<br>Requires `image:read` scope. */
+  backup_ids: DropletBackupIdsList;
+  next_backup_window: DropletNextBackupWindow;
+  /** An array of snapshot IDs of any snapshots created from the Droplet instance.<br>Requires `image:read` scope. */
+  snapshot_ids: DropletSnapshotIdsList;
+  image: DropletImage;
+  /** A flat array including the unique identifier for each Block Storage volume attached to the Droplet.<br>Requires `block_storage:read` scope. */
+  volume_ids: DropletVolumeIdsList;
+  size: Size;
+  /** The unique slug identifier for the size of this Droplet. */
+  size_slug: string;
+  /** The details of the network that are configured for the Droplet instance. This is an object that contains keys for IPv4 and IPv6. The value of each of these is an array that contains objects describing an individual IP resource allocated to the Droplet. These will define attributes like the IP address, netmask, and gateway of the specific network depending on the type of network it is. */
+  networks: DropletNetworks;
+  region: Region;
+  /** An array of Tags the Droplet has been tagged with.<br>Requires `tag:read` scope. */
+  tags: DropletTagsList;
+  /** A string specifying the UUID of the VPC to which the Droplet is assigned.<br>Requires `vpc:read` scope. */
+  vpc_uuid?: string;
+  /** A string specifying the UUID of the VPC subnet to which the Droplet is assigned.<br>Requires `vpc:read` scope. */
+  subnet_uuid?: string;
+  gpu_info?: GpuInfo;
+}
+export const Droplet = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.Number,
+    name: S.String,
+    memory: S.Number,
+    vcpus: S.Number,
+    disk: S.Number,
+    disk_info: S.optional(DropletDiskInfoList),
+    locked: S.Boolean,
+    status: DropletStatus,
+    kernel: S.optional(S.NullOr(Kernel)),
+    created_at: S.String,
+    features: DropletFeaturesList,
+    backup_ids: DropletBackupIdsList,
+    next_backup_window: DropletNextBackupWindow,
+    snapshot_ids: DropletSnapshotIdsList,
+    image: DropletImage,
+    volume_ids: DropletVolumeIdsList,
+    size: Size,
+    size_slug: S.String,
+    networks: DropletNetworks,
+    region: Region,
+    tags: DropletTagsList,
+    vpc_uuid: S.optional(S.String),
+    subnet_uuid: S.optional(S.String),
+    gpu_info: S.optional(GpuInfo),
+  }),
+).annotate({ identifier: "Droplet" }) as any as S.Schema<Droplet>;
+
+export type CreateDropletResponseDropletsList = Array<Droplet>;
+export const CreateDropletResponseDropletsList = /*@__PURE__*/ S.Array(
+  Droplet,
+) as any as S.Schema<CreateDropletResponseDropletsList>;
+
+/** The linked actions can be used to check the status of a Droplet's create event. */
+export interface ActionLink {
+  /** A unique numeric ID that can be used to identify and reference an action. */
+  id?: number;
+  /** A string specifying the type of the related action. */
+  rel?: string;
+  /** A URL that can be used to access the action. */
+  href?: string;
+}
+export const ActionLink = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.Number),
+    rel: S.optional(S.String),
+    href: S.optional(S.String),
+  }),
+).annotate({ identifier: "ActionLink" }) as any as S.Schema<ActionLink>;
+
+export type CreateDropletResponseLinksActionsList = Array<ActionLink>;
+export const CreateDropletResponseLinksActionsList = /*@__PURE__*/ S.Array(
+  ActionLink,
+) as any as S.Schema<CreateDropletResponseLinksActionsList>;
+
+export interface CreateDropletResponseLinks {
+  actions?: CreateDropletResponseLinksActionsList;
+}
+export const CreateDropletResponseLinks = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    actions: S.optional(CreateDropletResponseLinksActionsList),
+  }),
+).annotate({
+  identifier: "CreateDropletResponseLinks",
+}) as any as S.Schema<CreateDropletResponseLinks>;
+
+export interface CreateDropletResponse {
+  droplet?: Droplet;
+  droplets?: CreateDropletResponseDropletsList;
+  links?: CreateDropletResponseLinks;
+}
+export const CreateDropletResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    droplet: S.optional(Droplet),
+    droplets: S.optional(CreateDropletResponseDropletsList),
+    links: S.optional(CreateDropletResponseLinks),
+  }),
+).annotate({ identifier: "CreateDropletResponse" }) as any as S.Schema<CreateDropletResponse>;
 
 /** An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope. */
 export type CreateFirewallRequestDropletIdsList = Array<number>;
 export const CreateFirewallRequestDropletIdsList = /*@__PURE__*/ S.Array(
   S.Number,
 ) as any as S.Schema<CreateFirewallRequestDropletIdsList>;
+
+/** An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope. */
+export type CreateFirewallRequestTagsList = Array<string>;
+export const CreateFirewallRequestTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<CreateFirewallRequestTagsList>;
 
 /** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
 export type CreateFirewallRequestInboundRulesItemProtocol = "tcp" | "udp" | "icmp";
@@ -8962,6 +9782,12 @@ export const CreateFirewallRequestInboundRulesItemSourcesKubernetesIdsList = /*@
   S.String,
 ) as any as S.Schema<CreateFirewallRequestInboundRulesItemSourcesKubernetesIdsList>;
 
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type CreateFirewallRequestInboundRulesItemSourcesTagsList = Array<string>;
+export const CreateFirewallRequestInboundRulesItemSourcesTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<CreateFirewallRequestInboundRulesItemSourcesTagsList>;
+
 export interface CreateFirewallRequestInboundRulesItemSources {
   /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
   addresses?: CreateFirewallRequestInboundRulesItemSourcesAddressesList;
@@ -8971,7 +9797,8 @@ export interface CreateFirewallRequestInboundRulesItemSources {
   load_balancer_uids?: CreateFirewallRequestInboundRulesItemSourcesLoadBalancerUidsList;
   /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
   kubernetes_ids?: CreateFirewallRequestInboundRulesItemSourcesKubernetesIdsList;
-  tags?: unknown;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: CreateFirewallRequestInboundRulesItemSourcesTagsList | null;
 }
 export const CreateFirewallRequestInboundRulesItemSources = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -8981,7 +9808,7 @@ export const CreateFirewallRequestInboundRulesItemSources = /*@__PURE__*/ S.susp
       CreateFirewallRequestInboundRulesItemSourcesLoadBalancerUidsList,
     ),
     kubernetes_ids: S.optional(CreateFirewallRequestInboundRulesItemSourcesKubernetesIdsList),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(CreateFirewallRequestInboundRulesItemSourcesTagsList)),
   }),
 ).annotate({
   identifier: "CreateFirewallRequestInboundRulesItemSources",
@@ -9048,6 +9875,12 @@ export const CreateFirewallRequestOutboundRulesItemDestinationsKubernetesIdsList
     S.String,
   ) as any as S.Schema<CreateFirewallRequestOutboundRulesItemDestinationsKubernetesIdsList>;
 
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type CreateFirewallRequestOutboundRulesItemDestinationsTagsList = Array<string>;
+export const CreateFirewallRequestOutboundRulesItemDestinationsTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<CreateFirewallRequestOutboundRulesItemDestinationsTagsList>;
+
 export interface CreateFirewallRequestOutboundRulesItemDestinations {
   /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
   addresses?: CreateFirewallRequestOutboundRulesItemDestinationsAddressesList;
@@ -9057,7 +9890,8 @@ export interface CreateFirewallRequestOutboundRulesItemDestinations {
   load_balancer_uids?: CreateFirewallRequestOutboundRulesItemDestinationsLoadBalancerUidsList;
   /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
   kubernetes_ids?: CreateFirewallRequestOutboundRulesItemDestinationsKubernetesIdsList;
-  tags?: unknown;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: CreateFirewallRequestOutboundRulesItemDestinationsTagsList | null;
 }
 export const CreateFirewallRequestOutboundRulesItemDestinations = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -9067,7 +9901,7 @@ export const CreateFirewallRequestOutboundRulesItemDestinations = /*@__PURE__*/ 
       CreateFirewallRequestOutboundRulesItemDestinationsLoadBalancerUidsList,
     ),
     kubernetes_ids: S.optional(CreateFirewallRequestOutboundRulesItemDestinationsKubernetesIdsList),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(CreateFirewallRequestOutboundRulesItemDestinationsTagsList)),
   }),
 ).annotate({
   identifier: "CreateFirewallRequestOutboundRulesItemDestinations",
@@ -9103,7 +9937,8 @@ export interface CreateFirewallRequest {
   name: string;
   /** An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope. */
   droplet_ids?: CreateFirewallRequestDropletIdsList | null;
-  tags?: unknown;
+  /** An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope. */
+  tags?: CreateFirewallRequestTagsList | null;
   inbound_rules?: CreateFirewallRequestInboundRulesList | null;
   outbound_rules?: CreateFirewallRequestOutboundRulesList | null;
 }
@@ -9111,16 +9946,261 @@ export const CreateFirewallRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     name: S.String,
     droplet_ids: S.optional(S.NullOr(CreateFirewallRequestDropletIdsList)),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(CreateFirewallRequestTagsList)),
     inbound_rules: S.optional(S.NullOr(CreateFirewallRequestInboundRulesList)),
     outbound_rules: S.optional(S.NullOr(CreateFirewallRequestOutboundRulesList)),
   }).pipe(T.Http({ method: "POST", uri: "/v2/firewalls", code: 200 })),
 ).annotate({ identifier: "CreateFirewallRequest" }) as any as S.Schema<CreateFirewallRequest>;
 
-export interface CreateFirewallResponse {}
-export const CreateFirewallResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
-  identifier: "CreateFirewallResponse",
-}) as any as S.Schema<CreateFirewallResponse>;
+/** A status string indicating the current state of the firewall. This can be "waiting", "succeeded", or "failed". */
+export type FirewallStatus = "waiting" | "succeeded" | "failed";
+export const FirewallStatus = S.String;
+
+export interface FirewallPendingChangesItem {
+  droplet_id?: number;
+  removing?: boolean;
+  status?: string;
+}
+export const FirewallPendingChangesItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    droplet_id: S.optional(S.Number),
+    removing: S.optional(S.Boolean),
+    status: S.optional(S.String),
+  }),
+).annotate({
+  identifier: "FirewallPendingChangesItem",
+}) as any as S.Schema<FirewallPendingChangesItem>;
+
+/** An array of objects each containing the fields "droplet_id", "removing", and "status". It is provided to detail exactly which Droplets are having their security policies updated. When empty, all changes have been successfully applied. */
+export type FirewallPendingChangesList = Array<FirewallPendingChangesItem>;
+export const FirewallPendingChangesList = /*@__PURE__*/ S.Array(
+  FirewallPendingChangesItem,
+) as any as S.Schema<FirewallPendingChangesList>;
+
+/** An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope. */
+export type FirewallDropletIdsList = Array<number>;
+export const FirewallDropletIdsList = /*@__PURE__*/ S.Array(
+  S.Number,
+) as any as S.Schema<FirewallDropletIdsList>;
+
+/** An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope. */
+export type FirewallTagsList = Array<string>;
+export const FirewallTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FirewallTagsList>;
+
+/** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
+export type FirewallInboundRulesItemProtocol = "tcp" | "udp" | "icmp";
+export const FirewallInboundRulesItemProtocol = S.String;
+
+/** The action to be taken when traffic matches the rule. This may be one of `allow` or `deny`. For backward compatibility, this field is optional. When not set, it defaults to `allow`. */
+export type FirewallInboundRulesItemAction = "allow" | "deny";
+export const FirewallInboundRulesItemAction = S.String;
+
+/** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
+export type FirewallInboundRulesItemSourcesAddressesList = Array<string>;
+export const FirewallInboundRulesItemSourcesAddressesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FirewallInboundRulesItemSourcesAddressesList>;
+
+/** An array containing the IDs of the Droplets to which the firewall will allow traffic. */
+export type FirewallInboundRulesItemSourcesDropletIdsList = Array<number>;
+export const FirewallInboundRulesItemSourcesDropletIdsList = /*@__PURE__*/ S.Array(
+  S.Number,
+) as any as S.Schema<FirewallInboundRulesItemSourcesDropletIdsList>;
+
+/** An array containing the IDs of the load balancers to which the firewall will allow traffic. */
+export type FirewallInboundRulesItemSourcesLoadBalancerUidsList = Array<string>;
+export const FirewallInboundRulesItemSourcesLoadBalancerUidsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FirewallInboundRulesItemSourcesLoadBalancerUidsList>;
+
+/** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
+export type FirewallInboundRulesItemSourcesKubernetesIdsList = Array<string>;
+export const FirewallInboundRulesItemSourcesKubernetesIdsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FirewallInboundRulesItemSourcesKubernetesIdsList>;
+
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type FirewallInboundRulesItemSourcesTagsList = Array<string>;
+export const FirewallInboundRulesItemSourcesTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FirewallInboundRulesItemSourcesTagsList>;
+
+export interface FirewallInboundRulesItemSources {
+  /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
+  addresses?: FirewallInboundRulesItemSourcesAddressesList;
+  /** An array containing the IDs of the Droplets to which the firewall will allow traffic. */
+  droplet_ids?: FirewallInboundRulesItemSourcesDropletIdsList;
+  /** An array containing the IDs of the load balancers to which the firewall will allow traffic. */
+  load_balancer_uids?: FirewallInboundRulesItemSourcesLoadBalancerUidsList;
+  /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
+  kubernetes_ids?: FirewallInboundRulesItemSourcesKubernetesIdsList;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: FirewallInboundRulesItemSourcesTagsList | null;
+}
+export const FirewallInboundRulesItemSources = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    addresses: S.optional(FirewallInboundRulesItemSourcesAddressesList),
+    droplet_ids: S.optional(FirewallInboundRulesItemSourcesDropletIdsList),
+    load_balancer_uids: S.optional(FirewallInboundRulesItemSourcesLoadBalancerUidsList),
+    kubernetes_ids: S.optional(FirewallInboundRulesItemSourcesKubernetesIdsList),
+    tags: S.optional(S.NullOr(FirewallInboundRulesItemSourcesTagsList)),
+  }),
+).annotate({
+  identifier: "FirewallInboundRulesItemSources",
+}) as any as S.Schema<FirewallInboundRulesItemSources>;
+
+export interface FirewallInboundRulesItem {
+  /** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
+  protocol: FirewallInboundRulesItemProtocol;
+  /** The ports on which traffic will be allowed specified as a string containing a single port, a range (e.g. "8000-9000"), or "0" when all ports are open for a protocol. For ICMP rules this parameter will always return "0". */
+  ports: string;
+  /** The action to be taken when traffic matches the rule. This may be one of `allow` or `deny`. For backward compatibility, this field is optional. When not set, it defaults to `allow`. */
+  action?: FirewallInboundRulesItemAction;
+  sources: FirewallInboundRulesItemSources;
+}
+export const FirewallInboundRulesItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    protocol: FirewallInboundRulesItemProtocol,
+    ports: S.String,
+    action: S.optional(FirewallInboundRulesItemAction),
+    sources: FirewallInboundRulesItemSources,
+  }),
+).annotate({ identifier: "FirewallInboundRulesItem" }) as any as S.Schema<FirewallInboundRulesItem>;
+
+export type FirewallInboundRulesList = Array<FirewallInboundRulesItem>;
+export const FirewallInboundRulesList = /*@__PURE__*/ S.Array(
+  FirewallInboundRulesItem,
+) as any as S.Schema<FirewallInboundRulesList>;
+
+/** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
+export type FirewallOutboundRulesItemProtocol = "tcp" | "udp" | "icmp";
+export const FirewallOutboundRulesItemProtocol = S.String;
+
+/** The action to be taken when traffic matches the rule. This may be one of `allow` or `deny`. For backward compatibility, this field is optional. When not set, it defaults to `allow`. */
+export type FirewallOutboundRulesItemAction = "allow" | "deny";
+export const FirewallOutboundRulesItemAction = S.String;
+
+/** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
+export type FirewallOutboundRulesItemDestinationsAddressesList = Array<string>;
+export const FirewallOutboundRulesItemDestinationsAddressesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FirewallOutboundRulesItemDestinationsAddressesList>;
+
+/** An array containing the IDs of the Droplets to which the firewall will allow traffic. */
+export type FirewallOutboundRulesItemDestinationsDropletIdsList = Array<number>;
+export const FirewallOutboundRulesItemDestinationsDropletIdsList = /*@__PURE__*/ S.Array(
+  S.Number,
+) as any as S.Schema<FirewallOutboundRulesItemDestinationsDropletIdsList>;
+
+/** An array containing the IDs of the load balancers to which the firewall will allow traffic. */
+export type FirewallOutboundRulesItemDestinationsLoadBalancerUidsList = Array<string>;
+export const FirewallOutboundRulesItemDestinationsLoadBalancerUidsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FirewallOutboundRulesItemDestinationsLoadBalancerUidsList>;
+
+/** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
+export type FirewallOutboundRulesItemDestinationsKubernetesIdsList = Array<string>;
+export const FirewallOutboundRulesItemDestinationsKubernetesIdsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FirewallOutboundRulesItemDestinationsKubernetesIdsList>;
+
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type FirewallOutboundRulesItemDestinationsTagsList = Array<string>;
+export const FirewallOutboundRulesItemDestinationsTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FirewallOutboundRulesItemDestinationsTagsList>;
+
+export interface FirewallOutboundRulesItemDestinations {
+  /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
+  addresses?: FirewallOutboundRulesItemDestinationsAddressesList;
+  /** An array containing the IDs of the Droplets to which the firewall will allow traffic. */
+  droplet_ids?: FirewallOutboundRulesItemDestinationsDropletIdsList;
+  /** An array containing the IDs of the load balancers to which the firewall will allow traffic. */
+  load_balancer_uids?: FirewallOutboundRulesItemDestinationsLoadBalancerUidsList;
+  /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
+  kubernetes_ids?: FirewallOutboundRulesItemDestinationsKubernetesIdsList;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: FirewallOutboundRulesItemDestinationsTagsList | null;
+}
+export const FirewallOutboundRulesItemDestinations = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    addresses: S.optional(FirewallOutboundRulesItemDestinationsAddressesList),
+    droplet_ids: S.optional(FirewallOutboundRulesItemDestinationsDropletIdsList),
+    load_balancer_uids: S.optional(FirewallOutboundRulesItemDestinationsLoadBalancerUidsList),
+    kubernetes_ids: S.optional(FirewallOutboundRulesItemDestinationsKubernetesIdsList),
+    tags: S.optional(S.NullOr(FirewallOutboundRulesItemDestinationsTagsList)),
+  }),
+).annotate({
+  identifier: "FirewallOutboundRulesItemDestinations",
+}) as any as S.Schema<FirewallOutboundRulesItemDestinations>;
+
+export interface FirewallOutboundRulesItem {
+  /** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
+  protocol: FirewallOutboundRulesItemProtocol;
+  /** The ports on which traffic will be allowed specified as a string containing a single port, a range (e.g. "8000-9000"), or "0" when all ports are open for a protocol. For ICMP rules this parameter will always return "0". */
+  ports: string;
+  /** The action to be taken when traffic matches the rule. This may be one of `allow` or `deny`. For backward compatibility, this field is optional. When not set, it defaults to `allow`. */
+  action?: FirewallOutboundRulesItemAction;
+  destinations: FirewallOutboundRulesItemDestinations;
+}
+export const FirewallOutboundRulesItem = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    protocol: FirewallOutboundRulesItemProtocol,
+    ports: S.String,
+    action: S.optional(FirewallOutboundRulesItemAction),
+    destinations: FirewallOutboundRulesItemDestinations,
+  }),
+).annotate({
+  identifier: "FirewallOutboundRulesItem",
+}) as any as S.Schema<FirewallOutboundRulesItem>;
+
+export type FirewallOutboundRulesList = Array<FirewallOutboundRulesItem>;
+export const FirewallOutboundRulesList = /*@__PURE__*/ S.Array(
+  FirewallOutboundRulesItem,
+) as any as S.Schema<FirewallOutboundRulesList>;
+
+export interface Firewall {
+  /** A unique ID that can be used to identify and reference a firewall. */
+  id: string;
+  /** A status string indicating the current state of the firewall. This can be "waiting", "succeeded", or "failed". */
+  status: FirewallStatus;
+  /** A time value given in ISO8601 combined date and time format that represents when the firewall was created. */
+  created_at: string;
+  /** An array of objects each containing the fields "droplet_id", "removing", and "status". It is provided to detail exactly which Droplets are having their security policies updated. When empty, all changes have been successfully applied. */
+  pending_changes?: FirewallPendingChangesList;
+  /** A human-readable name for a firewall. The name must begin with an alphanumeric character. Subsequent characters must either be alphanumeric characters, a period (.), or a dash (-). */
+  name: string;
+  /** An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope. */
+  droplet_ids?: FirewallDropletIdsList | null;
+  /** An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope. */
+  tags?: FirewallTagsList | null;
+  inbound_rules?: FirewallInboundRulesList | null;
+  outbound_rules?: FirewallOutboundRulesList | null;
+}
+export const Firewall = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.String,
+    status: FirewallStatus,
+    created_at: S.String,
+    pending_changes: S.optional(FirewallPendingChangesList),
+    name: S.String,
+    droplet_ids: S.optional(S.NullOr(FirewallDropletIdsList)),
+    tags: S.optional(S.NullOr(FirewallTagsList)),
+    inbound_rules: S.optional(S.NullOr(FirewallInboundRulesList)),
+    outbound_rules: S.optional(S.NullOr(FirewallOutboundRulesList)),
+  }),
+).annotate({ identifier: "Firewall" }) as any as S.Schema<Firewall>;
+
+export interface CreateFirewallResponse {
+  firewall: Firewall;
+}
+export const CreateFirewallResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    firewall: Firewall,
+  }),
+).annotate({ identifier: "CreateFirewallResponse" }) as any as S.Schema<CreateFirewallResponse>;
 
 export interface FloatingIpCreateCase0 {
   /** The ID of the Droplet that the floating IP will be assigned to. */
@@ -9157,10 +10237,98 @@ export const CreateFloatingIPRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v2/floating_ips", code: 200 })),
 ).annotate({ identifier: "CreateFloatingIPRequest" }) as any as S.Schema<CreateFloatingIPRequest>;
 
-export interface CreateFloatingIPResponse {}
-export const CreateFloatingIPResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
-  identifier: "CreateFloatingIPResponse",
-}) as any as S.Schema<CreateFloatingIPResponse>;
+/** This attribute is set to an array which contains features available in this region */
+export type FloatingIpRegionFeaturesList = Array<string>;
+export const FloatingIpRegionFeaturesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FloatingIpRegionFeaturesList>;
+
+/** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
+export type FloatingIpRegionSizesList = Array<string>;
+export const FloatingIpRegionSizesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<FloatingIpRegionSizesList>;
+
+export interface FloatingIpRegion {
+  /** The display name of the region. This will be a full name that is used in the control panel and other interfaces. */
+  name: string;
+  /** A human-readable string that is used as a unique identifier for each region. */
+  slug: string;
+  /** This attribute is set to an array which contains features available in this region */
+  features: FloatingIpRegionFeaturesList;
+  /** This is a boolean value that represents whether new Droplets can be created in this region. */
+  available: boolean;
+  /** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
+  sizes: FloatingIpRegionSizesList;
+}
+export const FloatingIpRegion = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    name: S.String,
+    slug: S.String,
+    features: FloatingIpRegionFeaturesList,
+    available: S.Boolean,
+    sizes: FloatingIpRegionSizesList,
+  }),
+).annotate({ identifier: "FloatingIpRegion" }) as any as S.Schema<FloatingIpRegion>;
+
+/** The Droplet that the floating IP has been assigned to. When you query a floating IP, if it is assigned to a Droplet, the entire Droplet object will be returned. If it is not assigned, the value will be null. <br><br>Requires `droplet:read` scope. */
+export type FloatingIpDroplet = unknown | Droplet;
+export const FloatingIpDroplet = S.Unknown as any as S.Schema<FloatingIpDroplet>;
+
+export interface FloatingIp {
+  /** The public IP address of the floating IP. It also serves as its identifier. */
+  ip?: string;
+  region?: FloatingIpRegion;
+  /** The Droplet that the floating IP has been assigned to. When you query a floating IP, if it is assigned to a Droplet, the entire Droplet object will be returned. If it is not assigned, the value will be null. <br><br>Requires `droplet:read` scope. */
+  droplet?: FloatingIpDroplet;
+  /** A boolean value indicating whether or not the floating IP has pending actions preventing new ones from being submitted. */
+  locked?: boolean;
+  /** The UUID of the project to which the reserved IP currently belongs.<br><br>Requires `project:read` scope. */
+  project_id?: string;
+}
+export const FloatingIp = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    ip: S.optional(S.String),
+    region: S.optional(FloatingIpRegion),
+    droplet: S.optional(FloatingIpDroplet),
+    locked: S.optional(S.Boolean),
+    project_id: S.optional(S.String),
+  }),
+).annotate({ identifier: "FloatingIp" }) as any as S.Schema<FloatingIp>;
+
+export type CreateFloatingIPResponseLinksDropletsList = Array<ActionLink>;
+export const CreateFloatingIPResponseLinksDropletsList = /*@__PURE__*/ S.Array(
+  ActionLink,
+) as any as S.Schema<CreateFloatingIPResponseLinksDropletsList>;
+
+export type CreateFloatingIPResponseLinksActionsList = Array<ActionLink>;
+export const CreateFloatingIPResponseLinksActionsList = /*@__PURE__*/ S.Array(
+  ActionLink,
+) as any as S.Schema<CreateFloatingIPResponseLinksActionsList>;
+
+export interface CreateFloatingIPResponseLinks {
+  droplets?: CreateFloatingIPResponseLinksDropletsList;
+  actions?: CreateFloatingIPResponseLinksActionsList;
+}
+export const CreateFloatingIPResponseLinks = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    droplets: S.optional(CreateFloatingIPResponseLinksDropletsList),
+    actions: S.optional(CreateFloatingIPResponseLinksActionsList),
+  }),
+).annotate({
+  identifier: "CreateFloatingIPResponseLinks",
+}) as any as S.Schema<CreateFloatingIPResponseLinks>;
+
+export interface CreateFloatingIPResponse {
+  floating_ip?: FloatingIp;
+  links?: CreateFloatingIPResponseLinks;
+}
+export const CreateFloatingIPResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    floating_ip: S.optional(FloatingIp),
+    links: S.optional(CreateFloatingIPResponseLinks),
+  }),
+).annotate({ identifier: "CreateFloatingIPResponse" }) as any as S.Schema<CreateFloatingIPResponse>;
 
 export interface CreateFunctionNamespaceRequest {
   /** The [datacenter region](https://docs.digitalocean.com/products/platform/availability-matrix/#available-datacenters) in which to create the namespace. */
@@ -10680,46 +11848,6 @@ export const ApiCreateWorkspaceOutput = /*@__PURE__*/ S.suspend(() =>
   }),
 ).annotate({ identifier: "ApiCreateWorkspaceOutput" }) as any as S.Schema<ApiCreateWorkspaceOutput>;
 
-/** The name of a custom image's distribution. Currently, the valid values are `Arch Linux`, `CentOS`, `CoreOS`, `Debian`, `Fedora`, `Fedora Atomic`, `FreeBSD`, `Gentoo`, `openSUSE`, `RancherOS`, `Rocky Linux`, `Ubuntu`, and `Unknown`. Any other value will be accepted but ignored, and `Unknown` will be used in its place. */
-export type Distribution =
-  | "Arch Linux"
-  | "CentOS"
-  | "CoreOS"
-  | "Debian"
-  | "Fedora"
-  | "Fedora Atomic"
-  | "FreeBSD"
-  | "Gentoo"
-  | "openSUSE"
-  | "RancherOS"
-  | "Rocky Linux"
-  | "Ubuntu"
-  | "Unknown";
-export const Distribution = S.String;
-
-/** The slug identifier for the region where the resource will initially be available. */
-export type RegionSlug =
-  | "ams1"
-  | "ams2"
-  | "ams3"
-  | "blr1"
-  | "fra1"
-  | "lon1"
-  | "nyc1"
-  | "nyc2"
-  | "nyc3"
-  | "sfo1"
-  | "sfo2"
-  | "sfo3"
-  | "sgp1"
-  | "tor1"
-  | "syd1";
-export const RegionSlug = S.String;
-
-/** A flat array of tag names as strings to be applied to the resource. Tag names may be for either existing or new tags. <br><br>Requires `tag:create` scope. */
-export type TagsArray = Array<string>;
-export const TagsArray = /*@__PURE__*/ S.Array(S.String) as any as S.Schema<TagsArray>;
-
 export interface CreateImageCustomRequest {
   name: string;
   distribution?: Distribution | (string & {});
@@ -10740,8 +11868,66 @@ export const CreateImageCustomRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v2/images", code: 200 })),
 ).annotate({ identifier: "CreateImageCustomRequest" }) as any as S.Schema<CreateImageCustomRequest>;
 
-export interface CreateImageCustomResponse {}
-export const CreateImageCustomResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
+/** Describes the kind of image. It may be one of `base`, `snapshot`, `backup`, `custom`, or `admin`. Respectively, this specifies whether an image is a DigitalOcean base OS image, user-generated Droplet snapshot, automatically created Droplet backup, user-provided virtual machine image, or an image used for DigitalOcean managed resources (e.g. DOKS worker nodes). */
+export type ImageType = "base" | "snapshot" | "backup" | "custom" | "admin";
+export const ImageType = S.String;
+
+/** A status string indicating the state of a custom image. This may be `NEW`, `available`, `pending`, `deleted`, or `retired`. */
+export type ImageStatus = "NEW" | "available" | "pending" | "deleted" | "retired";
+export const ImageStatus = S.String;
+
+export interface Image {
+  /** A unique number that can be used to identify and reference a specific image. */
+  id?: number;
+  name?: string;
+  /** Describes the kind of image. It may be one of `base`, `snapshot`, `backup`, `custom`, or `admin`. Respectively, this specifies whether an image is a DigitalOcean base OS image, user-generated Droplet snapshot, automatically created Droplet backup, user-provided virtual machine image, or an image used for DigitalOcean managed resources (e.g. DOKS worker nodes). */
+  type?: ImageType;
+  distribution?: Distribution;
+  /** A uniquely identifying string that is associated with each of the DigitalOcean-provided public images. These can be used to reference a public image as an alternative to the numeric id. */
+  slug?: string | null;
+  /** This is a boolean value that indicates whether the image in question is public or not. An image that is public is available to all accounts. A non-public image is only accessible from your account. */
+  public?: boolean;
+  regions?: RegionsArray;
+  /** A time value given in ISO8601 combined date and time format that represents when the image was created. */
+  created_at?: string;
+  /** The minimum disk size in GB required for a Droplet to use this image. */
+  min_disk_size?: number | null;
+  /** The size of the image in gigabytes. */
+  size_gigabytes?: number | null;
+  description?: string;
+  tags?: TagsArray | null;
+  /** A status string indicating the state of a custom image. This may be `NEW`, `available`, `pending`, `deleted`, or `retired`. */
+  status?: ImageStatus;
+  /** A string containing information about errors that may occur when importing a custom image. */
+  error_message?: string;
+}
+export const Image = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.Number),
+    name: S.optional(S.String),
+    type: S.optional(ImageType),
+    distribution: S.optional(Distribution),
+    slug: S.optional(S.NullOr(S.String)),
+    public: S.optional(S.Boolean),
+    regions: S.optional(RegionsArray),
+    created_at: S.optional(S.String),
+    min_disk_size: S.optional(S.NullOr(S.Number)),
+    size_gigabytes: S.optional(S.NullOr(S.Number)),
+    description: S.optional(S.String),
+    tags: S.optional(S.NullOr(TagsArray)),
+    status: S.optional(ImageStatus),
+    error_message: S.optional(S.String),
+  }),
+).annotate({ identifier: "Image" }) as any as S.Schema<Image>;
+
+export interface CreateImageCustomResponse {
+  image?: Image;
+}
+export const CreateImageCustomResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    image: S.optional(Image),
+  }),
+).annotate({
   identifier: "CreateImageCustomResponse",
 }) as any as S.Schema<CreateImageCustomResponse>;
 
@@ -13545,8 +14731,195 @@ export const CreateLoadBalancerRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "CreateLoadBalancerRequest",
 }) as any as S.Schema<CreateLoadBalancerRequest>;
 
-export interface CreateLoadBalancerResponse {}
-export const CreateLoadBalancerResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
+/** This field has been replaced by the `size_unit` field for all regions except in AMS2, NYC2, and SFO1. Each available load balancer size now equates to the load balancer having a set number of nodes. * `lb-small` = 1 node * `lb-medium` = 3 nodes * `lb-large` = 6 nodes You can resize load balancers after creation up to once per hour. You cannot resize a load balancer within the first hour of its creation. */
+export type LoadBalancerSize = "lb-small" | "lb-medium" | "lb-large";
+export const LoadBalancerSize = S.String;
+
+/** This field has been deprecated. You can no longer specify an algorithm for load balancers. */
+export type LoadBalancerAlgorithm = "round_robin" | "least_connections";
+export const LoadBalancerAlgorithm = S.String;
+
+/** A status string indicating the current state of the load balancer. This can be `new`, `active`, or `errored`. */
+export type LoadBalancerStatus = "new" | "active" | "errored";
+export const LoadBalancerStatus = S.String;
+
+/** An array of objects specifying the forwarding rules for a load balancer. */
+export type LoadBalancerForwardingRulesList = Array<ForwardingRule>;
+export const LoadBalancerForwardingRulesList = /*@__PURE__*/ S.Array(
+  ForwardingRule,
+) as any as S.Schema<LoadBalancerForwardingRulesList>;
+
+/** A string indicating whether the load balancer should be external or internal. Internal load balancers have no public IPs and are only accessible to resources on the same VPC network. This property cannot be updated after creating the load balancer. */
+export type LoadBalancerNetwork = "EXTERNAL" | "INTERNAL";
+export const LoadBalancerNetwork = S.String;
+
+/** A string indicating whether the load balancer will support IPv4 or both IPv4 and IPv6 networking. This property cannot be updated after creating the load balancer. */
+export type LoadBalancerNetworkStack = "IPV4" | "DUALSTACK";
+export const LoadBalancerNetworkStack = S.String;
+
+/** A string indicating whether the load balancer should be a standard regional HTTP load balancer, a regional network load balancer that routes traffic at the TCP/UDP transport layer, or a global load balancer. */
+export type LoadBalancerType = "REGIONAL" | "REGIONAL_NETWORK" | "GLOBAL";
+export const LoadBalancerType = S.String;
+
+/** An array of objects specifying the domain configurations for a Global load balancer. */
+export type LoadBalancerDomainsList = Array<Domains>;
+export const LoadBalancerDomainsList = /*@__PURE__*/ S.Array(
+  Domains,
+) as any as S.Schema<LoadBalancerDomainsList>;
+
+/** An array containing the UUIDs of the Regional load balancers to be used as target backends for a Global load balancer. */
+export type LoadBalancerTargetLoadBalancerIdsList = Array<string>;
+export const LoadBalancerTargetLoadBalancerIdsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<LoadBalancerTargetLoadBalancerIdsList>;
+
+/** A string indicating the policy for the TLS cipher suites used by the load balancer. The possible values are `DEFAULT` or `STRONG`. The default value is `DEFAULT`. */
+export type LoadBalancerTlsCipherPolicy = "DEFAULT" | "STRONG";
+export const LoadBalancerTlsCipherPolicy = S.String;
+
+/** This attribute is set to an array which contains features available in this region */
+export type LoadBalancerRegionFeaturesList = Array<string>;
+export const LoadBalancerRegionFeaturesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<LoadBalancerRegionFeaturesList>;
+
+/** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
+export type LoadBalancerRegionSizesList = Array<string>;
+export const LoadBalancerRegionSizesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<LoadBalancerRegionSizesList>;
+
+export interface LoadBalancerRegion {
+  /** The display name of the region. This will be a full name that is used in the control panel and other interfaces. */
+  name: string;
+  /** A human-readable string that is used as a unique identifier for each region. */
+  slug: string;
+  /** This attribute is set to an array which contains features available in this region */
+  features: LoadBalancerRegionFeaturesList;
+  /** This is a boolean value that represents whether new Droplets can be created in this region. */
+  available: boolean;
+  /** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
+  sizes: LoadBalancerRegionSizesList;
+}
+export const LoadBalancerRegion = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    name: S.String,
+    slug: S.String,
+    features: LoadBalancerRegionFeaturesList,
+    available: S.Boolean,
+    sizes: LoadBalancerRegionSizesList,
+  }),
+).annotate({ identifier: "LoadBalancerRegion" }) as any as S.Schema<LoadBalancerRegion>;
+
+/** An array containing the IDs of the Droplets assigned to the load balancer. */
+export type LoadBalancerDropletIdsList = Array<number>;
+export const LoadBalancerDropletIdsList = /*@__PURE__*/ S.Array(
+  S.Number,
+) as any as S.Schema<LoadBalancerDropletIdsList>;
+
+export interface LoadBalancer {
+  /** A unique ID that can be used to identify and reference a load balancer. */
+  id?: string;
+  /** A human-readable name for a load balancer instance. */
+  name?: string;
+  /** The ID of the project that the load balancer is associated with. If no ID is provided at creation, the load balancer associates with the user's default project. If an invalid project ID is provided, the load balancer will not be created. */
+  project_id?: string;
+  /** An attribute containing the public-facing IPv6 address of the load balancer. */
+  ipv6?: string;
+  /** How many nodes the load balancer contains. Each additional node increases the load balancer's ability to manage more connections. Load balancers can be scaled up or down, and you can change the number of nodes after creation up to once per hour. This field is currently not available in the AMS2, NYC2, or SFO1 regions. Use the `size` field to scale load balancers that reside in these regions. */
+  size_unit?: number;
+  /** This field has been replaced by the `size_unit` field for all regions except in AMS2, NYC2, and SFO1. Each available load balancer size now equates to the load balancer having a set number of nodes. * `lb-small` = 1 node * `lb-medium` = 3 nodes * `lb-large` = 6 nodes You can resize load balancers after creation up to once per hour. You cannot resize a load balancer within the first hour of its creation. */
+  size?: LoadBalancerSize;
+  /** This field has been deprecated. You can no longer specify an algorithm for load balancers. */
+  algorithm?: LoadBalancerAlgorithm;
+  /** A status string indicating the current state of the load balancer. This can be `new`, `active`, or `errored`. */
+  status?: LoadBalancerStatus;
+  /** A time value given in ISO8601 combined date and time format that represents when the load balancer was created. */
+  created_at?: string;
+  /** An array of objects specifying the forwarding rules for a load balancer. */
+  forwarding_rules: LoadBalancerForwardingRulesList;
+  health_check?: HealthCheck;
+  sticky_sessions?: StickySessions;
+  /** A boolean value indicating whether HTTP requests to the load balancer on port 80 will be redirected to HTTPS on port 443. */
+  redirect_http_to_https?: boolean;
+  /** A boolean value indicating whether PROXY Protocol is in use. */
+  enable_proxy_protocol?: boolean;
+  /** A boolean value indicating whether HTTP keepalive connections are maintained to target Droplets. */
+  enable_backend_keepalive?: boolean;
+  /** An integer value which configures the idle timeout for HTTP requests to the target droplets. */
+  http_idle_timeout_seconds?: number;
+  /** A string specifying the UUID of the VPC to which the load balancer is assigned. */
+  vpc_uuid?: string;
+  /** A string specifying the UUID of the VPC subnet to which the load balancer is assigned. */
+  subnet_uuid?: string;
+  /** A boolean value indicating whether to disable automatic DNS record creation for Let's Encrypt certificates that are added to the load balancer. */
+  disable_lets_encrypt_dns_records?: boolean;
+  firewall?: LbFirewall;
+  /** A string indicating whether the load balancer should be external or internal. Internal load balancers have no public IPs and are only accessible to resources on the same VPC network. This property cannot be updated after creating the load balancer. */
+  network?: LoadBalancerNetwork;
+  /** A string indicating whether the load balancer will support IPv4 or both IPv4 and IPv6 networking. This property cannot be updated after creating the load balancer. */
+  network_stack?: LoadBalancerNetworkStack;
+  /** A string indicating whether the load balancer should be a standard regional HTTP load balancer, a regional network load balancer that routes traffic at the TCP/UDP transport layer, or a global load balancer. */
+  type?: LoadBalancerType;
+  /** An array of objects specifying the domain configurations for a Global load balancer. */
+  domains?: LoadBalancerDomainsList;
+  glb_settings?: GlbSettings;
+  /** An array containing the UUIDs of the Regional load balancers to be used as target backends for a Global load balancer. */
+  target_load_balancer_ids?: LoadBalancerTargetLoadBalancerIdsList;
+  /** A string indicating the policy for the TLS cipher suites used by the load balancer. The possible values are `DEFAULT` or `STRONG`. The default value is `DEFAULT`. */
+  tls_cipher_policy?: LoadBalancerTlsCipherPolicy;
+  /** An attribute containing the public-facing IP address of the load balancer. */
+  ip?: string;
+  region?: LoadBalancerRegion;
+  /** An array containing the IDs of the Droplets assigned to the load balancer. */
+  droplet_ids?: LoadBalancerDropletIdsList;
+  /** The name of a Droplet tag corresponding to Droplets assigned to the load balancer. */
+  tag?: string;
+}
+export const LoadBalancer = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.String),
+    name: S.optional(S.String),
+    project_id: S.optional(S.String),
+    ipv6: S.optional(S.String),
+    size_unit: S.optional(S.Number),
+    size: S.optional(LoadBalancerSize),
+    algorithm: S.optional(LoadBalancerAlgorithm),
+    status: S.optional(LoadBalancerStatus),
+    created_at: S.optional(S.String),
+    forwarding_rules: LoadBalancerForwardingRulesList,
+    health_check: S.optional(HealthCheck),
+    sticky_sessions: S.optional(StickySessions),
+    redirect_http_to_https: S.optional(S.Boolean),
+    enable_proxy_protocol: S.optional(S.Boolean),
+    enable_backend_keepalive: S.optional(S.Boolean),
+    http_idle_timeout_seconds: S.optional(S.Number),
+    vpc_uuid: S.optional(S.String),
+    subnet_uuid: S.optional(S.String),
+    disable_lets_encrypt_dns_records: S.optional(S.Boolean),
+    firewall: S.optional(LbFirewall),
+    network: S.optional(LoadBalancerNetwork),
+    network_stack: S.optional(LoadBalancerNetworkStack),
+    type: S.optional(LoadBalancerType),
+    domains: S.optional(LoadBalancerDomainsList),
+    glb_settings: S.optional(GlbSettings),
+    target_load_balancer_ids: S.optional(LoadBalancerTargetLoadBalancerIdsList),
+    tls_cipher_policy: S.optional(LoadBalancerTlsCipherPolicy),
+    ip: S.optional(S.String),
+    region: S.optional(LoadBalancerRegion),
+    droplet_ids: S.optional(LoadBalancerDropletIdsList),
+    tag: S.optional(S.String),
+  }),
+).annotate({ identifier: "LoadBalancer" }) as any as S.Schema<LoadBalancer>;
+
+export interface CreateLoadBalancerResponse {
+  load_balancer?: LoadBalancer;
+}
+export const CreateLoadBalancerResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    load_balancer: S.optional(LoadBalancer),
+  }),
+).annotate({
   identifier: "CreateLoadBalancerResponse",
 }) as any as S.Schema<CreateLoadBalancerResponse>;
 
@@ -14841,10 +16214,88 @@ export const CreatePartnerAttachmentRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "CreatePartnerAttachmentRequest",
 }) as any as S.Schema<CreatePartnerAttachmentRequest>;
 
-export interface CreatePartnerAttachmentResponse {}
-export const CreatePartnerAttachmentResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate(
-  { identifier: "CreatePartnerAttachmentResponse" },
-) as any as S.Schema<CreatePartnerAttachmentResponse>;
+/** An array of VPC network IDs. */
+export type PartnerAttachmentVpcIdsList = Array<string>;
+export const PartnerAttachmentVpcIdsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<PartnerAttachmentVpcIdsList>;
+
+/** The BGP configuration for the partner attachment. */
+export interface PartnerAttachmentBgp {
+  /** ASN of the local router. */
+  local_asn?: number;
+  /** ASN of the peer router */
+  peer_asn?: number;
+  /** IP of the DigitalOcean router */
+  local_router_ip?: string;
+  /** IP of the peer router */
+  peer_router_ip?: string;
+}
+export const PartnerAttachmentBgp = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    local_asn: S.optional(S.Number),
+    peer_asn: S.optional(S.Number),
+    local_router_ip: S.optional(S.String),
+    peer_router_ip: S.optional(S.String),
+  }),
+).annotate({ identifier: "PartnerAttachmentBgp" }) as any as S.Schema<PartnerAttachmentBgp>;
+
+/** An array of associated partner attachment UUIDs. */
+export type PartnerAttachmentChildrenList = Array<string>;
+export const PartnerAttachmentChildrenList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<PartnerAttachmentChildrenList>;
+
+export interface PartnerAttachment {
+  /** A unique ID that can be used to identify and reference the partner attachment. */
+  id?: string;
+  /** The name of the partner attachment. Must be unique and may only contain alphanumeric characters, dashes, and periods. */
+  name?: string;
+  /** The current operational state of the attachment. */
+  state?: string;
+  /** The bandwidth (in Mbps) of the connection. */
+  connection_bandwidth_in_mbps?: number;
+  /** The region where the partner attachment is located. */
+  region?: string;
+  /** The Network as a Service (NaaS) provider for the partner attachment. */
+  naas_provider?: string;
+  /** An array of VPC network IDs. */
+  vpc_ids?: PartnerAttachmentVpcIdsList;
+  /** The BGP configuration for the partner attachment. */
+  bgp?: PartnerAttachmentBgp;
+  /** A time value given in ISO8601 combined date and time format. */
+  created_at?: string;
+  /** Associated partner attachment UUID */
+  parent_uuid?: string;
+  /** An array of associated partner attachment UUIDs. */
+  children?: PartnerAttachmentChildrenList;
+}
+export const PartnerAttachment = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.String),
+    name: S.optional(S.String),
+    state: S.optional(S.String),
+    connection_bandwidth_in_mbps: S.optional(S.Number),
+    region: S.optional(S.String),
+    naas_provider: S.optional(S.String),
+    vpc_ids: S.optional(PartnerAttachmentVpcIdsList),
+    bgp: S.optional(PartnerAttachmentBgp),
+    created_at: S.optional(S.String),
+    parent_uuid: S.optional(S.String),
+    children: S.optional(PartnerAttachmentChildrenList),
+  }),
+).annotate({ identifier: "PartnerAttachment" }) as any as S.Schema<PartnerAttachment>;
+
+export interface CreatePartnerAttachmentResponse {
+  partner_attachment?: PartnerAttachment;
+}
+export const CreatePartnerAttachmentResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    partner_attachment: S.optional(PartnerAttachment),
+  }),
+).annotate({
+  identifier: "CreatePartnerAttachmentResponse",
+}) as any as S.Schema<CreatePartnerAttachmentResponse>;
 
 export interface CreatePartnerAttachmentServiceKeyRequest {
   /** A unique identifier for a partner attachment. */
@@ -14864,9 +16315,9 @@ export const CreatePartnerAttachmentServiceKeyRequest = /*@__PURE__*/ S.suspend(
   identifier: "CreatePartnerAttachmentServiceKeyRequest",
 }) as any as S.Schema<CreatePartnerAttachmentServiceKeyRequest>;
 
-export interface CreatePartnerAttachmentServiceKeyResponse {}
+export type CreatePartnerAttachmentServiceKeyResponse = unknown;
 export const CreatePartnerAttachmentServiceKeyResponse = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({}),
+  S.Unknown.pipe(T.RawResponseRoot()),
 ).annotate({
   identifier: "CreatePartnerAttachmentServiceKeyResponse",
 }) as any as S.Schema<CreatePartnerAttachmentServiceKeyResponse>;
@@ -15042,10 +16493,98 @@ export const CreateReservedIPRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v2/reserved_ips", code: 200 })),
 ).annotate({ identifier: "CreateReservedIPRequest" }) as any as S.Schema<CreateReservedIPRequest>;
 
-export interface CreateReservedIPResponse {}
-export const CreateReservedIPResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
-  identifier: "CreateReservedIPResponse",
-}) as any as S.Schema<CreateReservedIPResponse>;
+/** This attribute is set to an array which contains features available in this region */
+export type ReservedIpRegionFeaturesList = Array<string>;
+export const ReservedIpRegionFeaturesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<ReservedIpRegionFeaturesList>;
+
+/** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
+export type ReservedIpRegionSizesList = Array<string>;
+export const ReservedIpRegionSizesList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<ReservedIpRegionSizesList>;
+
+export interface ReservedIpRegion {
+  /** The display name of the region. This will be a full name that is used in the control panel and other interfaces. */
+  name: string;
+  /** A human-readable string that is used as a unique identifier for each region. */
+  slug: string;
+  /** This attribute is set to an array which contains features available in this region */
+  features: ReservedIpRegionFeaturesList;
+  /** This is a boolean value that represents whether new Droplets can be created in this region. */
+  available: boolean;
+  /** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
+  sizes: ReservedIpRegionSizesList;
+}
+export const ReservedIpRegion = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    name: S.String,
+    slug: S.String,
+    features: ReservedIpRegionFeaturesList,
+    available: S.Boolean,
+    sizes: ReservedIpRegionSizesList,
+  }),
+).annotate({ identifier: "ReservedIpRegion" }) as any as S.Schema<ReservedIpRegion>;
+
+/** The Droplet that the reserved IP has been assigned to. When you query a reserved IP, if it is assigned to a Droplet, the entire Droplet object will be returned. If it is not assigned, the value will be null.<br><br>Requires `droplet:read` scope. */
+export type ReservedIpDroplet = unknown | Droplet;
+export const ReservedIpDroplet = S.Unknown as any as S.Schema<ReservedIpDroplet>;
+
+export interface ReservedIp {
+  /** The public IP address of the reserved IP. It also serves as its identifier. */
+  ip?: string;
+  region?: ReservedIpRegion;
+  /** The Droplet that the reserved IP has been assigned to. When you query a reserved IP, if it is assigned to a Droplet, the entire Droplet object will be returned. If it is not assigned, the value will be null.<br><br>Requires `droplet:read` scope. */
+  droplet?: ReservedIpDroplet;
+  /** A boolean value indicating whether or not the reserved IP has pending actions preventing new ones from being submitted. */
+  locked?: boolean;
+  /** The UUID of the project to which the reserved IP currently belongs.<br><br>Requires `project:read` scope. */
+  project_id?: string;
+}
+export const ReservedIp = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    ip: S.optional(S.String),
+    region: S.optional(ReservedIpRegion),
+    droplet: S.optional(ReservedIpDroplet),
+    locked: S.optional(S.Boolean),
+    project_id: S.optional(S.String),
+  }),
+).annotate({ identifier: "ReservedIp" }) as any as S.Schema<ReservedIp>;
+
+export type CreateReservedIPResponseLinksDropletsList = Array<ActionLink>;
+export const CreateReservedIPResponseLinksDropletsList = /*@__PURE__*/ S.Array(
+  ActionLink,
+) as any as S.Schema<CreateReservedIPResponseLinksDropletsList>;
+
+export type CreateReservedIPResponseLinksActionsList = Array<ActionLink>;
+export const CreateReservedIPResponseLinksActionsList = /*@__PURE__*/ S.Array(
+  ActionLink,
+) as any as S.Schema<CreateReservedIPResponseLinksActionsList>;
+
+export interface CreateReservedIPResponseLinks {
+  droplets?: CreateReservedIPResponseLinksDropletsList;
+  actions?: CreateReservedIPResponseLinksActionsList;
+}
+export const CreateReservedIPResponseLinks = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    droplets: S.optional(CreateReservedIPResponseLinksDropletsList),
+    actions: S.optional(CreateReservedIPResponseLinksActionsList),
+  }),
+).annotate({
+  identifier: "CreateReservedIPResponseLinks",
+}) as any as S.Schema<CreateReservedIPResponseLinks>;
+
+export interface CreateReservedIPResponse {
+  reserved_ip?: ReservedIp;
+  links?: CreateReservedIPResponseLinks;
+}
+export const CreateReservedIPResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    reserved_ip: S.optional(ReservedIp),
+    links: S.optional(CreateReservedIPResponseLinks),
+  }),
+).annotate({ identifier: "CreateReservedIPResponse" }) as any as S.Schema<CreateReservedIPResponse>;
 
 export interface CreateReservedIPv6Request {
   /** The slug identifier for the region the reserved IPv6 will be reserved to. */
@@ -15624,27 +17163,27 @@ export const CreateSshKeyRequest = /*@__PURE__*/ S.suspend(() =>
 ).annotate({ identifier: "CreateSshKeyRequest" }) as any as S.Schema<CreateSshKeyRequest>;
 
 export interface SshKeys {
-  id?: number;
-  fingerprint?: string;
+  id: number;
+  fingerprint: string;
   /** The entire public key string that was uploaded. Embedded into the root user's `authorized_keys` file if you include this key during Droplet creation. */
   public_key: string;
   name: string;
 }
 export const SshKeys = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    id: S.optional(S.Number),
-    fingerprint: S.optional(S.String),
+    id: S.Number,
+    fingerprint: S.String,
     public_key: S.String,
     name: S.String,
   }),
 ).annotate({ identifier: "SshKeys" }) as any as S.Schema<SshKeys>;
 
 export interface CreateSshKeyResponse {
-  ssh_key?: SshKeys;
+  ssh_key: SshKeys;
 }
 export const CreateSshKeyResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    ssh_key: S.optional(SshKeys),
+    ssh_key: SshKeys,
   }),
 ).annotate({ identifier: "CreateSshKeyResponse" }) as any as S.Schema<CreateSshKeyResponse>;
 
@@ -16478,8 +18017,106 @@ export const CreateVpcnatgatewayRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "CreateVpcnatgatewayRequest",
 }) as any as S.Schema<CreateVpcnatgatewayRequest>;
 
-export interface CreateVpcnatgatewayResponse {}
-export const CreateVpcnatgatewayResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
+/** The type of the VPC NAT gateway. */
+export type VpcNatGatewayCreateType = "PUBLIC";
+export const VpcNatGatewayCreateType = S.String;
+
+/** The region in which the VPC NAT gateway is created. */
+export type VpcNatGatewayCreateRegion =
+  | "nyc1"
+  | "nyc2"
+  | "nyc3"
+  | "ams2"
+  | "ams3"
+  | "sfo1"
+  | "sfo2"
+  | "sfo3"
+  | "sgp1"
+  | "lon1"
+  | "fra1"
+  | "tor1"
+  | "blr1"
+  | "syd1"
+  | "atl1";
+export const VpcNatGatewayCreateRegion = S.String;
+
+export type VpcNatGatewayCreateVpcsItem = CreateVpcnatgatewayRequestVpcsItem;
+export const VpcNatGatewayCreateVpcsItem = CreateVpcnatgatewayRequestVpcsItem;
+
+/** An array of VPCs associated with the VPC NAT gateway. */
+export type VpcNatGatewayCreateVpcsList = Array<CreateVpcnatgatewayRequestVpcsItem>;
+export const VpcNatGatewayCreateVpcsList = /*@__PURE__*/ S.Array(
+  CreateVpcnatgatewayRequestVpcsItem,
+) as any as S.Schema<VpcNatGatewayCreateVpcsList>;
+
+/** Specify the address using either `ip` or `ipv4`. Both fields accept the same value and `ip` takes precedence if both are provided. The assigned address is returned in the `ipv4` field of GET and list responses. */
+export type VpcNatGatewayCreateEgressesPublicGatewaysItem =
+  CreateVpcnatgatewayRequestEgressesPublicGatewaysItem;
+export const VpcNatGatewayCreateEgressesPublicGatewaysItem =
+  CreateVpcnatgatewayRequestEgressesPublicGatewaysItem;
+
+/** An array containing a single public gateway object that sets the gateway's public egress IP address. */
+export type VpcNatGatewayCreateEgressesPublicGatewaysList =
+  Array<CreateVpcnatgatewayRequestEgressesPublicGatewaysItem>;
+export const VpcNatGatewayCreateEgressesPublicGatewaysList = /*@__PURE__*/ S.Array(
+  CreateVpcnatgatewayRequestEgressesPublicGatewaysItem,
+) as any as S.Schema<VpcNatGatewayCreateEgressesPublicGatewaysList>;
+
+/** An optional object specifying the public egress IP address to assign to the VPC NAT gateway. Provide this only to use a specific address. If omitted, DigitalOcean allocates a public IP address automatically. */
+export interface VpcNatGatewayCreateEgresses {
+  /** An array containing a single public gateway object that sets the gateway's public egress IP address. */
+  public_gateways?: VpcNatGatewayCreateEgressesPublicGatewaysList;
+}
+export const VpcNatGatewayCreateEgresses = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    public_gateways: S.optional(VpcNatGatewayCreateEgressesPublicGatewaysList),
+  }),
+).annotate({
+  identifier: "VpcNatGatewayCreateEgresses",
+}) as any as S.Schema<VpcNatGatewayCreateEgresses>;
+
+export interface VpcNatGatewayCreate {
+  /** The human-readable name of the VPC NAT gateway. */
+  name: string;
+  /** The type of the VPC NAT gateway. */
+  type: VpcNatGatewayCreateType;
+  /** The region in which the VPC NAT gateway is created. */
+  region: VpcNatGatewayCreateRegion;
+  /** The size of the VPC NAT gateway. */
+  size: number;
+  /** An array of VPCs associated with the VPC NAT gateway. */
+  vpcs: VpcNatGatewayCreateVpcsList;
+  /** The UDP timeout in seconds for the VPC NAT gateway. */
+  udp_timeout_seconds?: number;
+  /** The ICMP timeout in seconds for the VPC NAT gateway. */
+  icmp_timeout_seconds?: number;
+  /** The TCP timeout in seconds for the VPC NAT gateway. */
+  tcp_timeout_seconds?: number;
+  /** An optional object specifying the public egress IP address to assign to the VPC NAT gateway. Provide this only to use a specific address. If omitted, DigitalOcean allocates a public IP address automatically. */
+  egresses?: VpcNatGatewayCreateEgresses;
+}
+export const VpcNatGatewayCreate = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    name: S.String,
+    type: VpcNatGatewayCreateType,
+    region: VpcNatGatewayCreateRegion,
+    size: S.Number,
+    vpcs: VpcNatGatewayCreateVpcsList,
+    udp_timeout_seconds: S.optional(S.Number),
+    icmp_timeout_seconds: S.optional(S.Number),
+    tcp_timeout_seconds: S.optional(S.Number),
+    egresses: S.optional(VpcNatGatewayCreateEgresses),
+  }),
+).annotate({ identifier: "VpcNatGatewayCreate" }) as any as S.Schema<VpcNatGatewayCreate>;
+
+export interface CreateVpcnatgatewayResponse {
+  vpc_nat_gateway?: VpcNatGatewayCreate;
+}
+export const CreateVpcnatgatewayResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    vpc_nat_gateway: S.optional(VpcNatGatewayCreate),
+  }),
+).annotate({
   identifier: "CreateVpcnatgatewayResponse",
 }) as any as S.Schema<CreateVpcnatgatewayResponse>;
 
@@ -16502,10 +18139,46 @@ export const CreateVpcPeeringRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v2/vpc_peerings", code: 200 })),
 ).annotate({ identifier: "CreateVpcPeeringRequest" }) as any as S.Schema<CreateVpcPeeringRequest>;
 
-export interface CreateVpcPeeringResponse {}
-export const CreateVpcPeeringResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
-  identifier: "CreateVpcPeeringResponse",
-}) as any as S.Schema<CreateVpcPeeringResponse>;
+/** The current status of the VPC peering. */
+export type VpcPeeringStatus = "PROVISIONING" | "ACTIVE" | "DELETING";
+export const VpcPeeringStatus = S.String;
+
+/** An array of the two peered VPCs IDs. */
+export type VpcPeeringVpcIdsList = Array<string>;
+export const VpcPeeringVpcIdsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<VpcPeeringVpcIdsList>;
+
+export interface VpcPeering {
+  /** A unique ID that can be used to identify and reference the VPC peering. */
+  id?: string;
+  /** A time value given in ISO8601 combined date and time format. */
+  created_at?: string;
+  /** The current status of the VPC peering. */
+  status?: VpcPeeringStatus;
+  /** An array of the two peered VPCs IDs. */
+  vpc_ids?: VpcPeeringVpcIdsList;
+  /** The name of the VPC peering. Must be unique within the team and may only contain alphanumeric characters and dashes. */
+  name?: string;
+}
+export const VpcPeering = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    id: S.optional(S.String),
+    created_at: S.optional(S.String),
+    status: S.optional(VpcPeeringStatus),
+    vpc_ids: S.optional(VpcPeeringVpcIdsList),
+    name: S.optional(S.String),
+  }),
+).annotate({ identifier: "VpcPeering" }) as any as S.Schema<VpcPeering>;
+
+export interface CreateVpcPeeringResponse {
+  vpc_peering?: VpcPeering;
+}
+export const CreateVpcPeeringResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    vpc_peering: S.optional(VpcPeering),
+  }),
+).annotate({ identifier: "CreateVpcPeeringResponse" }) as any as S.Schema<CreateVpcPeeringResponse>;
 
 export interface CreateVpcPeeringsRequest {
   /** A unique identifier for a VPC. */
@@ -16520,8 +18193,14 @@ export const CreateVpcPeeringsRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v2/vpcs/{vpc_id}/peerings", code: 200 })),
 ).annotate({ identifier: "CreateVpcPeeringsRequest" }) as any as S.Schema<CreateVpcPeeringsRequest>;
 
-export interface CreateVpcPeeringsResponse {}
-export const CreateVpcPeeringsResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
+export interface CreateVpcPeeringsResponse {
+  peering?: VpcPeering;
+}
+export const CreateVpcPeeringsResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    peering: S.optional(VpcPeering),
+  }),
+).annotate({
   identifier: "CreateVpcPeeringsResponse",
 }) as any as S.Schema<CreateVpcPeeringsResponse>;
 
@@ -17322,6 +19001,12 @@ export const DeleteFirewallRulesRequestInboundRulesItemSourcesKubernetesIdsList 
     S.String,
   ) as any as S.Schema<DeleteFirewallRulesRequestInboundRulesItemSourcesKubernetesIdsList>;
 
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type DeleteFirewallRulesRequestInboundRulesItemSourcesTagsList = Array<string>;
+export const DeleteFirewallRulesRequestInboundRulesItemSourcesTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<DeleteFirewallRulesRequestInboundRulesItemSourcesTagsList>;
+
 export interface DeleteFirewallRulesRequestInboundRulesItemSources {
   /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
   addresses?: DeleteFirewallRulesRequestInboundRulesItemSourcesAddressesList;
@@ -17331,7 +19016,8 @@ export interface DeleteFirewallRulesRequestInboundRulesItemSources {
   load_balancer_uids?: DeleteFirewallRulesRequestInboundRulesItemSourcesLoadBalancerUidsList;
   /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
   kubernetes_ids?: DeleteFirewallRulesRequestInboundRulesItemSourcesKubernetesIdsList;
-  tags?: unknown;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: DeleteFirewallRulesRequestInboundRulesItemSourcesTagsList | null;
 }
 export const DeleteFirewallRulesRequestInboundRulesItemSources = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -17341,7 +19027,7 @@ export const DeleteFirewallRulesRequestInboundRulesItemSources = /*@__PURE__*/ S
       DeleteFirewallRulesRequestInboundRulesItemSourcesLoadBalancerUidsList,
     ),
     kubernetes_ids: S.optional(DeleteFirewallRulesRequestInboundRulesItemSourcesKubernetesIdsList),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(DeleteFirewallRulesRequestInboundRulesItemSourcesTagsList)),
   }),
 ).annotate({
   identifier: "DeleteFirewallRulesRequestInboundRulesItemSources",
@@ -17411,6 +19097,13 @@ export const DeleteFirewallRulesRequestOutboundRulesItemDestinationsKubernetesId
     S.String,
   ) as any as S.Schema<DeleteFirewallRulesRequestOutboundRulesItemDestinationsKubernetesIdsList>;
 
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type DeleteFirewallRulesRequestOutboundRulesItemDestinationsTagsList = Array<string>;
+export const DeleteFirewallRulesRequestOutboundRulesItemDestinationsTagsList =
+  /*@__PURE__*/ S.Array(
+    S.String,
+  ) as any as S.Schema<DeleteFirewallRulesRequestOutboundRulesItemDestinationsTagsList>;
+
 export interface DeleteFirewallRulesRequestOutboundRulesItemDestinations {
   /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
   addresses?: DeleteFirewallRulesRequestOutboundRulesItemDestinationsAddressesList;
@@ -17420,7 +19113,8 @@ export interface DeleteFirewallRulesRequestOutboundRulesItemDestinations {
   load_balancer_uids?: DeleteFirewallRulesRequestOutboundRulesItemDestinationsLoadBalancerUidsList;
   /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
   kubernetes_ids?: DeleteFirewallRulesRequestOutboundRulesItemDestinationsKubernetesIdsList;
-  tags?: unknown;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: DeleteFirewallRulesRequestOutboundRulesItemDestinationsTagsList | null;
 }
 export const DeleteFirewallRulesRequestOutboundRulesItemDestinations = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -17432,7 +19126,7 @@ export const DeleteFirewallRulesRequestOutboundRulesItemDestinations = /*@__PURE
     kubernetes_ids: S.optional(
       DeleteFirewallRulesRequestOutboundRulesItemDestinationsKubernetesIdsList,
     ),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(DeleteFirewallRulesRequestOutboundRulesItemDestinationsTagsList)),
   }),
 ).annotate({
   identifier: "DeleteFirewallRulesRequestOutboundRulesItemDestinations",
@@ -17485,15 +19179,22 @@ export const DeleteFirewallRulesResponse = /*@__PURE__*/ S.suspend(() => S.Struc
   identifier: "DeleteFirewallRulesResponse",
 }) as any as S.Schema<DeleteFirewallRulesResponse>;
 
+/** An array containing the names of the Tags to be removed from the firewall. */
+export type DeleteFirewallTagsRequestTagsList = Array<string>;
+export const DeleteFirewallTagsRequestTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<DeleteFirewallTagsRequestTagsList>;
+
 export interface DeleteFirewallTagsRequest {
   /** A unique ID that can be used to identify and reference a firewall. */
   firewall_id: string;
-  tags: unknown;
+  /** An array containing the names of the Tags to be removed from the firewall. */
+  tags: DeleteFirewallTagsRequestTagsList;
 }
 export const DeleteFirewallTagsRequest = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     firewall_id: S.String.pipe(T.Label()),
-    tags: S.Unknown,
+    tags: DeleteFirewallTagsRequestTagsList,
   }).pipe(T.Http({ method: "DELETE", uri: "/v2/firewalls/{firewall_id}/tags", code: 200 })),
 ).annotate({
   identifier: "DeleteFirewallTagsRequest",
@@ -18333,10 +20034,16 @@ export const DeletePartnerAttachmentRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "DeletePartnerAttachmentRequest",
 }) as any as S.Schema<DeletePartnerAttachmentRequest>;
 
-export interface DeletePartnerAttachmentResponse {}
-export const DeletePartnerAttachmentResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate(
-  { identifier: "DeletePartnerAttachmentResponse" },
-) as any as S.Schema<DeletePartnerAttachmentResponse>;
+export interface DeletePartnerAttachmentResponse {
+  partner_attachment?: PartnerAttachment;
+}
+export const DeletePartnerAttachmentResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    partner_attachment: S.optional(PartnerAttachment),
+  }),
+).annotate({
+  identifier: "DeletePartnerAttachmentResponse",
+}) as any as S.Schema<DeletePartnerAttachmentResponse>;
 
 export interface DeleteProjectRequest {
   /** A unique identifier for a project. */
@@ -18773,10 +20480,14 @@ export const DeleteVpcPeeringRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "DELETE", uri: "/v2/vpc_peerings/{vpc_peering_id}", code: 200 })),
 ).annotate({ identifier: "DeleteVpcPeeringRequest" }) as any as S.Schema<DeleteVpcPeeringRequest>;
 
-export interface DeleteVpcPeeringResponse {}
-export const DeleteVpcPeeringResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
-  identifier: "DeleteVpcPeeringResponse",
-}) as any as S.Schema<DeleteVpcPeeringResponse>;
+export interface DeleteVpcPeeringResponse {
+  vpc_peering?: VpcPeering;
+}
+export const DeleteVpcPeeringResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    vpc_peering: S.optional(VpcPeering),
+  }),
+).annotate({ identifier: "DeleteVpcPeeringResponse" }) as any as S.Schema<DeleteVpcPeeringResponse>;
 
 export interface DeleteVpcSubnetRequest {
   /** The unique identifier of the VPC to which the subnet belongs. */
@@ -19746,43 +21457,11 @@ export const GetActionRequest = /*@__PURE__*/ S.suspend(() =>
 export type ActionStatus = "in-progress" | "completed" | "errored";
 export const ActionStatus = S.String;
 
-/** This attribute is set to an array which contains features available in this region */
-export type RegionFeaturesList = Array<string>;
-export const RegionFeaturesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<RegionFeaturesList>;
-
-/** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
-export type RegionSizesList = Array<string>;
-export const RegionSizesList = /*@__PURE__*/ S.Array(S.String) as any as S.Schema<RegionSizesList>;
-
-export interface Region {
-  /** The display name of the region. This will be a full name that is used in the control panel and other interfaces. */
-  name: string;
-  /** A human-readable string that is used as a unique identifier for each region. */
-  slug: string;
-  /** This attribute is set to an array which contains features available in this region */
-  features: RegionFeaturesList;
-  /** This is a boolean value that represents whether new Droplets can be created in this region. */
-  available: boolean;
-  /** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
-  sizes: RegionSizesList;
-}
-export const Region = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    name: S.String,
-    slug: S.String,
-    features: RegionFeaturesList,
-    available: S.Boolean,
-    sizes: RegionSizesList,
-  }),
-).annotate({ identifier: "Region" }) as any as S.Schema<Region>;
-
 export interface Action {
   /** A unique numeric ID that can be used to identify and reference an action. */
-  id?: number;
+  id: number;
   /** The current status of the action. This can be "in-progress", "completed", or "errored". */
-  status?: ActionStatus;
+  status: ActionStatus;
   /** This is the type of action that the object represents. For example, this could be "transfer" to represent the state of an image transfer action. */
   type?: string;
   /** A time value given in ISO8601 combined date and time format that represents when the action was initiated. */
@@ -19799,8 +21478,8 @@ export interface Action {
 }
 export const Action = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    id: S.optional(S.Number),
-    status: S.optional(ActionStatus),
+    id: S.Number,
+    status: ActionStatus,
     type: S.optional(S.String),
     started_at: S.optional(S.String),
     completed_at: S.optional(S.NullOr(S.String)),
@@ -19812,11 +21491,11 @@ export const Action = /*@__PURE__*/ S.suspend(() =>
 ).annotate({ identifier: "Action" }) as any as S.Schema<Action>;
 
 export interface GetActionResponse {
-  action?: Action;
+  action: Action;
 }
 export const GetActionResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    action: S.optional(Action),
+    action: Action,
   }),
 ).annotate({ identifier: "GetActionResponse" }) as any as S.Schema<GetActionResponse>;
 
@@ -20744,59 +22423,6 @@ export const GetAutoscalepoolRequest = /*@__PURE__*/ S.suspend(() =>
     autoscale_pool_id: S.String.pipe(T.Label()),
   }).pipe(T.Http({ method: "GET", uri: "/v2/droplets/autoscale/{autoscale_pool_id}", code: 200 })),
 ).annotate({ identifier: "GetAutoscalepoolRequest" }) as any as S.Schema<GetAutoscalepoolRequest>;
-
-/** The scaling configuration for an autoscale pool, which is how the pool scales up and down (either by resource utilization or static configuration). */
-export type AutoscalePoolConfig = AutoscalePoolStaticConfig | AutoscalePoolDynamicConfig;
-export const AutoscalePoolConfig = S.Unknown as any as S.Schema<AutoscalePoolConfig>;
-
-export interface CurrentUtilization {
-  /** The average memory utilization of the autoscale pool. */
-  memory?: number;
-  /** The average CPU utilization of the autoscale pool. */
-  cpu?: number;
-}
-export const CurrentUtilization = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    memory: S.optional(S.Number),
-    cpu: S.optional(S.Number),
-  }),
-).annotate({ identifier: "CurrentUtilization" }) as any as S.Schema<CurrentUtilization>;
-
-/** The current status of the autoscale pool. */
-export type AutoscalePoolStatus = "active" | "deleting" | "error";
-export const AutoscalePoolStatus = S.String;
-
-export interface AutoscalePool {
-  /** A unique identifier for each autoscale pool instance. This is automatically generated upon autoscale pool creation. */
-  id: string;
-  /** The human-readable name set for the autoscale pool. */
-  name: string;
-  /** The scaling configuration for an autoscale pool, which is how the pool scales up and down (either by resource utilization or static configuration). */
-  config: AutoscalePoolConfig;
-  droplet_template: AutoscalePoolDropletTemplate;
-  current_utilization?: CurrentUtilization;
-  /** A time value given in ISO8601 combined date and time format that represents when the autoscale pool was created. */
-  created_at: string;
-  /** A time value given in ISO8601 combined date and time format that represents when the autoscale pool was last updated. */
-  updated_at: string;
-  /** The current status of the autoscale pool. */
-  status: AutoscalePoolStatus;
-  /** The number of active Droplets in the autoscale pool. */
-  active_resources_count: number;
-}
-export const AutoscalePool = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.String,
-    name: S.String,
-    config: AutoscalePoolConfig,
-    droplet_template: AutoscalePoolDropletTemplate,
-    current_utilization: S.optional(CurrentUtilization),
-    created_at: S.String,
-    updated_at: S.String,
-    status: AutoscalePoolStatus,
-    active_resources_count: S.Number,
-  }),
-).annotate({ identifier: "AutoscalePool" }) as any as S.Schema<AutoscalePool>;
 
 export interface GetAutoscalepoolResponse {
   autoscale_pool?: AutoscalePool;
@@ -22594,200 +24220,6 @@ export const GetDedicatedInferenceRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "GetDedicatedInferenceRequest",
 }) as any as S.Schema<GetDedicatedInferenceRequest>;
 
-/** Current state of the Dedicated Inference. */
-export type DedicatedInferenceStatus =
-  | "active"
-  | "new"
-  | "provisioning"
-  | "updating"
-  | "deleting"
-  | "error";
-export const DedicatedInferenceStatus = S.String;
-
-/** DigitalOcean region where the Dedicated Inference is hosted. */
-export type DedicatedInferenceSpecRegion = "atl1" | "nyc2" | "tor1";
-export const DedicatedInferenceSpecRegion = S.String;
-
-export type DedicatedInferenceSpecVpc = DedicatedInferenceSpecInputVpc;
-export const DedicatedInferenceSpecVpc = DedicatedInferenceSpecInputVpc;
-
-/** Model provider. */
-export type ModelDeploymentSpecModelProvider = "hugging_face";
-export const ModelDeploymentSpecModelProvider = S.String;
-
-/** Current state of the Accelerator. */
-export type AcceleratorConfigSpecStatus = "new" | "provisioning" | "active";
-export const AcceleratorConfigSpecStatus = S.String;
-
-export interface AcceleratorConfigSpec {
-  /** Number of accelerator instances. */
-  scale: number;
-  /** Accelerator type (e.g. prefill_decode). */
-  type: string;
-  /** DigitalOcean GPU slug. */
-  accelerator_slug: string;
-  /** Current state of the Accelerator. */
-  status?: AcceleratorConfigSpecStatus;
-}
-export const AcceleratorConfigSpec = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    scale: S.Number,
-    type: S.String,
-    accelerator_slug: S.String,
-    status: S.optional(AcceleratorConfigSpecStatus),
-  }),
-).annotate({ identifier: "AcceleratorConfigSpec" }) as any as S.Schema<AcceleratorConfigSpec>;
-
-/** Accelerator configuration for this deployment. */
-export type ModelDeploymentSpecAcceleratorsList = Array<AcceleratorConfigSpec>;
-export const ModelDeploymentSpecAcceleratorsList = /*@__PURE__*/ S.Array(
-  AcceleratorConfigSpec,
-) as any as S.Schema<ModelDeploymentSpecAcceleratorsList>;
-
-/** Configuration for a single model deployment. */
-export interface ModelDeploymentSpec {
-  /** Used to identify an existing deployment when updating; empty means create new. */
-  model_id?: string;
-  /** Model identifier (e.g. Hugging Face slug). */
-  model_slug?: string;
-  /** Model provider. */
-  model_provider?: ModelDeploymentSpecModelProvider;
-  /** Workload-specific configuration (e.g. ISL/OSL in future). */
-  workload_config?: unknown;
-  /** Accelerator configuration for this deployment. */
-  accelerators?: ModelDeploymentSpecAcceleratorsList;
-}
-export const ModelDeploymentSpec = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    model_id: S.optional(S.String),
-    model_slug: S.optional(S.String),
-    model_provider: S.optional(ModelDeploymentSpecModelProvider),
-    workload_config: S.optional(S.Unknown),
-    accelerators: S.optional(ModelDeploymentSpecAcceleratorsList),
-  }),
-).annotate({ identifier: "ModelDeploymentSpec" }) as any as S.Schema<ModelDeploymentSpec>;
-
-/** At least one model deployment is required. */
-export type DedicatedInferenceSpecModelDeploymentsList = Array<ModelDeploymentSpec>;
-export const DedicatedInferenceSpecModelDeploymentsList = /*@__PURE__*/ S.Array(
-  ModelDeploymentSpec,
-) as any as S.Schema<DedicatedInferenceSpecModelDeploymentsList>;
-
-/** Structured configuration for a Dedicated Inference deployment. */
-export interface DedicatedInferenceSpec {
-  /** Spec version. */
-  version: number;
-  /** Name of the Dedicated Inference. Must be unique within the team. */
-  name: string;
-  /** DigitalOcean region where the Dedicated Inference is hosted. */
-  region: DedicatedInferenceSpecRegion;
-  vpc: DedicatedInferenceSpecInputVpc;
-  /** Whether to expose a public LLM endpoint. */
-  enable_public_endpoint: boolean;
-  /** At least one model deployment is required. */
-  model_deployments: DedicatedInferenceSpecModelDeploymentsList;
-}
-export const DedicatedInferenceSpec = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    version: S.Number,
-    name: S.String,
-    region: DedicatedInferenceSpecRegion,
-    vpc: DedicatedInferenceSpecInputVpc,
-    enable_public_endpoint: S.Boolean,
-    model_deployments: DedicatedInferenceSpecModelDeploymentsList,
-  }),
-).annotate({ identifier: "DedicatedInferenceSpec" }) as any as S.Schema<DedicatedInferenceSpec>;
-
-export type PendingDeploymentSpecStatus = "provisioning" | "updating";
-export const PendingDeploymentSpecStatus = S.String;
-
-export type PendingDeploymentSpecVpc = DedicatedInferenceSpecInputVpc;
-export const PendingDeploymentSpecVpc = DedicatedInferenceSpecInputVpc;
-
-/** At least one model deployment is required. */
-export type PendingDeploymentSpecModelDeploymentsList = Array<ModelDeploymentSpec>;
-export const PendingDeploymentSpecModelDeploymentsList = /*@__PURE__*/ S.Array(
-  ModelDeploymentSpec,
-) as any as S.Schema<PendingDeploymentSpecModelDeploymentsList>;
-
-/** Pending deployment when status is provisioning or updating. */
-export interface PendingDeploymentSpec {
-  /** Deployment UUID. */
-  id?: string;
-  /** Spec version. */
-  version?: number;
-  /** Name of the Dedicated Inference. Must be unique within the team. */
-  name?: string;
-  status?: PendingDeploymentSpecStatus;
-  vpc?: DedicatedInferenceSpecInputVpc;
-  /** Whether to expose a public LLM endpoint. */
-  enable_public_endpoint?: boolean;
-  /** At least one model deployment is required. */
-  model_deployments?: PendingDeploymentSpecModelDeploymentsList;
-  created_at?: string;
-  updated_at?: string;
-}
-export const PendingDeploymentSpec = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.String),
-    version: S.optional(S.Number),
-    name: S.optional(S.String),
-    status: S.optional(PendingDeploymentSpecStatus),
-    vpc: S.optional(DedicatedInferenceSpecInputVpc),
-    enable_public_endpoint: S.optional(S.Boolean),
-    model_deployments: S.optional(PendingDeploymentSpecModelDeploymentsList),
-    created_at: S.optional(S.String),
-    updated_at: S.optional(S.String),
-  }),
-).annotate({ identifier: "PendingDeploymentSpec" }) as any as S.Schema<PendingDeploymentSpec>;
-
-export interface DedicatedInferenceEndpoints {
-  /** Public FQDN of the Dedicated Inference instance. */
-  public_endpoint_fqdn?: string;
-  /** Private VPC FQDN of the Dedicated Inference instance. */
-  private_endpoint_fqdn?: string;
-}
-export const DedicatedInferenceEndpoints = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    public_endpoint_fqdn: S.optional(S.String),
-    private_endpoint_fqdn: S.optional(S.String),
-  }),
-).annotate({
-  identifier: "DedicatedInferenceEndpoints",
-}) as any as S.Schema<DedicatedInferenceEndpoints>;
-
-/** A Dedicated Inference instance. */
-export interface DedicatedInference {
-  /** Unique ID of the Dedicated Inference. */
-  id?: string;
-  /** Current state of the Dedicated Inference. */
-  status?: DedicatedInferenceStatus;
-  /** DigitalOcean region where the Dedicated Inference is hosted. */
-  region?: string;
-  /** VPC UUID of the Dedicated Inference. */
-  vpc_uuid?: string;
-  spec?: DedicatedInferenceSpec;
-  pending_deployment_spec?: PendingDeploymentSpec;
-  endpoints?: DedicatedInferenceEndpoints;
-  /** When the Dedicated Inference was created. */
-  created_at?: string;
-  /** When the Dedicated Inference was last updated. */
-  updated_at?: string;
-}
-export const DedicatedInference = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.String),
-    status: S.optional(DedicatedInferenceStatus),
-    region: S.optional(S.String),
-    vpc_uuid: S.optional(S.String),
-    spec: S.optional(DedicatedInferenceSpec),
-    pending_deployment_spec: S.optional(PendingDeploymentSpec),
-    endpoints: S.optional(DedicatedInferenceEndpoints),
-    created_at: S.optional(S.String),
-    updated_at: S.optional(S.String),
-  }),
-).annotate({ identifier: "DedicatedInference" }) as any as S.Schema<DedicatedInference>;
-
 export interface GetDedicatedInferenceResponse {
   dedicated_inference?: DedicatedInference;
 }
@@ -22984,387 +24416,12 @@ export const GetDropletRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v2/droplets/{droplet_id}", code: 200 })),
 ).annotate({ identifier: "GetDropletRequest" }) as any as S.Schema<GetDropletRequest>;
 
-/** The type of disk. All Droplets contain a `local` or `boot` disk. Additionally, GPU Droplets can also have a `scratch` disk for non-persistent data. */
-export type DiskInfoType = "local" | "boot" | "scratch";
-export const DiskInfoType = S.String;
-
-export interface DiskInfoSize {
-  /** The amount of space allocated to the disk. */
-  amount?: number;
-  /** The unit of measure for the disk size. */
-  unit?: string;
-}
-export const DiskInfoSize = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    amount: S.optional(S.Number),
-    unit: S.optional(S.String),
-  }),
-).annotate({ identifier: "DiskInfoSize" }) as any as S.Schema<DiskInfoSize>;
-
-export interface DiskInfo {
-  /** The type of disk. All Droplets contain a `local` or `boot` disk. Additionally, GPU Droplets can also have a `scratch` disk for non-persistent data. */
-  type?: DiskInfoType;
-  size?: DiskInfoSize;
-}
-export const DiskInfo = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    type: S.optional(DiskInfoType),
-    size: S.optional(DiskInfoSize),
-  }),
-).annotate({ identifier: "DiskInfo" }) as any as S.Schema<DiskInfo>;
-
-/** An array of objects containing information about the disks available to the Droplet. */
-export type DropletDiskInfoList = Array<DiskInfo>;
-export const DropletDiskInfoList = /*@__PURE__*/ S.Array(
-  DiskInfo,
-) as any as S.Schema<DropletDiskInfoList>;
-
-/** A status string indicating the state of the Droplet instance. This may be "new", "active", "off", or "archive". */
-export type DropletStatus = "new" | "active" | "off" | "archive";
-export const DropletStatus = S.String;
-
-/** **Note**: All Droplets created after March 2017 use internal kernels by default. These Droplets will have this attribute set to `null`. The current [kernel](https://docs.digitalocean.com/products/droplets/how-to/kernel/) for Droplets with externally managed kernels. This will initially be set to the kernel of the base image when the Droplet is created. */
-export interface Kernel {
-  /** A unique number used to identify and reference a specific kernel. */
-  id?: number;
-  /** The display name of the kernel. This is shown in the web UI and is generally a descriptive title for the kernel in question. */
-  name?: string;
-  /** A standard kernel version string representing the version, patch, and release information. */
-  version?: string;
-}
-export const Kernel = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.Number),
-    name: S.optional(S.String),
-    version: S.optional(S.String),
-  }),
-).annotate({ identifier: "Kernel" }) as any as S.Schema<Kernel>;
-
-/** An array of features enabled on this Droplet. */
-export type DropletFeaturesList = Array<string>;
-export const DropletFeaturesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<DropletFeaturesList>;
-
-/** An array of backup IDs of any backups that have been taken of the Droplet instance. Droplet backups are enabled at the time of the instance creation.<br>Requires `image:read` scope. */
-export type DropletBackupIdsList = Array<number>;
-export const DropletBackupIdsList = /*@__PURE__*/ S.Array(
-  S.Number,
-) as any as S.Schema<DropletBackupIdsList>;
-
-export interface DropletNextBackupWindow {
-  /** A time value given in ISO8601 combined date and time format specifying the start of the Droplet's backup window. */
-  start?: string;
-  /** A time value given in ISO8601 combined date and time format specifying the end of the Droplet's backup window. */
-  end?: string;
-}
-export const DropletNextBackupWindow = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    start: S.optional(S.String),
-    end: S.optional(S.String),
-  }),
-).annotate({ identifier: "DropletNextBackupWindow" }) as any as S.Schema<DropletNextBackupWindow>;
-
-/** An array of snapshot IDs of any snapshots created from the Droplet instance.<br>Requires `image:read` scope. */
-export type DropletSnapshotIdsList = Array<number>;
-export const DropletSnapshotIdsList = /*@__PURE__*/ S.Array(
-  S.Number,
-) as any as S.Schema<DropletSnapshotIdsList>;
-
-/** Describes the kind of image. It may be one of `base`, `snapshot`, `backup`, `custom`, or `admin`. Respectively, this specifies whether an image is a DigitalOcean base OS image, user-generated Droplet snapshot, automatically created Droplet backup, user-provided virtual machine image, or an image used for DigitalOcean managed resources (e.g. DOKS worker nodes). */
-export type DropletImageType = "base" | "snapshot" | "backup" | "custom" | "admin";
-export const DropletImageType = S.String;
-
-/** This attribute is an array of the regions that the image is available in. The regions are represented by their identifying slug values. */
-export type RegionsArray = Array<RegionSlug>;
-export const RegionsArray = /*@__PURE__*/ S.Array(RegionSlug) as any as S.Schema<RegionsArray>;
-
-/** A status string indicating the state of a custom image. This may be `NEW`, `available`, `pending`, `deleted`, or `retired`. */
-export type DropletImageStatus = "NEW" | "available" | "pending" | "deleted" | "retired";
-export const DropletImageStatus = S.String;
-
-export interface DropletImage {
-  /** A unique number that can be used to identify and reference a specific image. */
-  id?: number;
-  name?: string;
-  /** Describes the kind of image. It may be one of `base`, `snapshot`, `backup`, `custom`, or `admin`. Respectively, this specifies whether an image is a DigitalOcean base OS image, user-generated Droplet snapshot, automatically created Droplet backup, user-provided virtual machine image, or an image used for DigitalOcean managed resources (e.g. DOKS worker nodes). */
-  type?: DropletImageType;
-  distribution?: Distribution;
-  /** A uniquely identifying string that is associated with each of the DigitalOcean-provided public images. These can be used to reference a public image as an alternative to the numeric id. */
-  slug?: string | null;
-  /** This is a boolean value that indicates whether the image in question is public or not. An image that is public is available to all accounts. A non-public image is only accessible from your account. */
-  public?: boolean;
-  regions?: RegionsArray;
-  /** A time value given in ISO8601 combined date and time format that represents when the image was created. */
-  created_at?: string;
-  /** The minimum disk size in GB required for a Droplet to use this image. */
-  min_disk_size?: number | null;
-  /** The size of the image in gigabytes. */
-  size_gigabytes?: number | null;
-  description?: string;
-  tags?: TagsArray | null;
-  /** A status string indicating the state of a custom image. This may be `NEW`, `available`, `pending`, `deleted`, or `retired`. */
-  status?: DropletImageStatus;
-  /** A string containing information about errors that may occur when importing a custom image. */
-  error_message?: string;
-}
-export const DropletImage = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.Number),
-    name: S.optional(S.String),
-    type: S.optional(DropletImageType),
-    distribution: S.optional(Distribution),
-    slug: S.optional(S.NullOr(S.String)),
-    public: S.optional(S.Boolean),
-    regions: S.optional(RegionsArray),
-    created_at: S.optional(S.String),
-    min_disk_size: S.optional(S.NullOr(S.Number)),
-    size_gigabytes: S.optional(S.NullOr(S.Number)),
-    description: S.optional(S.String),
-    tags: S.optional(S.NullOr(TagsArray)),
-    status: S.optional(DropletImageStatus),
-    error_message: S.optional(S.String),
-  }),
-).annotate({ identifier: "DropletImage" }) as any as S.Schema<DropletImage>;
-
-/** A flat array including the unique identifier for each Block Storage volume attached to the Droplet.<br>Requires `block_storage:read` scope. */
-export type DropletVolumeIdsList = Array<string>;
-export const DropletVolumeIdsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<DropletVolumeIdsList>;
-
-/** An array containing the region slugs where this size is available for Droplet creates. */
-export type SizeRegionsList = Array<string>;
-export const SizeRegionsList = /*@__PURE__*/ S.Array(S.String) as any as S.Schema<SizeRegionsList>;
-
-/** An array of objects containing information about the disks available to Droplets created with this size. */
-export type SizeDiskInfoList = Array<DiskInfo>;
-export const SizeDiskInfoList = /*@__PURE__*/ S.Array(
-  DiskInfo,
-) as any as S.Schema<SizeDiskInfoList>;
-
-export interface GpuInfoVram {
-  /** The amount of VRAM allocated to the GPU. */
-  amount?: number;
-  /** The unit of measure for the VRAM. */
-  unit?: string;
-}
-export const GpuInfoVram = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    amount: S.optional(S.Number),
-    unit: S.optional(S.String),
-  }),
-).annotate({ identifier: "GpuInfoVram" }) as any as S.Schema<GpuInfoVram>;
-
-/** An object containing information about the GPU capabilities of Droplets created with this size. */
-export interface GpuInfo {
-  /** The number of GPUs allocated to the Droplet. */
-  count?: number;
-  /** The model of the GPU. */
-  model?: string;
-  vram?: GpuInfoVram;
-}
-export const GpuInfo = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    count: S.optional(S.Number),
-    model: S.optional(S.String),
-    vram: S.optional(GpuInfoVram),
-  }),
-).annotate({ identifier: "GpuInfo" }) as any as S.Schema<GpuInfo>;
-
-export interface Size {
-  /** A human-readable string that is used to uniquely identify each size. */
-  slug: string;
-  /** The amount of RAM allocated to Droplets created of this size. The value is represented in megabytes. */
-  memory: number;
-  /** The number of CPUs allocated to Droplets of this size. */
-  vcpus: number;
-  /** The amount of disk space set aside for Droplets of this size. The value is represented in gigabytes. */
-  disk: number;
-  /** The amount of transfer bandwidth that is available for Droplets created in this size. This only counts traffic on the public interface. The value is given in terabytes. */
-  transfer: number;
-  /** This attribute describes the monthly cost of this Droplet size if the Droplet is kept for an entire month. The value is measured in US dollars. */
-  price_monthly: number;
-  /** This describes the price of the Droplet size as measured hourly. The value is measured in US dollars. */
-  price_hourly: number;
-  /** An array containing the region slugs where this size is available for Droplet creates. */
-  regions: SizeRegionsList;
-  /** This is a boolean value that represents whether new Droplets can be created with this size. */
-  available: boolean;
-  /** A string describing the class of Droplets created from this size. For example: Basic, General Purpose, CPU-Optimized, Memory-Optimized, or Storage-Optimized. */
-  description: string;
-  /** An array of objects containing information about the disks available to Droplets created with this size. */
-  disk_info?: SizeDiskInfoList;
-  gpu_info?: GpuInfo;
-}
-export const Size = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    slug: S.String,
-    memory: S.Number,
-    vcpus: S.Number,
-    disk: S.Number,
-    transfer: S.Number,
-    price_monthly: S.Number,
-    price_hourly: S.Number,
-    regions: SizeRegionsList,
-    available: S.Boolean,
-    description: S.String,
-    disk_info: S.optional(SizeDiskInfoList),
-    gpu_info: S.optional(GpuInfo),
-  }),
-).annotate({ identifier: "Size" }) as any as S.Schema<Size>;
-
-/** The type of the IPv4 network interface. */
-export type NetworkV4Type = "public" | "private";
-export const NetworkV4Type = S.String;
-
-export interface NetworkV4 {
-  /** The IP address of the IPv4 network interface. */
-  ip_address?: string;
-  /** The netmask of the IPv4 network interface. */
-  netmask?: string;
-  /** The gateway of the specified IPv4 network interface. For private interfaces, a gateway is not provided. This is denoted by returning `nil` as its value. */
-  gateway?: string;
-  /** The type of the IPv4 network interface. */
-  type?: NetworkV4Type;
-}
-export const NetworkV4 = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    ip_address: S.optional(S.String),
-    netmask: S.optional(S.String),
-    gateway: S.optional(S.String),
-    type: S.optional(NetworkV4Type),
-  }),
-).annotate({ identifier: "NetworkV4" }) as any as S.Schema<NetworkV4>;
-
-export type DropletNetworksV4List = Array<NetworkV4>;
-export const DropletNetworksV4List = /*@__PURE__*/ S.Array(
-  NetworkV4,
-) as any as S.Schema<DropletNetworksV4List>;
-
-/** The type of the IPv6 network interface. **Note**: IPv6 private networking is not currently supported. */
-export type NetworkV6Type = "public";
-export const NetworkV6Type = S.String;
-
-export interface NetworkV6 {
-  /** The IP address of the IPv6 network interface. */
-  ip_address?: string;
-  /** The netmask of the IPv6 network interface. */
-  netmask?: number;
-  /** The gateway of the specified IPv6 network interface. */
-  gateway?: string;
-  /** The type of the IPv6 network interface. **Note**: IPv6 private networking is not currently supported. */
-  type?: NetworkV6Type;
-}
-export const NetworkV6 = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    ip_address: S.optional(S.String),
-    netmask: S.optional(S.Number),
-    gateway: S.optional(S.String),
-    type: S.optional(NetworkV6Type),
-  }),
-).annotate({ identifier: "NetworkV6" }) as any as S.Schema<NetworkV6>;
-
-export type DropletNetworksV6List = Array<NetworkV6>;
-export const DropletNetworksV6List = /*@__PURE__*/ S.Array(
-  NetworkV6,
-) as any as S.Schema<DropletNetworksV6List>;
-
-/** The details of the network that are configured for the Droplet instance. This is an object that contains keys for IPv4 and IPv6. The value of each of these is an array that contains objects describing an individual IP resource allocated to the Droplet. These will define attributes like the IP address, netmask, and gateway of the specific network depending on the type of network it is. */
-export interface DropletNetworks {
-  v4?: DropletNetworksV4List;
-  v6?: DropletNetworksV6List;
-}
-export const DropletNetworks = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    v4: S.optional(DropletNetworksV4List),
-    v6: S.optional(DropletNetworksV6List),
-  }),
-).annotate({ identifier: "DropletNetworks" }) as any as S.Schema<DropletNetworks>;
-
-/** An array of Tags the Droplet has been tagged with.<br>Requires `tag:read` scope. */
-export type DropletTagsList = Array<string>;
-export const DropletTagsList = /*@__PURE__*/ S.Array(S.String) as any as S.Schema<DropletTagsList>;
-
-export interface Droplet {
-  /** A unique identifier for each Droplet instance. This is automatically generated upon Droplet creation. */
-  id: number;
-  /** The human-readable name set for the Droplet instance. */
-  name: string;
-  /** Memory of the Droplet in megabytes. */
-  memory: number;
-  /** The number of virtual CPUs. */
-  vcpus: number;
-  /** The size of the Droplet's disk in gigabytes. */
-  disk: number;
-  /** An array of objects containing information about the disks available to the Droplet. */
-  disk_info?: DropletDiskInfoList;
-  /** A boolean value indicating whether the Droplet has been locked, preventing actions by users. */
-  locked: boolean;
-  /** A status string indicating the state of the Droplet instance. This may be "new", "active", "off", or "archive". */
-  status: DropletStatus;
-  kernel?: Kernel | null;
-  /** A time value given in ISO8601 combined date and time format that represents when the Droplet was created. */
-  created_at: string;
-  /** An array of features enabled on this Droplet. */
-  features: DropletFeaturesList;
-  /** An array of backup IDs of any backups that have been taken of the Droplet instance. Droplet backups are enabled at the time of the instance creation.<br>Requires `image:read` scope. */
-  backup_ids: DropletBackupIdsList;
-  next_backup_window: DropletNextBackupWindow;
-  /** An array of snapshot IDs of any snapshots created from the Droplet instance.<br>Requires `image:read` scope. */
-  snapshot_ids: DropletSnapshotIdsList;
-  image: DropletImage;
-  /** A flat array including the unique identifier for each Block Storage volume attached to the Droplet.<br>Requires `block_storage:read` scope. */
-  volume_ids: DropletVolumeIdsList;
-  size: Size;
-  /** The unique slug identifier for the size of this Droplet. */
-  size_slug: string;
-  /** The details of the network that are configured for the Droplet instance. This is an object that contains keys for IPv4 and IPv6. The value of each of these is an array that contains objects describing an individual IP resource allocated to the Droplet. These will define attributes like the IP address, netmask, and gateway of the specific network depending on the type of network it is. */
-  networks: DropletNetworks;
-  region: Region;
-  /** An array of Tags the Droplet has been tagged with.<br>Requires `tag:read` scope. */
-  tags: DropletTagsList;
-  /** A string specifying the UUID of the VPC to which the Droplet is assigned.<br>Requires `vpc:read` scope. */
-  vpc_uuid?: string;
-  /** A string specifying the UUID of the VPC subnet to which the Droplet is assigned.<br>Requires `vpc:read` scope. */
-  subnet_uuid?: string;
-  gpu_info?: GpuInfo;
-}
-export const Droplet = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.Number,
-    name: S.String,
-    memory: S.Number,
-    vcpus: S.Number,
-    disk: S.Number,
-    disk_info: S.optional(DropletDiskInfoList),
-    locked: S.Boolean,
-    status: DropletStatus,
-    kernel: S.optional(S.NullOr(Kernel)),
-    created_at: S.String,
-    features: DropletFeaturesList,
-    backup_ids: DropletBackupIdsList,
-    next_backup_window: DropletNextBackupWindow,
-    snapshot_ids: DropletSnapshotIdsList,
-    image: DropletImage,
-    volume_ids: DropletVolumeIdsList,
-    size: Size,
-    size_slug: S.String,
-    networks: DropletNetworks,
-    region: Region,
-    tags: DropletTagsList,
-    vpc_uuid: S.optional(S.String),
-    subnet_uuid: S.optional(S.String),
-    gpu_info: S.optional(GpuInfo),
-  }),
-).annotate({ identifier: "Droplet" }) as any as S.Schema<Droplet>;
-
 export interface GetDropletResponse {
-  droplet?: Droplet;
+  droplet: Droplet;
 }
 export const GetDropletResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    droplet: S.optional(Droplet),
+    droplet: Droplet,
   }),
 ).annotate({ identifier: "GetDropletResponse" }) as any as S.Schema<GetDropletResponse>;
 
@@ -23384,11 +24441,11 @@ export const GetDropletActionRequest = /*@__PURE__*/ S.suspend(() =>
 ).annotate({ identifier: "GetDropletActionRequest" }) as any as S.Schema<GetDropletActionRequest>;
 
 export interface GetDropletActionResponse {
-  action?: Action;
+  action: Action;
 }
 export const GetDropletActionResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    action: S.optional(Action),
+    action: Action,
   }),
 ).annotate({ identifier: "GetDropletActionResponse" }) as any as S.Schema<GetDropletActionResponse>;
 
@@ -23595,232 +24652,12 @@ export const GetFirewallRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v2/firewalls/{firewall_id}", code: 200 })),
 ).annotate({ identifier: "GetFirewallRequest" }) as any as S.Schema<GetFirewallRequest>;
 
-/** A status string indicating the current state of the firewall. This can be "waiting", "succeeded", or "failed". */
-export type FirewallStatus = "waiting" | "succeeded" | "failed";
-export const FirewallStatus = S.String;
-
-export interface FirewallPendingChangesItem {
-  droplet_id?: number;
-  removing?: boolean;
-  status?: string;
-}
-export const FirewallPendingChangesItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    droplet_id: S.optional(S.Number),
-    removing: S.optional(S.Boolean),
-    status: S.optional(S.String),
-  }),
-).annotate({
-  identifier: "FirewallPendingChangesItem",
-}) as any as S.Schema<FirewallPendingChangesItem>;
-
-/** An array of objects each containing the fields "droplet_id", "removing", and "status". It is provided to detail exactly which Droplets are having their security policies updated. When empty, all changes have been successfully applied. */
-export type FirewallPendingChangesList = Array<FirewallPendingChangesItem>;
-export const FirewallPendingChangesList = /*@__PURE__*/ S.Array(
-  FirewallPendingChangesItem,
-) as any as S.Schema<FirewallPendingChangesList>;
-
-/** An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope. */
-export type FirewallDropletIdsList = Array<number>;
-export const FirewallDropletIdsList = /*@__PURE__*/ S.Array(
-  S.Number,
-) as any as S.Schema<FirewallDropletIdsList>;
-
-/** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
-export type FirewallInboundRulesItemProtocol = "tcp" | "udp" | "icmp";
-export const FirewallInboundRulesItemProtocol = S.String;
-
-/** The action to be taken when traffic matches the rule. This may be one of `allow` or `deny`. For backward compatibility, this field is optional. When not set, it defaults to `allow`. */
-export type FirewallInboundRulesItemAction = "allow" | "deny";
-export const FirewallInboundRulesItemAction = S.String;
-
-/** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
-export type FirewallInboundRulesItemSourcesAddressesList = Array<string>;
-export const FirewallInboundRulesItemSourcesAddressesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<FirewallInboundRulesItemSourcesAddressesList>;
-
-/** An array containing the IDs of the Droplets to which the firewall will allow traffic. */
-export type FirewallInboundRulesItemSourcesDropletIdsList = Array<number>;
-export const FirewallInboundRulesItemSourcesDropletIdsList = /*@__PURE__*/ S.Array(
-  S.Number,
-) as any as S.Schema<FirewallInboundRulesItemSourcesDropletIdsList>;
-
-/** An array containing the IDs of the load balancers to which the firewall will allow traffic. */
-export type FirewallInboundRulesItemSourcesLoadBalancerUidsList = Array<string>;
-export const FirewallInboundRulesItemSourcesLoadBalancerUidsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<FirewallInboundRulesItemSourcesLoadBalancerUidsList>;
-
-/** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
-export type FirewallInboundRulesItemSourcesKubernetesIdsList = Array<string>;
-export const FirewallInboundRulesItemSourcesKubernetesIdsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<FirewallInboundRulesItemSourcesKubernetesIdsList>;
-
-export interface FirewallInboundRulesItemSources {
-  /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
-  addresses?: FirewallInboundRulesItemSourcesAddressesList;
-  /** An array containing the IDs of the Droplets to which the firewall will allow traffic. */
-  droplet_ids?: FirewallInboundRulesItemSourcesDropletIdsList;
-  /** An array containing the IDs of the load balancers to which the firewall will allow traffic. */
-  load_balancer_uids?: FirewallInboundRulesItemSourcesLoadBalancerUidsList;
-  /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
-  kubernetes_ids?: FirewallInboundRulesItemSourcesKubernetesIdsList;
-  tags?: unknown;
-}
-export const FirewallInboundRulesItemSources = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    addresses: S.optional(FirewallInboundRulesItemSourcesAddressesList),
-    droplet_ids: S.optional(FirewallInboundRulesItemSourcesDropletIdsList),
-    load_balancer_uids: S.optional(FirewallInboundRulesItemSourcesLoadBalancerUidsList),
-    kubernetes_ids: S.optional(FirewallInboundRulesItemSourcesKubernetesIdsList),
-    tags: S.optional(S.Unknown),
-  }),
-).annotate({
-  identifier: "FirewallInboundRulesItemSources",
-}) as any as S.Schema<FirewallInboundRulesItemSources>;
-
-export interface FirewallInboundRulesItem {
-  /** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
-  protocol: FirewallInboundRulesItemProtocol;
-  /** The ports on which traffic will be allowed specified as a string containing a single port, a range (e.g. "8000-9000"), or "0" when all ports are open for a protocol. For ICMP rules this parameter will always return "0". */
-  ports: string;
-  /** The action to be taken when traffic matches the rule. This may be one of `allow` or `deny`. For backward compatibility, this field is optional. When not set, it defaults to `allow`. */
-  action?: FirewallInboundRulesItemAction;
-  sources: FirewallInboundRulesItemSources;
-}
-export const FirewallInboundRulesItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    protocol: FirewallInboundRulesItemProtocol,
-    ports: S.String,
-    action: S.optional(FirewallInboundRulesItemAction),
-    sources: FirewallInboundRulesItemSources,
-  }),
-).annotate({ identifier: "FirewallInboundRulesItem" }) as any as S.Schema<FirewallInboundRulesItem>;
-
-export type FirewallInboundRulesList = Array<FirewallInboundRulesItem>;
-export const FirewallInboundRulesList = /*@__PURE__*/ S.Array(
-  FirewallInboundRulesItem,
-) as any as S.Schema<FirewallInboundRulesList>;
-
-/** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
-export type FirewallOutboundRulesItemProtocol = "tcp" | "udp" | "icmp";
-export const FirewallOutboundRulesItemProtocol = S.String;
-
-/** The action to be taken when traffic matches the rule. This may be one of `allow` or `deny`. For backward compatibility, this field is optional. When not set, it defaults to `allow`. */
-export type FirewallOutboundRulesItemAction = "allow" | "deny";
-export const FirewallOutboundRulesItemAction = S.String;
-
-/** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
-export type FirewallOutboundRulesItemDestinationsAddressesList = Array<string>;
-export const FirewallOutboundRulesItemDestinationsAddressesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<FirewallOutboundRulesItemDestinationsAddressesList>;
-
-/** An array containing the IDs of the Droplets to which the firewall will allow traffic. */
-export type FirewallOutboundRulesItemDestinationsDropletIdsList = Array<number>;
-export const FirewallOutboundRulesItemDestinationsDropletIdsList = /*@__PURE__*/ S.Array(
-  S.Number,
-) as any as S.Schema<FirewallOutboundRulesItemDestinationsDropletIdsList>;
-
-/** An array containing the IDs of the load balancers to which the firewall will allow traffic. */
-export type FirewallOutboundRulesItemDestinationsLoadBalancerUidsList = Array<string>;
-export const FirewallOutboundRulesItemDestinationsLoadBalancerUidsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<FirewallOutboundRulesItemDestinationsLoadBalancerUidsList>;
-
-/** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
-export type FirewallOutboundRulesItemDestinationsKubernetesIdsList = Array<string>;
-export const FirewallOutboundRulesItemDestinationsKubernetesIdsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<FirewallOutboundRulesItemDestinationsKubernetesIdsList>;
-
-export interface FirewallOutboundRulesItemDestinations {
-  /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
-  addresses?: FirewallOutboundRulesItemDestinationsAddressesList;
-  /** An array containing the IDs of the Droplets to which the firewall will allow traffic. */
-  droplet_ids?: FirewallOutboundRulesItemDestinationsDropletIdsList;
-  /** An array containing the IDs of the load balancers to which the firewall will allow traffic. */
-  load_balancer_uids?: FirewallOutboundRulesItemDestinationsLoadBalancerUidsList;
-  /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
-  kubernetes_ids?: FirewallOutboundRulesItemDestinationsKubernetesIdsList;
-  tags?: unknown;
-}
-export const FirewallOutboundRulesItemDestinations = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    addresses: S.optional(FirewallOutboundRulesItemDestinationsAddressesList),
-    droplet_ids: S.optional(FirewallOutboundRulesItemDestinationsDropletIdsList),
-    load_balancer_uids: S.optional(FirewallOutboundRulesItemDestinationsLoadBalancerUidsList),
-    kubernetes_ids: S.optional(FirewallOutboundRulesItemDestinationsKubernetesIdsList),
-    tags: S.optional(S.Unknown),
-  }),
-).annotate({
-  identifier: "FirewallOutboundRulesItemDestinations",
-}) as any as S.Schema<FirewallOutboundRulesItemDestinations>;
-
-export interface FirewallOutboundRulesItem {
-  /** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
-  protocol: FirewallOutboundRulesItemProtocol;
-  /** The ports on which traffic will be allowed specified as a string containing a single port, a range (e.g. "8000-9000"), or "0" when all ports are open for a protocol. For ICMP rules this parameter will always return "0". */
-  ports: string;
-  /** The action to be taken when traffic matches the rule. This may be one of `allow` or `deny`. For backward compatibility, this field is optional. When not set, it defaults to `allow`. */
-  action?: FirewallOutboundRulesItemAction;
-  destinations: FirewallOutboundRulesItemDestinations;
-}
-export const FirewallOutboundRulesItem = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    protocol: FirewallOutboundRulesItemProtocol,
-    ports: S.String,
-    action: S.optional(FirewallOutboundRulesItemAction),
-    destinations: FirewallOutboundRulesItemDestinations,
-  }),
-).annotate({
-  identifier: "FirewallOutboundRulesItem",
-}) as any as S.Schema<FirewallOutboundRulesItem>;
-
-export type FirewallOutboundRulesList = Array<FirewallOutboundRulesItem>;
-export const FirewallOutboundRulesList = /*@__PURE__*/ S.Array(
-  FirewallOutboundRulesItem,
-) as any as S.Schema<FirewallOutboundRulesList>;
-
-export interface Firewall {
-  /** A unique ID that can be used to identify and reference a firewall. */
-  id?: string;
-  /** A status string indicating the current state of the firewall. This can be "waiting", "succeeded", or "failed". */
-  status?: FirewallStatus;
-  /** A time value given in ISO8601 combined date and time format that represents when the firewall was created. */
-  created_at?: string;
-  /** An array of objects each containing the fields "droplet_id", "removing", and "status". It is provided to detail exactly which Droplets are having their security policies updated. When empty, all changes have been successfully applied. */
-  pending_changes?: FirewallPendingChangesList;
-  /** A human-readable name for a firewall. The name must begin with an alphanumeric character. Subsequent characters must either be alphanumeric characters, a period (.), or a dash (-). */
-  name?: string;
-  /** An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope. */
-  droplet_ids?: FirewallDropletIdsList | null;
-  tags?: unknown;
-  inbound_rules?: FirewallInboundRulesList | null;
-  outbound_rules?: FirewallOutboundRulesList | null;
-}
-export const Firewall = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.String),
-    status: S.optional(FirewallStatus),
-    created_at: S.optional(S.String),
-    pending_changes: S.optional(FirewallPendingChangesList),
-    name: S.optional(S.String),
-    droplet_ids: S.optional(S.NullOr(FirewallDropletIdsList)),
-    tags: S.optional(S.Unknown),
-    inbound_rules: S.optional(S.NullOr(FirewallInboundRulesList)),
-    outbound_rules: S.optional(S.NullOr(FirewallOutboundRulesList)),
-  }),
-).annotate({ identifier: "Firewall" }) as any as S.Schema<Firewall>;
-
 export interface GetFirewallResponse {
-  firewall?: Firewall;
+  firewall: Firewall;
 }
 export const GetFirewallResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    firewall: S.optional(Firewall),
+    firewall: Firewall,
   }),
 ).annotate({ identifier: "GetFirewallResponse" }) as any as S.Schema<GetFirewallResponse>;
 
@@ -23833,65 +24670,6 @@ export const GetFloatingIPRequest = /*@__PURE__*/ S.suspend(() =>
     floating_ip: S.String.pipe(T.Label()),
   }).pipe(T.Http({ method: "GET", uri: "/v2/floating_ips/{floating_ip}", code: 200 })),
 ).annotate({ identifier: "GetFloatingIPRequest" }) as any as S.Schema<GetFloatingIPRequest>;
-
-/** This attribute is set to an array which contains features available in this region */
-export type FloatingIpRegionFeaturesList = Array<string>;
-export const FloatingIpRegionFeaturesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<FloatingIpRegionFeaturesList>;
-
-/** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
-export type FloatingIpRegionSizesList = Array<string>;
-export const FloatingIpRegionSizesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<FloatingIpRegionSizesList>;
-
-export interface FloatingIpRegion {
-  /** The display name of the region. This will be a full name that is used in the control panel and other interfaces. */
-  name: string;
-  /** A human-readable string that is used as a unique identifier for each region. */
-  slug: string;
-  /** This attribute is set to an array which contains features available in this region */
-  features: FloatingIpRegionFeaturesList;
-  /** This is a boolean value that represents whether new Droplets can be created in this region. */
-  available: boolean;
-  /** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
-  sizes: FloatingIpRegionSizesList;
-}
-export const FloatingIpRegion = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    name: S.String,
-    slug: S.String,
-    features: FloatingIpRegionFeaturesList,
-    available: S.Boolean,
-    sizes: FloatingIpRegionSizesList,
-  }),
-).annotate({ identifier: "FloatingIpRegion" }) as any as S.Schema<FloatingIpRegion>;
-
-/** The Droplet that the floating IP has been assigned to. When you query a floating IP, if it is assigned to a Droplet, the entire Droplet object will be returned. If it is not assigned, the value will be null. <br><br>Requires `droplet:read` scope. */
-export type FloatingIpDroplet = unknown | Droplet;
-export const FloatingIpDroplet = S.Unknown as any as S.Schema<FloatingIpDroplet>;
-
-export interface FloatingIp {
-  /** The public IP address of the floating IP. It also serves as its identifier. */
-  ip?: string;
-  region?: FloatingIpRegion;
-  /** The Droplet that the floating IP has been assigned to. When you query a floating IP, if it is assigned to a Droplet, the entire Droplet object will be returned. If it is not assigned, the value will be null. <br><br>Requires `droplet:read` scope. */
-  droplet?: FloatingIpDroplet;
-  /** A boolean value indicating whether or not the floating IP has pending actions preventing new ones from being submitted. */
-  locked?: boolean;
-  /** The UUID of the project to which the reserved IP currently belongs.<br><br>Requires `project:read` scope. */
-  project_id?: string;
-}
-export const FloatingIp = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    ip: S.optional(S.String),
-    region: S.optional(FloatingIpRegion),
-    droplet: S.optional(FloatingIpDroplet),
-    locked: S.optional(S.Boolean),
-    project_id: S.optional(S.String),
-  }),
-).annotate({ identifier: "FloatingIp" }) as any as S.Schema<FloatingIp>;
 
 export interface GetFloatingIPResponse {
   floating_ip?: FloatingIp;
@@ -23925,9 +24703,9 @@ export const GetFloatingIPsActionResponseActionStatus = S.String;
 
 export interface GetFloatingIPsActionResponseAction {
   /** A unique numeric ID that can be used to identify and reference an action. */
-  id?: number;
+  id: number;
   /** The current status of the action. This can be "in-progress", "completed", or "errored". */
-  status?: GetFloatingIPsActionResponseActionStatus;
+  status: GetFloatingIPsActionResponseActionStatus;
   /** This is the type of action that the object represents. For example, this could be "transfer" to represent the state of an image transfer action. */
   type?: string;
   /** A time value given in ISO8601 combined date and time format that represents when the action was initiated. */
@@ -23946,8 +24724,8 @@ export interface GetFloatingIPsActionResponseAction {
 }
 export const GetFloatingIPsActionResponseAction = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    id: S.optional(S.Number),
-    status: S.optional(GetFloatingIPsActionResponseActionStatus),
+    id: S.Number,
+    status: GetFloatingIPsActionResponseActionStatus,
     type: S.optional(S.String),
     started_at: S.optional(S.String),
     completed_at: S.optional(S.NullOr(S.String)),
@@ -26520,58 +27298,6 @@ export const GetImageRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v2/images/{image_id}", code: 200 })),
 ).annotate({ identifier: "GetImageRequest" }) as any as S.Schema<GetImageRequest>;
 
-/** Describes the kind of image. It may be one of `base`, `snapshot`, `backup`, `custom`, or `admin`. Respectively, this specifies whether an image is a DigitalOcean base OS image, user-generated Droplet snapshot, automatically created Droplet backup, user-provided virtual machine image, or an image used for DigitalOcean managed resources (e.g. DOKS worker nodes). */
-export type ImageType = "base" | "snapshot" | "backup" | "custom" | "admin";
-export const ImageType = S.String;
-
-/** A status string indicating the state of a custom image. This may be `NEW`, `available`, `pending`, `deleted`, or `retired`. */
-export type ImageStatus = "NEW" | "available" | "pending" | "deleted" | "retired";
-export const ImageStatus = S.String;
-
-export interface Image {
-  /** A unique number that can be used to identify and reference a specific image. */
-  id?: number;
-  name?: string;
-  /** Describes the kind of image. It may be one of `base`, `snapshot`, `backup`, `custom`, or `admin`. Respectively, this specifies whether an image is a DigitalOcean base OS image, user-generated Droplet snapshot, automatically created Droplet backup, user-provided virtual machine image, or an image used for DigitalOcean managed resources (e.g. DOKS worker nodes). */
-  type?: ImageType;
-  distribution?: Distribution;
-  /** A uniquely identifying string that is associated with each of the DigitalOcean-provided public images. These can be used to reference a public image as an alternative to the numeric id. */
-  slug?: string | null;
-  /** This is a boolean value that indicates whether the image in question is public or not. An image that is public is available to all accounts. A non-public image is only accessible from your account. */
-  public?: boolean;
-  regions?: RegionsArray;
-  /** A time value given in ISO8601 combined date and time format that represents when the image was created. */
-  created_at?: string;
-  /** The minimum disk size in GB required for a Droplet to use this image. */
-  min_disk_size?: number | null;
-  /** The size of the image in gigabytes. */
-  size_gigabytes?: number | null;
-  description?: string;
-  tags?: TagsArray | null;
-  /** A status string indicating the state of a custom image. This may be `NEW`, `available`, `pending`, `deleted`, or `retired`. */
-  status?: ImageStatus;
-  /** A string containing information about errors that may occur when importing a custom image. */
-  error_message?: string;
-}
-export const Image = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.Number),
-    name: S.optional(S.String),
-    type: S.optional(ImageType),
-    distribution: S.optional(Distribution),
-    slug: S.optional(S.NullOr(S.String)),
-    public: S.optional(S.Boolean),
-    regions: S.optional(RegionsArray),
-    created_at: S.optional(S.String),
-    min_disk_size: S.optional(S.NullOr(S.Number)),
-    size_gigabytes: S.optional(S.NullOr(S.Number)),
-    description: S.optional(S.String),
-    tags: S.optional(S.NullOr(TagsArray)),
-    status: S.optional(ImageStatus),
-    error_message: S.optional(S.String),
-  }),
-).annotate({ identifier: "Image" }) as any as S.Schema<Image>;
-
 export interface GetImageResponse {
   image: Image;
 }
@@ -27871,187 +28597,6 @@ export const GetLoadBalancerRequest = /*@__PURE__*/ S.suspend(() =>
     lb_id: S.String.pipe(T.Label()),
   }).pipe(T.Http({ method: "GET", uri: "/v2/load_balancers/{lb_id}", code: 200 })),
 ).annotate({ identifier: "GetLoadBalancerRequest" }) as any as S.Schema<GetLoadBalancerRequest>;
-
-/** This field has been replaced by the `size_unit` field for all regions except in AMS2, NYC2, and SFO1. Each available load balancer size now equates to the load balancer having a set number of nodes. * `lb-small` = 1 node * `lb-medium` = 3 nodes * `lb-large` = 6 nodes You can resize load balancers after creation up to once per hour. You cannot resize a load balancer within the first hour of its creation. */
-export type LoadBalancerSize = "lb-small" | "lb-medium" | "lb-large";
-export const LoadBalancerSize = S.String;
-
-/** This field has been deprecated. You can no longer specify an algorithm for load balancers. */
-export type LoadBalancerAlgorithm = "round_robin" | "least_connections";
-export const LoadBalancerAlgorithm = S.String;
-
-/** A status string indicating the current state of the load balancer. This can be `new`, `active`, or `errored`. */
-export type LoadBalancerStatus = "new" | "active" | "errored";
-export const LoadBalancerStatus = S.String;
-
-/** An array of objects specifying the forwarding rules for a load balancer. */
-export type LoadBalancerForwardingRulesList = Array<ForwardingRule>;
-export const LoadBalancerForwardingRulesList = /*@__PURE__*/ S.Array(
-  ForwardingRule,
-) as any as S.Schema<LoadBalancerForwardingRulesList>;
-
-/** A string indicating whether the load balancer should be external or internal. Internal load balancers have no public IPs and are only accessible to resources on the same VPC network. This property cannot be updated after creating the load balancer. */
-export type LoadBalancerNetwork = "EXTERNAL" | "INTERNAL";
-export const LoadBalancerNetwork = S.String;
-
-/** A string indicating whether the load balancer will support IPv4 or both IPv4 and IPv6 networking. This property cannot be updated after creating the load balancer. */
-export type LoadBalancerNetworkStack = "IPV4" | "DUALSTACK";
-export const LoadBalancerNetworkStack = S.String;
-
-/** A string indicating whether the load balancer should be a standard regional HTTP load balancer, a regional network load balancer that routes traffic at the TCP/UDP transport layer, or a global load balancer. */
-export type LoadBalancerType = "REGIONAL" | "REGIONAL_NETWORK" | "GLOBAL";
-export const LoadBalancerType = S.String;
-
-/** An array of objects specifying the domain configurations for a Global load balancer. */
-export type LoadBalancerDomainsList = Array<Domains>;
-export const LoadBalancerDomainsList = /*@__PURE__*/ S.Array(
-  Domains,
-) as any as S.Schema<LoadBalancerDomainsList>;
-
-/** An array containing the UUIDs of the Regional load balancers to be used as target backends for a Global load balancer. */
-export type LoadBalancerTargetLoadBalancerIdsList = Array<string>;
-export const LoadBalancerTargetLoadBalancerIdsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<LoadBalancerTargetLoadBalancerIdsList>;
-
-/** A string indicating the policy for the TLS cipher suites used by the load balancer. The possible values are `DEFAULT` or `STRONG`. The default value is `DEFAULT`. */
-export type LoadBalancerTlsCipherPolicy = "DEFAULT" | "STRONG";
-export const LoadBalancerTlsCipherPolicy = S.String;
-
-/** This attribute is set to an array which contains features available in this region */
-export type LoadBalancerRegionFeaturesList = Array<string>;
-export const LoadBalancerRegionFeaturesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<LoadBalancerRegionFeaturesList>;
-
-/** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
-export type LoadBalancerRegionSizesList = Array<string>;
-export const LoadBalancerRegionSizesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<LoadBalancerRegionSizesList>;
-
-export interface LoadBalancerRegion {
-  /** The display name of the region. This will be a full name that is used in the control panel and other interfaces. */
-  name: string;
-  /** A human-readable string that is used as a unique identifier for each region. */
-  slug: string;
-  /** This attribute is set to an array which contains features available in this region */
-  features: LoadBalancerRegionFeaturesList;
-  /** This is a boolean value that represents whether new Droplets can be created in this region. */
-  available: boolean;
-  /** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
-  sizes: LoadBalancerRegionSizesList;
-}
-export const LoadBalancerRegion = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    name: S.String,
-    slug: S.String,
-    features: LoadBalancerRegionFeaturesList,
-    available: S.Boolean,
-    sizes: LoadBalancerRegionSizesList,
-  }),
-).annotate({ identifier: "LoadBalancerRegion" }) as any as S.Schema<LoadBalancerRegion>;
-
-/** An array containing the IDs of the Droplets assigned to the load balancer. */
-export type LoadBalancerDropletIdsList = Array<number>;
-export const LoadBalancerDropletIdsList = /*@__PURE__*/ S.Array(
-  S.Number,
-) as any as S.Schema<LoadBalancerDropletIdsList>;
-
-export interface LoadBalancer {
-  /** A unique ID that can be used to identify and reference a load balancer. */
-  id?: string;
-  /** A human-readable name for a load balancer instance. */
-  name?: string;
-  /** The ID of the project that the load balancer is associated with. If no ID is provided at creation, the load balancer associates with the user's default project. If an invalid project ID is provided, the load balancer will not be created. */
-  project_id?: string;
-  /** An attribute containing the public-facing IPv6 address of the load balancer. */
-  ipv6?: string;
-  /** How many nodes the load balancer contains. Each additional node increases the load balancer's ability to manage more connections. Load balancers can be scaled up or down, and you can change the number of nodes after creation up to once per hour. This field is currently not available in the AMS2, NYC2, or SFO1 regions. Use the `size` field to scale load balancers that reside in these regions. */
-  size_unit?: number;
-  /** This field has been replaced by the `size_unit` field for all regions except in AMS2, NYC2, and SFO1. Each available load balancer size now equates to the load balancer having a set number of nodes. * `lb-small` = 1 node * `lb-medium` = 3 nodes * `lb-large` = 6 nodes You can resize load balancers after creation up to once per hour. You cannot resize a load balancer within the first hour of its creation. */
-  size?: LoadBalancerSize;
-  /** This field has been deprecated. You can no longer specify an algorithm for load balancers. */
-  algorithm?: LoadBalancerAlgorithm;
-  /** A status string indicating the current state of the load balancer. This can be `new`, `active`, or `errored`. */
-  status?: LoadBalancerStatus;
-  /** A time value given in ISO8601 combined date and time format that represents when the load balancer was created. */
-  created_at?: string;
-  /** An array of objects specifying the forwarding rules for a load balancer. */
-  forwarding_rules: LoadBalancerForwardingRulesList;
-  health_check?: HealthCheck;
-  sticky_sessions?: StickySessions;
-  /** A boolean value indicating whether HTTP requests to the load balancer on port 80 will be redirected to HTTPS on port 443. */
-  redirect_http_to_https?: boolean;
-  /** A boolean value indicating whether PROXY Protocol is in use. */
-  enable_proxy_protocol?: boolean;
-  /** A boolean value indicating whether HTTP keepalive connections are maintained to target Droplets. */
-  enable_backend_keepalive?: boolean;
-  /** An integer value which configures the idle timeout for HTTP requests to the target droplets. */
-  http_idle_timeout_seconds?: number;
-  /** A string specifying the UUID of the VPC to which the load balancer is assigned. */
-  vpc_uuid?: string;
-  /** A string specifying the UUID of the VPC subnet to which the load balancer is assigned. */
-  subnet_uuid?: string;
-  /** A boolean value indicating whether to disable automatic DNS record creation for Let's Encrypt certificates that are added to the load balancer. */
-  disable_lets_encrypt_dns_records?: boolean;
-  firewall?: LbFirewall;
-  /** A string indicating whether the load balancer should be external or internal. Internal load balancers have no public IPs and are only accessible to resources on the same VPC network. This property cannot be updated after creating the load balancer. */
-  network?: LoadBalancerNetwork;
-  /** A string indicating whether the load balancer will support IPv4 or both IPv4 and IPv6 networking. This property cannot be updated after creating the load balancer. */
-  network_stack?: LoadBalancerNetworkStack;
-  /** A string indicating whether the load balancer should be a standard regional HTTP load balancer, a regional network load balancer that routes traffic at the TCP/UDP transport layer, or a global load balancer. */
-  type?: LoadBalancerType;
-  /** An array of objects specifying the domain configurations for a Global load balancer. */
-  domains?: LoadBalancerDomainsList;
-  glb_settings?: GlbSettings;
-  /** An array containing the UUIDs of the Regional load balancers to be used as target backends for a Global load balancer. */
-  target_load_balancer_ids?: LoadBalancerTargetLoadBalancerIdsList;
-  /** A string indicating the policy for the TLS cipher suites used by the load balancer. The possible values are `DEFAULT` or `STRONG`. The default value is `DEFAULT`. */
-  tls_cipher_policy?: LoadBalancerTlsCipherPolicy;
-  /** An attribute containing the public-facing IP address of the load balancer. */
-  ip?: string;
-  region?: LoadBalancerRegion;
-  /** An array containing the IDs of the Droplets assigned to the load balancer. */
-  droplet_ids?: LoadBalancerDropletIdsList;
-  /** The name of a Droplet tag corresponding to Droplets assigned to the load balancer. */
-  tag?: string;
-}
-export const LoadBalancer = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.String),
-    name: S.optional(S.String),
-    project_id: S.optional(S.String),
-    ipv6: S.optional(S.String),
-    size_unit: S.optional(S.Number),
-    size: S.optional(LoadBalancerSize),
-    algorithm: S.optional(LoadBalancerAlgorithm),
-    status: S.optional(LoadBalancerStatus),
-    created_at: S.optional(S.String),
-    forwarding_rules: LoadBalancerForwardingRulesList,
-    health_check: S.optional(HealthCheck),
-    sticky_sessions: S.optional(StickySessions),
-    redirect_http_to_https: S.optional(S.Boolean),
-    enable_proxy_protocol: S.optional(S.Boolean),
-    enable_backend_keepalive: S.optional(S.Boolean),
-    http_idle_timeout_seconds: S.optional(S.Number),
-    vpc_uuid: S.optional(S.String),
-    subnet_uuid: S.optional(S.String),
-    disable_lets_encrypt_dns_records: S.optional(S.Boolean),
-    firewall: S.optional(LbFirewall),
-    network: S.optional(LoadBalancerNetwork),
-    network_stack: S.optional(LoadBalancerNetworkStack),
-    type: S.optional(LoadBalancerType),
-    domains: S.optional(LoadBalancerDomainsList),
-    glb_settings: S.optional(GlbSettings),
-    target_load_balancer_ids: S.optional(LoadBalancerTargetLoadBalancerIdsList),
-    tls_cipher_policy: S.optional(LoadBalancerTlsCipherPolicy),
-    ip: S.optional(S.String),
-    region: S.optional(LoadBalancerRegion),
-    droplet_ids: S.optional(LoadBalancerDropletIdsList),
-    tag: S.optional(S.String),
-  }),
-).annotate({ identifier: "LoadBalancer" }) as any as S.Schema<LoadBalancer>;
 
 export interface GetLoadBalancerResponse {
   load_balancer?: LoadBalancer;
@@ -29751,78 +30296,6 @@ export const GetPartnerAttachmentRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "GetPartnerAttachmentRequest",
 }) as any as S.Schema<GetPartnerAttachmentRequest>;
 
-/** An array of VPC network IDs. */
-export type PartnerAttachmentVpcIdsList = Array<string>;
-export const PartnerAttachmentVpcIdsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<PartnerAttachmentVpcIdsList>;
-
-/** The BGP configuration for the partner attachment. */
-export interface PartnerAttachmentBgp {
-  /** ASN of the local router. */
-  local_asn?: number;
-  /** ASN of the peer router */
-  peer_asn?: number;
-  /** IP of the DigitalOcean router */
-  local_router_ip?: string;
-  /** IP of the peer router */
-  peer_router_ip?: string;
-}
-export const PartnerAttachmentBgp = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    local_asn: S.optional(S.Number),
-    peer_asn: S.optional(S.Number),
-    local_router_ip: S.optional(S.String),
-    peer_router_ip: S.optional(S.String),
-  }),
-).annotate({ identifier: "PartnerAttachmentBgp" }) as any as S.Schema<PartnerAttachmentBgp>;
-
-/** An array of associated partner attachment UUIDs. */
-export type PartnerAttachmentChildrenList = Array<string>;
-export const PartnerAttachmentChildrenList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<PartnerAttachmentChildrenList>;
-
-export interface PartnerAttachment {
-  /** A unique ID that can be used to identify and reference the partner attachment. */
-  id?: string;
-  /** The name of the partner attachment. Must be unique and may only contain alphanumeric characters, dashes, and periods. */
-  name?: string;
-  /** The current operational state of the attachment. */
-  state?: string;
-  /** The bandwidth (in Mbps) of the connection. */
-  connection_bandwidth_in_mbps?: number;
-  /** The region where the partner attachment is located. */
-  region?: string;
-  /** The Network as a Service (NaaS) provider for the partner attachment. */
-  naas_provider?: string;
-  /** An array of VPC network IDs. */
-  vpc_ids?: PartnerAttachmentVpcIdsList;
-  /** The BGP configuration for the partner attachment. */
-  bgp?: PartnerAttachmentBgp;
-  /** A time value given in ISO8601 combined date and time format. */
-  created_at?: string;
-  /** Associated partner attachment UUID */
-  parent_uuid?: string;
-  /** An array of associated partner attachment UUIDs. */
-  children?: PartnerAttachmentChildrenList;
-}
-export const PartnerAttachment = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.String),
-    name: S.optional(S.String),
-    state: S.optional(S.String),
-    connection_bandwidth_in_mbps: S.optional(S.Number),
-    region: S.optional(S.String),
-    naas_provider: S.optional(S.String),
-    vpc_ids: S.optional(PartnerAttachmentVpcIdsList),
-    bgp: S.optional(PartnerAttachmentBgp),
-    created_at: S.optional(S.String),
-    parent_uuid: S.optional(S.String),
-    children: S.optional(PartnerAttachmentChildrenList),
-  }),
-).annotate({ identifier: "PartnerAttachment" }) as any as S.Schema<PartnerAttachment>;
-
 export interface GetPartnerAttachmentResponse {
   partner_attachment?: PartnerAttachment;
 }
@@ -30313,65 +30786,6 @@ export const GetReservedIPRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "GET", uri: "/v2/reserved_ips/{reserved_ip}", code: 200 })),
 ).annotate({ identifier: "GetReservedIPRequest" }) as any as S.Schema<GetReservedIPRequest>;
 
-/** This attribute is set to an array which contains features available in this region */
-export type ReservedIpRegionFeaturesList = Array<string>;
-export const ReservedIpRegionFeaturesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<ReservedIpRegionFeaturesList>;
-
-/** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
-export type ReservedIpRegionSizesList = Array<string>;
-export const ReservedIpRegionSizesList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<ReservedIpRegionSizesList>;
-
-export interface ReservedIpRegion {
-  /** The display name of the region. This will be a full name that is used in the control panel and other interfaces. */
-  name: string;
-  /** A human-readable string that is used as a unique identifier for each region. */
-  slug: string;
-  /** This attribute is set to an array which contains features available in this region */
-  features: ReservedIpRegionFeaturesList;
-  /** This is a boolean value that represents whether new Droplets can be created in this region. */
-  available: boolean;
-  /** This attribute is set to an array which contains the identifying slugs for the sizes available in this region. sizes:read is required to view. */
-  sizes: ReservedIpRegionSizesList;
-}
-export const ReservedIpRegion = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    name: S.String,
-    slug: S.String,
-    features: ReservedIpRegionFeaturesList,
-    available: S.Boolean,
-    sizes: ReservedIpRegionSizesList,
-  }),
-).annotate({ identifier: "ReservedIpRegion" }) as any as S.Schema<ReservedIpRegion>;
-
-/** The Droplet that the reserved IP has been assigned to. When you query a reserved IP, if it is assigned to a Droplet, the entire Droplet object will be returned. If it is not assigned, the value will be null.<br><br>Requires `droplet:read` scope. */
-export type ReservedIpDroplet = unknown | Droplet;
-export const ReservedIpDroplet = S.Unknown as any as S.Schema<ReservedIpDroplet>;
-
-export interface ReservedIp {
-  /** The public IP address of the reserved IP. It also serves as its identifier. */
-  ip?: string;
-  region?: ReservedIpRegion;
-  /** The Droplet that the reserved IP has been assigned to. When you query a reserved IP, if it is assigned to a Droplet, the entire Droplet object will be returned. If it is not assigned, the value will be null.<br><br>Requires `droplet:read` scope. */
-  droplet?: ReservedIpDroplet;
-  /** A boolean value indicating whether or not the reserved IP has pending actions preventing new ones from being submitted. */
-  locked?: boolean;
-  /** The UUID of the project to which the reserved IP currently belongs.<br><br>Requires `project:read` scope. */
-  project_id?: string;
-}
-export const ReservedIp = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    ip: S.optional(S.String),
-    region: S.optional(ReservedIpRegion),
-    droplet: S.optional(ReservedIpDroplet),
-    locked: S.optional(S.Boolean),
-    project_id: S.optional(S.String),
-  }),
-).annotate({ identifier: "ReservedIp" }) as any as S.Schema<ReservedIp>;
-
 export interface GetReservedIPResponse {
   reserved_ip?: ReservedIp;
 }
@@ -30404,9 +30818,9 @@ export const GetReservedIPsActionResponseActionStatus = S.String;
 
 export interface GetReservedIPsActionResponseAction {
   /** A unique numeric ID that can be used to identify and reference an action. */
-  id?: number;
+  id: number;
   /** The current status of the action. This can be "in-progress", "completed", or "errored". */
-  status?: GetReservedIPsActionResponseActionStatus;
+  status: GetReservedIPsActionResponseActionStatus;
   /** This is the type of action that the object represents. For example, this could be "transfer" to represent the state of an image transfer action. */
   type?: string;
   /** A time value given in ISO8601 combined date and time format that represents when the action was initiated. */
@@ -30425,8 +30839,8 @@ export interface GetReservedIPsActionResponseAction {
 }
 export const GetReservedIPsActionResponseAction = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    id: S.optional(S.Number),
-    status: S.optional(GetReservedIPsActionResponseActionStatus),
+    id: S.Number,
+    status: GetReservedIPsActionResponseActionStatus,
     type: S.optional(S.String),
     started_at: S.optional(S.String),
     completed_at: S.optional(S.NullOr(S.String)),
@@ -30637,11 +31051,11 @@ export const GetSshKeyRequest = /*@__PURE__*/ S.suspend(() =>
 ).annotate({ identifier: "GetSshKeyRequest" }) as any as S.Schema<GetSshKeyRequest>;
 
 export interface GetSshKeyResponse {
-  ssh_key?: SshKeys;
+  ssh_key: SshKeys;
 }
 export const GetSshKeyResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    ssh_key: S.optional(SshKeys),
+    ssh_key: SshKeys,
   }),
 ).annotate({ identifier: "GetSshKeyResponse" }) as any as S.Schema<GetSshKeyResponse>;
 
@@ -31231,9 +31645,9 @@ export interface VolumeAction {
   type?: string;
   resource_id?: number | null;
   /** A unique numeric ID that can be used to identify and reference an action. */
-  id?: number;
+  id: number;
   /** The current status of the action. This can be "in-progress", "completed", or "errored". */
-  status?: VolumeActionStatus;
+  status: VolumeActionStatus;
   /** A time value given in ISO8601 combined date and time format that represents when the action was initiated. */
   started_at?: string;
   /** A time value given in ISO8601 combined date and time format that represents when the action was completed. */
@@ -31248,8 +31662,8 @@ export const VolumeAction = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     type: S.optional(S.String),
     resource_id: S.optional(S.NullOr(S.Number)),
-    id: S.optional(S.Number),
-    status: S.optional(VolumeActionStatus),
+    id: S.Number,
+    status: VolumeActionStatus,
     started_at: S.optional(S.String),
     completed_at: S.optional(S.NullOr(S.String)),
     resource_type: S.optional(S.String),
@@ -31468,38 +31882,6 @@ export const GetVpcPeeringRequest = /*@__PURE__*/ S.suspend(() =>
     vpc_peering_id: S.String.pipe(T.Label()),
   }).pipe(T.Http({ method: "GET", uri: "/v2/vpc_peerings/{vpc_peering_id}", code: 200 })),
 ).annotate({ identifier: "GetVpcPeeringRequest" }) as any as S.Schema<GetVpcPeeringRequest>;
-
-/** The current status of the VPC peering. */
-export type VpcPeeringStatus = "PROVISIONING" | "ACTIVE" | "DELETING";
-export const VpcPeeringStatus = S.String;
-
-/** An array of the two peered VPCs IDs. */
-export type VpcPeeringVpcIdsList = Array<string>;
-export const VpcPeeringVpcIdsList = /*@__PURE__*/ S.Array(
-  S.String,
-) as any as S.Schema<VpcPeeringVpcIdsList>;
-
-export interface VpcPeering {
-  /** A unique ID that can be used to identify and reference the VPC peering. */
-  id?: string;
-  /** A time value given in ISO8601 combined date and time format. */
-  created_at?: string;
-  /** The current status of the VPC peering. */
-  status?: VpcPeeringStatus;
-  /** An array of the two peered VPCs IDs. */
-  vpc_ids?: VpcPeeringVpcIdsList;
-  /** The name of the VPC peering. Must be unique within the team and may only contain alphanumeric characters and dashes. */
-  name?: string;
-}
-export const VpcPeering = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.String),
-    created_at: S.optional(S.String),
-    status: S.optional(VpcPeeringStatus),
-    vpc_ids: S.optional(VpcPeeringVpcIdsList),
-    name: S.optional(S.String),
-  }),
-).annotate({ identifier: "VpcPeering" }) as any as S.Schema<VpcPeering>;
 
 export interface GetVpcPeeringResponse {
   vpc_peering?: VpcPeering;
@@ -34397,30 +34779,6 @@ export const ListDedicatedInferenceTokensRequest = /*@__PURE__*/ S.suspend(() =>
 ).annotate({
   identifier: "ListDedicatedInferenceTokensRequest",
 }) as any as S.Schema<ListDedicatedInferenceTokensRequest>;
-
-/** Access token for authenticating to Dedicated Inference endpoints. */
-export interface DedicatedInferenceAccessToken {
-  /** Unique ID of the token. */
-  id?: string;
-  /** Name of the token. */
-  name?: string;
-  /** Token value; only returned once on create. Store securely. */
-  value?: string;
-  created_at?: string;
-  /** When true, the token is managed by DigitalOcean (for example, system-provisioned). When false, the token was created by the user. */
-  is_managed?: boolean;
-}
-export const DedicatedInferenceAccessToken = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({
-    id: S.optional(S.String),
-    name: S.optional(S.String),
-    value: S.optional(S.String),
-    created_at: S.optional(S.String),
-    is_managed: S.optional(S.Boolean),
-  }),
-).annotate({
-  identifier: "DedicatedInferenceAccessToken",
-}) as any as S.Schema<DedicatedInferenceAccessToken>;
 
 export type ListDedicatedInferenceTokensResponseTokensList = Array<DedicatedInferenceAccessToken>;
 export const ListDedicatedInferenceTokensResponseTokensList = /*@__PURE__*/ S.Array(
@@ -41641,10 +41999,14 @@ export const PatchByoipPrefixRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "PATCH", uri: "/v2/byoip_prefixes/{byoip_prefix_uuid}", code: 200 })),
 ).annotate({ identifier: "PatchByoipPrefixRequest" }) as any as S.Schema<PatchByoipPrefixRequest>;
 
-export interface PatchByoipPrefixResponse {}
-export const PatchByoipPrefixResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
-  identifier: "PatchByoipPrefixResponse",
-}) as any as S.Schema<PatchByoipPrefixResponse>;
+export interface PatchByoipPrefixResponse {
+  byoip_prefix?: ByoipPrefix;
+}
+export const PatchByoipPrefixResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    byoip_prefix: S.optional(ByoipPrefix),
+  }),
+).annotate({ identifier: "PatchByoipPrefixResponse" }) as any as S.Schema<PatchByoipPrefixResponse>;
 
 export type PatchDatabaseConfigRequestConfig =
   | MysqlAdvancedConfig
@@ -41714,10 +42076,16 @@ export const PatchDedicatedInferenceRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "PatchDedicatedInferenceRequest",
 }) as any as S.Schema<PatchDedicatedInferenceRequest>;
 
-export interface PatchDedicatedInferenceResponse {}
-export const PatchDedicatedInferenceResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate(
-  { identifier: "PatchDedicatedInferenceResponse" },
-) as any as S.Schema<PatchDedicatedInferenceResponse>;
+export interface PatchDedicatedInferenceResponse {
+  dedicated_inference?: DedicatedInference;
+}
+export const PatchDedicatedInferenceResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    dedicated_inference: S.optional(DedicatedInference),
+  }),
+).annotate({
+  identifier: "PatchDedicatedInferenceResponse",
+}) as any as S.Schema<PatchDedicatedInferenceResponse>;
 
 export interface PatchDomainRecordRequest {
   /** The name of the domain itself. */
@@ -41877,8 +42245,14 @@ export const PatchPartnerAttachmentRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "PatchPartnerAttachmentRequest",
 }) as any as S.Schema<PatchPartnerAttachmentRequest>;
 
-export interface PatchPartnerAttachmentResponse {}
-export const PatchPartnerAttachmentResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
+export interface PatchPartnerAttachmentResponse {
+  partner_attachment?: PartnerAttachment;
+}
+export const PatchPartnerAttachmentResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    partner_attachment: S.optional(PartnerAttachment),
+  }),
+).annotate({
   identifier: "PatchPartnerAttachmentResponse",
 }) as any as S.Schema<PatchPartnerAttachmentResponse>;
 
@@ -42464,11 +42838,11 @@ export const PostDropletActionRequest = /*@__PURE__*/ S.suspend(() =>
 ).annotate({ identifier: "PostDropletActionRequest" }) as any as S.Schema<PostDropletActionRequest>;
 
 export interface PostDropletActionResponse {
-  action?: Action;
+  action: Action;
 }
 export const PostDropletActionResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    action: S.optional(Action),
+    action: Action,
   }),
 ).annotate({
   identifier: "PostDropletActionResponse",
@@ -42563,9 +42937,9 @@ export const PostFloatingIPsActionResponseActionStatus = S.String;
 
 export interface PostFloatingIPsActionResponseAction {
   /** A unique numeric ID that can be used to identify and reference an action. */
-  id?: number;
+  id: number;
   /** The current status of the action. This can be "in-progress", "completed", or "errored". */
-  status?: PostFloatingIPsActionResponseActionStatus;
+  status: PostFloatingIPsActionResponseActionStatus;
   /** This is the type of action that the object represents. For example, this could be "transfer" to represent the state of an image transfer action. */
   type?: string;
   /** A time value given in ISO8601 combined date and time format that represents when the action was initiated. */
@@ -42584,8 +42958,8 @@ export interface PostFloatingIPsActionResponseAction {
 }
 export const PostFloatingIPsActionResponseAction = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    id: S.optional(S.Number),
-    status: S.optional(PostFloatingIPsActionResponseActionStatus),
+    id: S.Number,
+    status: PostFloatingIPsActionResponseActionStatus,
     type: S.optional(S.String),
     started_at: S.optional(S.String),
     completed_at: S.optional(S.NullOr(S.String)),
@@ -42734,9 +43108,9 @@ export const PostReservedIPsActionResponseActionStatus = S.String;
 
 export interface PostReservedIPsActionResponseAction {
   /** A unique numeric ID that can be used to identify and reference an action. */
-  id?: number;
+  id: number;
   /** The current status of the action. This can be "in-progress", "completed", or "errored". */
-  status?: PostReservedIPsActionResponseActionStatus;
+  status: PostReservedIPsActionResponseActionStatus;
   /** This is the type of action that the object represents. For example, this could be "transfer" to represent the state of an image transfer action. */
   type?: string;
   /** A time value given in ISO8601 combined date and time format that represents when the action was initiated. */
@@ -42755,8 +43129,8 @@ export interface PostReservedIPsActionResponseAction {
 }
 export const PostReservedIPsActionResponseAction = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    id: S.optional(S.Number),
-    status: S.optional(PostReservedIPsActionResponseActionStatus),
+    id: S.Number,
+    status: PostReservedIPsActionResponseActionStatus,
     type: S.optional(S.String),
     started_at: S.optional(S.String),
     completed_at: S.optional(S.NullOr(S.String)),
@@ -42840,9 +43214,9 @@ export const PostReservedIPv6ActionResponseActionStatus = S.String;
 
 export interface PostReservedIPv6ActionResponseAction {
   /** A unique numeric ID that can be used to identify and reference an action. */
-  id?: number;
+  id: number;
   /** The current status of the action. This can be "in-progress", "completed", or "errored". */
-  status?: PostReservedIPv6ActionResponseActionStatus;
+  status: PostReservedIPv6ActionResponseActionStatus;
   /** This is the type of action that the object represents. For example, this could be "transfer" to represent the state of an image transfer action. */
   type?: string;
   /** A time value given in ISO8601 combined date and time format that represents when the action was initiated. */
@@ -42859,8 +43233,8 @@ export interface PostReservedIPv6ActionResponseAction {
 }
 export const PostReservedIPv6ActionResponseAction = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    id: S.optional(S.Number),
-    status: S.optional(PostReservedIPv6ActionResponseActionStatus),
+    id: S.Number,
+    status: PostReservedIPv6ActionResponseActionStatus,
     type: S.optional(S.String),
     started_at: S.optional(S.String),
     completed_at: S.optional(S.NullOr(S.String)),
@@ -42941,10 +43315,14 @@ export const PostVolumeActionRequest = /*@__PURE__*/ S.suspend(() =>
   }).pipe(T.Http({ method: "POST", uri: "/v2/volumes/actions", code: 200 })),
 ).annotate({ identifier: "PostVolumeActionRequest" }) as any as S.Schema<PostVolumeActionRequest>;
 
-export interface PostVolumeActionResponse {}
-export const PostVolumeActionResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
-  identifier: "PostVolumeActionResponse",
-}) as any as S.Schema<PostVolumeActionResponse>;
+export interface PostVolumeActionResponse {
+  action?: VolumeAction;
+}
+export const PostVolumeActionResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    action: S.optional(VolumeAction),
+  }),
+).annotate({ identifier: "PostVolumeActionResponse" }) as any as S.Schema<PostVolumeActionResponse>;
 
 /** The volume action to initiate. */
 export type VolumeActionPostResizeType = "attach" | "detach" | "resize";
@@ -42992,8 +43370,14 @@ export const PostVolumeActionByIdRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "PostVolumeActionByIdRequest",
 }) as any as S.Schema<PostVolumeActionByIdRequest>;
 
-export interface PostVolumeActionByIdResponse {}
-export const PostVolumeActionByIdResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate({
+export interface PostVolumeActionByIdResponse {
+  action?: VolumeAction;
+}
+export const PostVolumeActionByIdResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    action: S.optional(VolumeAction),
+  }),
+).annotate({
   identifier: "PostVolumeActionByIdResponse",
 }) as any as S.Schema<PostVolumeActionByIdResponse>;
 
@@ -43396,9 +43780,14 @@ export const RunKubernetesClusterLintRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "RunKubernetesClusterLintRequest",
 }) as any as S.Schema<RunKubernetesClusterLintRequest>;
 
-export interface RunKubernetesClusterLintResponse {}
+export interface RunKubernetesClusterLintResponse {
+  /** ID of the clusterlint run that can be used later to fetch the diagnostics. */
+  run_id?: string;
+}
 export const RunKubernetesClusterLintResponse = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({}),
+  S.Struct({
+    run_id: S.optional(S.String),
+  }),
 ).annotate({
   identifier: "RunKubernetesClusterLintResponse",
 }) as any as S.Schema<RunKubernetesClusterLintResponse>;
@@ -44551,6 +44940,12 @@ export const UpdateFirewallRequestDropletIdsList = /*@__PURE__*/ S.Array(
   S.Number,
 ) as any as S.Schema<UpdateFirewallRequestDropletIdsList>;
 
+/** An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope. */
+export type UpdateFirewallRequestTagsList = Array<string>;
+export const UpdateFirewallRequestTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<UpdateFirewallRequestTagsList>;
+
 /** The type of traffic to be allowed. This may be one of `tcp`, `udp`, or `icmp`. */
 export type UpdateFirewallRequestInboundRulesItemProtocol = "tcp" | "udp" | "icmp";
 export const UpdateFirewallRequestInboundRulesItemProtocol = S.String;
@@ -44584,6 +44979,12 @@ export const UpdateFirewallRequestInboundRulesItemSourcesKubernetesIdsList = /*@
   S.String,
 ) as any as S.Schema<UpdateFirewallRequestInboundRulesItemSourcesKubernetesIdsList>;
 
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type UpdateFirewallRequestInboundRulesItemSourcesTagsList = Array<string>;
+export const UpdateFirewallRequestInboundRulesItemSourcesTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<UpdateFirewallRequestInboundRulesItemSourcesTagsList>;
+
 export interface UpdateFirewallRequestInboundRulesItemSources {
   /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
   addresses?: UpdateFirewallRequestInboundRulesItemSourcesAddressesList;
@@ -44593,7 +44994,8 @@ export interface UpdateFirewallRequestInboundRulesItemSources {
   load_balancer_uids?: UpdateFirewallRequestInboundRulesItemSourcesLoadBalancerUidsList;
   /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
   kubernetes_ids?: UpdateFirewallRequestInboundRulesItemSourcesKubernetesIdsList;
-  tags?: unknown;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: UpdateFirewallRequestInboundRulesItemSourcesTagsList | null;
 }
 export const UpdateFirewallRequestInboundRulesItemSources = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -44603,7 +45005,7 @@ export const UpdateFirewallRequestInboundRulesItemSources = /*@__PURE__*/ S.susp
       UpdateFirewallRequestInboundRulesItemSourcesLoadBalancerUidsList,
     ),
     kubernetes_ids: S.optional(UpdateFirewallRequestInboundRulesItemSourcesKubernetesIdsList),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(UpdateFirewallRequestInboundRulesItemSourcesTagsList)),
   }),
 ).annotate({
   identifier: "UpdateFirewallRequestInboundRulesItemSources",
@@ -44670,6 +45072,12 @@ export const UpdateFirewallRequestOutboundRulesItemDestinationsKubernetesIdsList
     S.String,
   ) as any as S.Schema<UpdateFirewallRequestOutboundRulesItemDestinationsKubernetesIdsList>;
 
+/** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+export type UpdateFirewallRequestOutboundRulesItemDestinationsTagsList = Array<string>;
+export const UpdateFirewallRequestOutboundRulesItemDestinationsTagsList = /*@__PURE__*/ S.Array(
+  S.String,
+) as any as S.Schema<UpdateFirewallRequestOutboundRulesItemDestinationsTagsList>;
+
 export interface UpdateFirewallRequestOutboundRulesItemDestinations {
   /** An array of strings containing the IPv4 addresses, IPv6 addresses, IPv4 CIDRs, and/or IPv6 CIDRs to which the firewall will allow traffic. */
   addresses?: UpdateFirewallRequestOutboundRulesItemDestinationsAddressesList;
@@ -44679,7 +45087,8 @@ export interface UpdateFirewallRequestOutboundRulesItemDestinations {
   load_balancer_uids?: UpdateFirewallRequestOutboundRulesItemDestinationsLoadBalancerUidsList;
   /** An array containing the IDs of the Kubernetes clusters to which the firewall will allow traffic. */
   kubernetes_ids?: UpdateFirewallRequestOutboundRulesItemDestinationsKubernetesIdsList;
-  tags?: unknown;
+  /** An array containing the names of Tags corresponding to groups of Droplets to which the firewall will allow traffic. */
+  tags?: UpdateFirewallRequestOutboundRulesItemDestinationsTagsList | null;
 }
 export const UpdateFirewallRequestOutboundRulesItemDestinations = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
@@ -44689,7 +45098,7 @@ export const UpdateFirewallRequestOutboundRulesItemDestinations = /*@__PURE__*/ 
       UpdateFirewallRequestOutboundRulesItemDestinationsLoadBalancerUidsList,
     ),
     kubernetes_ids: S.optional(UpdateFirewallRequestOutboundRulesItemDestinationsKubernetesIdsList),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(UpdateFirewallRequestOutboundRulesItemDestinationsTagsList)),
   }),
 ).annotate({
   identifier: "UpdateFirewallRequestOutboundRulesItemDestinations",
@@ -44727,7 +45136,8 @@ export interface UpdateFirewallRequest {
   name: string;
   /** An array containing the IDs of the Droplets assigned to the firewall. <br><br>Requires `droplet:read` scope. */
   droplet_ids?: UpdateFirewallRequestDropletIdsList | null;
-  tags?: unknown;
+  /** An array containing the names of the Tags assigned to the firewall. <br><br>Requires `tag:read` scope. */
+  tags?: UpdateFirewallRequestTagsList | null;
   inbound_rules?: UpdateFirewallRequestInboundRulesList | null;
   outbound_rules?: UpdateFirewallRequestOutboundRulesList | null;
 }
@@ -44736,18 +45146,18 @@ export const UpdateFirewallRequest = /*@__PURE__*/ S.suspend(() =>
     firewall_id: S.String.pipe(T.Label()),
     name: S.String,
     droplet_ids: S.optional(S.NullOr(UpdateFirewallRequestDropletIdsList)),
-    tags: S.optional(S.Unknown),
+    tags: S.optional(S.NullOr(UpdateFirewallRequestTagsList)),
     inbound_rules: S.optional(S.NullOr(UpdateFirewallRequestInboundRulesList)),
     outbound_rules: S.optional(S.NullOr(UpdateFirewallRequestOutboundRulesList)),
   }).pipe(T.Http({ method: "PUT", uri: "/v2/firewalls/{firewall_id}", code: 200 })),
 ).annotate({ identifier: "UpdateFirewallRequest" }) as any as S.Schema<UpdateFirewallRequest>;
 
 export interface UpdateFirewallResponse {
-  firewall?: Firewall;
+  firewall: Firewall;
 }
 export const UpdateFirewallResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    firewall: S.optional(Firewall),
+    firewall: Firewall,
   }),
 ).annotate({ identifier: "UpdateFirewallResponse" }) as any as S.Schema<UpdateFirewallResponse>;
 
@@ -45728,10 +46138,16 @@ export const UpdateKubernetesClusterRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "UpdateKubernetesClusterRequest",
 }) as any as S.Schema<UpdateKubernetesClusterRequest>;
 
-export interface UpdateKubernetesClusterResponse {}
-export const UpdateKubernetesClusterResponse = /*@__PURE__*/ S.suspend(() => S.Struct({})).annotate(
-  { identifier: "UpdateKubernetesClusterResponse" },
-) as any as S.Schema<UpdateKubernetesClusterResponse>;
+export interface UpdateKubernetesClusterResponse {
+  kubernetes_cluster?: Cluster;
+}
+export const UpdateKubernetesClusterResponse = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    kubernetes_cluster: S.optional(Cluster),
+  }),
+).annotate({
+  identifier: "UpdateKubernetesClusterResponse",
+}) as any as S.Schema<UpdateKubernetesClusterResponse>;
 
 /** An array containing the tags applied to the node pool. All node pools are automatically tagged `k8s`, `k8s-worker`, and `k8s:$K8S_CLUSTER_ID`. <br><br>Requires `tag:read` scope. */
 export type UpdateKubernetesNodePoolRequestTagsList = Array<string>;
@@ -45790,9 +46206,13 @@ export const UpdateKubernetesNodePoolRequest = /*@__PURE__*/ S.suspend(() =>
   identifier: "UpdateKubernetesNodePoolRequest",
 }) as any as S.Schema<UpdateKubernetesNodePoolRequest>;
 
-export interface UpdateKubernetesNodePoolResponse {}
+export interface UpdateKubernetesNodePoolResponse {
+  node_pool?: KubernetesNodePool;
+}
 export const UpdateKubernetesNodePoolResponse = /*@__PURE__*/ S.suspend(() =>
-  S.Struct({}),
+  S.Struct({
+    node_pool: S.optional(KubernetesNodePool),
+  }),
 ).annotate({
   identifier: "UpdateKubernetesNodePoolResponse",
 }) as any as S.Schema<UpdateKubernetesNodePoolResponse>;
@@ -46507,11 +46927,11 @@ export const UpdateSshKeyRequest = /*@__PURE__*/ S.suspend(() =>
 ).annotate({ identifier: "UpdateSshKeyRequest" }) as any as S.Schema<UpdateSshKeyRequest>;
 
 export interface UpdateSshKeyResponse {
-  ssh_key?: SshKeys;
+  ssh_key: SshKeys;
 }
 export const UpdateSshKeyResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
-    ssh_key: S.optional(SshKeys),
+    ssh_key: SshKeys,
   }),
 ).annotate({ identifier: "UpdateSshKeyResponse" }) as any as S.Schema<UpdateSshKeyResponse>;
 
@@ -48815,7 +49235,7 @@ export const createSpacesKey: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type CreateSshKeyError = DigitalOceanOpError;
+export type CreateSshKeyError = UnprocessableEntity | DigitalOceanOpError;
 /** Create a New SSH Key To add a new SSH public key to your DigitalOcean account, send a POST request to `/v2/account/keys`. Set the `name` attribute to the name you wish to use and the `public_key` attribute to the full public key you are adding. */
 export const createSshKey: API.OperationMethod<
   CreateSshKeyRequest,
@@ -48825,7 +49245,7 @@ export const createSshKey: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: CreateSshKeyRequest,
   output: CreateSshKeyResponse,
-  errors: [UnknownDigitalOceanError],
+  errors: [UnprocessableEntity, UnknownDigitalOceanError],
   protocol: DigitalOceanProtocol,
   retry: Retry.Retry,
 }));
