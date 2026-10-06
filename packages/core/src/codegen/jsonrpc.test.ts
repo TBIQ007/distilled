@@ -5,9 +5,11 @@ import {
   JSONRPC_INBOUND_TRAIT,
   JSONRPC_METHOD_TRAIT,
   JSONRPC_NOTIFICATION_TRAIT,
+  JSONRPC_NO_PARAMS_TRAIT,
   JSONRPC_SERVICE_TRAIT,
   jsonRpcEmission,
   methodToOperationName,
+  normalizeJsonSchema,
 } from "./jsonrpc.ts";
 
 const ns = "com.example.agent";
@@ -183,5 +185,135 @@ describe("JSON-RPC emission", () => {
     );
     expect(code).toContain(`export const handlers = <R = never>(impl: InboundHandlers<R>)`);
     expect(code).toContain(`import * as JsonRpc from "@distilled.cloud/core/jsonrpc";`);
+  });
+});
+
+describe("json-schema-rpc normalization and edge cases", () => {
+  const base = {
+    Mode: {
+      oneOf: [
+        { type: "string", const: "fast" },
+        { type: "string", const: "slow" },
+      ],
+    },
+    Update: {
+      oneOf: [
+        {
+          type: "object",
+          required: ["kind"],
+          properties: { kind: { const: "text" }, text: { type: "string" } },
+        },
+        {
+          type: "object",
+          required: ["kind"],
+          properties: {
+            kind: { const: "plan" },
+            steps: { type: "array", items: { type: "string" } },
+          },
+        },
+      ],
+    },
+    LoginParams: {
+      oneOf: [
+        {
+          type: "object",
+          required: ["type"],
+          properties: { type: { const: "apiKey" }, apiKey: { type: "string" } },
+        },
+        { type: "object", required: ["type"], properties: { type: { const: "chatgpt" } } },
+      ],
+    },
+    LoginResponse: { type: "object", properties: { ok: { type: "boolean" } } },
+    StatusResponse: { type: "object", properties: { mode: { $ref: "#/$defs/Mode" } } },
+  };
+
+  const model = () =>
+    convertJsonSchemaRpcToSmithy({
+      namespace: ns,
+      serviceName: "Agent",
+      definitions: base,
+      methods: [
+        {
+          method: "account/login",
+          direction: "outbound",
+          kind: "request",
+          params: "LoginParams",
+          result: "LoginResponse",
+        },
+        { method: "status/read", direction: "outbound", kind: "request", result: "StatusResponse" },
+        { method: "initialized", direction: "outbound", kind: "notification" },
+      ],
+    });
+
+  test("const discriminators become enums; literal unions collapse to one enum", () => {
+    expect(normalizeJsonSchema({ const: "x" })).toEqual({ enum: ["x"], type: "string" });
+    expect(normalizeJsonSchema(base.Mode)).toEqual({ type: "string", enum: ["fast", "slow"] });
+    const { shapes } = model();
+    const mode = shapes[`${ns}#Mode`];
+    expect(mode.type).toBe("enum");
+  });
+
+  test("union params are the operation's input directly (no `body` wrapper)", () => {
+    const { shapes } = model();
+    const login = shapes[`${ns}#AccountLogin`];
+    expect(login.input.target).toBe(`${ns}#LoginParams`);
+    const { code } = generateService(model(), {
+      unionStyle: "opaque-cases",
+      ...jsonRpcEmission({
+        protocol: "P",
+        connection: "C",
+        commonErrorType: "E",
+        commonErrorClasses: [],
+      }),
+    });
+    expect(code).toMatch(/export const accountLogin: JsonRpc\.RequestMethod<\s*LoginParams,/);
+  });
+
+  test("methods without params take no argument (void input, S.Void schema)", () => {
+    const { shapes } = model();
+    expect(shapes[`${ns}#StatusRead`].traits[JSONRPC_NO_PARAMS_TRAIT]).toEqual({});
+    const emission = jsonRpcEmission({
+      protocol: "P",
+      connection: "C",
+      commonErrorType: "E",
+      commonErrorClasses: [],
+    });
+    const { code } = generateService(model(), { unionStyle: "opaque-cases", ...emission });
+    expect(code).toMatch(/export const statusRead: JsonRpc\.RequestMethod<\s*void,/);
+    expect(code).toMatch(/statusRead[\s\S]*?input: S\.Void/);
+    expect(code).toMatch(/export const initialized: JsonRpc\.RequestMethod<void, void,/);
+  });
+
+  test("an operation name colliding with a definition fails loudly", () => {
+    expect(() =>
+      convertJsonSchemaRpcToSmithy({
+        namespace: ns,
+        serviceName: "Agent",
+        definitions: { ...base, StatusRead: { type: "object" } },
+        methods: [
+          {
+            method: "status/read",
+            direction: "outbound",
+            kind: "request",
+            result: "StatusResponse",
+          },
+        ],
+      }),
+    ).toThrow(/collides with the definition StatusRead/);
+  });
+
+  test("postProcess drops an unused traits import", () => {
+    const emission = jsonRpcEmission({
+      protocol: "P",
+      connection: "C",
+      commonErrorType: "E",
+      commonErrorClasses: [],
+    });
+    const header = emission.header({ hasPaginated: false, model: {} });
+    expect(header).toContain(`import * as T from "../traits.ts";`);
+    expect(emission.postProcess(`${header}export const x = 1;\n`)).not.toContain(`import * as T`);
+    expect(emission.postProcess(`${header}export const x = T.Body("a");\n`)).toContain(
+      `import * as T`,
+    );
   });
 });

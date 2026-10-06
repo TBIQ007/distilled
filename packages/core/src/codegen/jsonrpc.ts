@@ -41,6 +41,8 @@ export const JSONRPC_SERVICE_TRAIT = "com.distilled.jsonrpc#jsonRpc2";
 export const JSONRPC_METHOD_TRAIT = "com.distilled.jsonrpc#method";
 export const JSONRPC_NOTIFICATION_TRAIT = "com.distilled.jsonrpc#notification";
 export const JSONRPC_INBOUND_TRAIT = "com.distilled.jsonrpc#inbound";
+/** The method takes no params: callers pass nothing and no `params` member is sent. */
+export const JSONRPC_NO_PARAMS_TRAIT = "com.distilled.jsonrpc#noParams";
 
 //#region Dialect
 
@@ -99,11 +101,56 @@ const rewriteRefs = (value: unknown): unknown => {
 
 const ref = (name: string) => ({ $ref: `#/components/schemas/${name}` });
 
+const LITERAL_KEYS = new Set(["type", "enum", "description", "title"]);
+
+/**
+ * JSON Schema features the OpenAPI schema converter doesn't read, rewritten
+ * into ones it does:
+ *
+ *  - `const: x` → `enum: [x]` — JSON-RPC protocols discriminate their unions
+ *    with `const` members (`type: "text"`, `sessionUpdate: "plan"`); without
+ *    this every discriminator degrades to `string` and unions can't narrow.
+ *  - a `oneOf` / `anyOf` whose branches are all string literals (or one-value
+ *    enums) → one string `enum`, instead of a union of singleton enums.
+ */
+export const normalizeJsonSchema = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(normalizeJsonSchema);
+  if (value === null || typeof value !== "object") return value;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(value)) {
+    // Property maps are keyed by member name; never treat them as keywords.
+    out[k] =
+      k === "properties" && v && typeof v === "object"
+        ? Object.fromEntries(Object.entries(v).map(([p, sub]) => [p, normalizeJsonSchema(sub)]))
+        : normalizeJsonSchema(v);
+  }
+  if (out.const !== undefined && out.enum === undefined) {
+    out.enum = [out.const];
+    if (out.type === undefined && typeof out.const === "string") out.type = "string";
+    delete out.const;
+  }
+  for (const key of ["oneOf", "anyOf"] as const) {
+    const branches = out[key];
+    if (!Array.isArray(branches) || branches.length < 2) continue;
+    const literal = (b: any) =>
+      b &&
+      typeof b === "object" &&
+      b.type === "string" &&
+      Array.isArray(b.enum) &&
+      Object.keys(b).every((bk) => LITERAL_KEYS.has(bk));
+    if (!branches.every(literal)) continue;
+    delete out[key];
+    out.type = "string";
+    out.enum = [...new Set(branches.flatMap((b: any) => b.enum))];
+  }
+  return out;
+};
+
 /** Convert a JSON Schema definitions map + method list into a Smithy model. */
 export const convertJsonSchemaRpcToSmithy = (options: JsonSchemaRpcConvertOptions): any => {
   const schemas: Record<string, unknown> = {};
   for (const [name, schema] of Object.entries(options.definitions)) {
-    schemas[name] = rewriteRefs(schema);
+    schemas[name] = rewriteRefs(normalizeJsonSchema(schema));
   }
 
   const byName = new Map<string, JsonRpcMethodSpec>();
@@ -113,6 +160,11 @@ export const convertJsonSchemaRpcToSmithy = (options: JsonSchemaRpcConvertOption
     if (byName.has(name)) {
       throw new Error(
         `json-schema-rpc: operation name ${name} is used by both ${byName.get(name)!.method} and ${m.method} — set \`name\` on one of them`,
+      );
+    }
+    if (name in schemas) {
+      throw new Error(
+        `json-schema-rpc: operation name ${name} (from ${m.method}) collides with the definition ${name} — set \`name\` on the method`,
       );
     }
     byName.set(name, m);
@@ -163,14 +215,30 @@ export const convertJsonSchemaRpcToSmithy = (options: JsonSchemaRpcConvertOption
   // Swap the synthetic HTTP binding for the JSON-RPC traits.
   for (const [name, m] of byName) {
     const op = model.shapes[`${options.namespace}#${name}`];
-    if (!op) throw new Error(`json-schema-rpc: converter dropped operation ${name}`);
+    if (op?.type !== "operation") {
+      throw new Error(
+        `json-schema-rpc: operation ${name} (from ${m.method}) ${op ? `collides with a ${op.type} shape` : "was dropped by the converter"} — set \`name\` on the method`,
+      );
+    }
     const { "smithy.api#http": _http, ...traits } = op.traits ?? {};
     op.traits = {
       ...traits,
       [JSONRPC_METHOD_TRAIT]: m.method,
       ...(m.kind === "notification" ? { [JSONRPC_NOTIFICATION_TRAIT]: {} } : {}),
       ...(m.direction === "inbound" ? { [JSONRPC_INBOUND_TRAIT]: {} } : {}),
+      ...(m.params === undefined ? { [JSONRPC_NO_PARAMS_TRAIT]: {} } : {}),
     };
+    // Non-object params (a union, a scalar) arrive from the converter as a
+    // sole `httpPayload` member of a synthesized struct. JSON-RPC sends params
+    // as-is, so the operation's input IS that payload type.
+    const input = op.input?.target ? model.shapes[op.input.target] : undefined;
+    const members = input?.type === "structure" ? Object.values(input.members ?? {}) : [];
+    if (
+      members.length === 1 &&
+      (members[0] as any).traits?.["smithy.api#httpPayload"] !== undefined
+    ) {
+      op.input = { target: (members[0] as any).target };
+    }
   }
   const service = model.shapes[`${options.namespace}#${options.serviceName}`];
   service.traits = { ...service.traits, [JSONRPC_SERVICE_TRAIT]: { params: "named" } };
@@ -199,7 +267,7 @@ export interface JsonRpcEmissionOptions {
  */
 export const jsonRpcEmission = (
   o: JsonRpcEmissionOptions,
-): Required<Pick<SdkSpec, "operation" | "header" | "footer">> => {
+): Required<Pick<SdkSpec, "operation" | "header" | "footer" | "postProcess">> => {
   const inbound: Array<{
     readonly key: string;
     readonly method: string;
@@ -217,6 +285,10 @@ export const jsonRpcEmission = (
       throw new Error(`${ctx.opName}: not a JSON-RPC operation (missing ${JSONRPC_METHOD_TRAIT})`);
     }
     const isNotification = JSONRPC_NOTIFICATION_TRAIT in traits;
+    const noParams = JSONRPC_NO_PARAMS_TRAIT in traits;
+    // Outbound methods without params take no argument and send no `params`.
+    const inputType = noParams ? "void" : ctx.inputName;
+    const inputSchema = noParams ? "S.Void" : ctx.inputName;
     const doc = ctx.doc ? `/** ${ctx.doc} */\n` : "";
 
     if (JSONRPC_INBOUND_TRAIT in traits) {
@@ -242,9 +314,9 @@ export const jsonRpcEmission = (
         doc +
         operationConst({
           exportName: ctx.exportName,
-          typeAnnotation: `JsonRpc.RequestMethod<${ctx.inputName}, void, JsonRpc.JsonRpcTransportError, ${o.connection}>`,
+          typeAnnotation: `JsonRpc.RequestMethod<${inputType}, void, JsonRpc.JsonRpcTransportError, ${o.connection}>`,
           factory: "JsonRpc.notify",
-          config: `{ method: ${JSON.stringify(method)}, input: ${ctx.inputName}, protocol: ${o.protocol} }`,
+          config: `{ method: ${JSON.stringify(method)}, input: ${inputSchema}, protocol: ${o.protocol} }`,
         })
       );
     }
@@ -255,10 +327,10 @@ export const jsonRpcEmission = (
       doc +
         operationConst({
           exportName: ctx.exportName,
-          typeAnnotation: `JsonRpc.RequestMethod<${ctx.inputName}, ${ctx.outputTsType}, ${ctx.opName}Error, ${o.connection}>`,
+          typeAnnotation: `JsonRpc.RequestMethod<${inputType}, ${ctx.outputTsType}, ${ctx.opName}Error, ${o.connection}>`,
           factory: "JsonRpc.request",
           config:
-            `{\n  method: ${JSON.stringify(method)},\n  input: ${ctx.inputName},\n` +
+            `{\n  method: ${JSON.stringify(method)},\n  input: ${inputSchema},\n` +
             `  output: ${ctx.outputSchema},\n  errors: [${errors.join(", ")}],\n  protocol: ${o.protocol},\n}`,
         }),
     ].join("\n");
@@ -300,7 +372,16 @@ export const jsonRpcEmission = (
     ];
   };
 
-  return { operation, header, footer };
+  /**
+   * Drop header imports the module turned out not to use. A package with its
+   * own `postProcess` should call this one from it.
+   */
+  const postProcess = (code: string): string =>
+    /\bT\./.test(code.replace(`import * as T from "../traits.ts";\n`, ""))
+      ? code
+      : code.replace(`import * as T from "../traits.ts";\n`, "");
+
+  return { operation, header, footer, postProcess };
 };
 
 /** The export name the generator gives an operation (for package code). */
