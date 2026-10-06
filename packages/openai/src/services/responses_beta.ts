@@ -7349,27 +7349,45 @@ export const BetaResponseCreatedEvent = /*@__PURE__*/ S.suspend(() =>
 export type BetaResponseErrorEventType = "error";
 export const BetaResponseErrorEventType = S.String;
 
+/** The error that interrupted the stream. */
+export interface BetaResponseErrorEventError {
+  /** The error type, e.g. `invalid_request_error`. */
+  type: string;
+  /** The error code. */
+  code?: string | null;
+  /** The error message. */
+  message: string;
+  /** The parameter the error relates to. */
+  param?: string | null;
+}
+export const BetaResponseErrorEventError = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    type: S.String,
+    code: S.optional(S.NullOr(S.String)),
+    message: S.String,
+    param: S.optional(S.NullOr(S.String)),
+  }),
+).annotate({
+  identifier: "BetaResponseErrorEventError",
+}) as any as S.Schema<BetaResponseErrorEventError>;
+
 /** Emitted when an error occurs. */
 export interface BetaResponseErrorEvent {
   /** The agent that owns this multi-agent streaming event. */
   agent?: BetaAgentTag | null;
   /** The type of the event. Always `error`. */
   type: BetaResponseErrorEventType;
-  code: string | null;
-  /** The error message. */
-  message: string;
-  param: string | null;
   /** The sequence number of this event. */
   sequence_number: number;
+  /** The error that interrupted the stream. */
+  error: BetaResponseErrorEventError;
 }
 export const BetaResponseErrorEvent = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     agent: S.optional(S.NullOr(BetaAgentTag)),
     type: BetaResponseErrorEventType,
-    code: S.NullOr(S.String),
-    message: S.String,
-    param: S.NullOr(S.String),
     sequence_number: S.Number,
+    error: BetaResponseErrorEventError,
   }),
 ).annotate({ identifier: "BetaResponseErrorEvent" }) as any as S.Schema<BetaResponseErrorEvent>;
 

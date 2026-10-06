@@ -59,6 +59,15 @@ export class Gone
     [{ status: 410 }],
   ) {}
 
+/** No guardrail with this id exists (or it was deleted). */
+export class GuardrailNotFound
+  extends /*@__PURE__*/ T.applyErrorMatchers(
+    /*@__PURE__*/ S.TaggedError<GuardrailNotFound>()("GuardrailNotFound", {
+      message: S.String,
+    }).pipe(C.withBadRequestError),
+    [{ status: 404 }],
+  ) {}
+
 export class InsufficientCredits
   extends /*@__PURE__*/ T.applyErrorMatchers(
     /*@__PURE__*/ S.TaggedError<InsufficientCredits>()("InsufficientCredits", {
@@ -75,6 +84,15 @@ export class InvalidApiKey
       message: S.String,
     }).pipe(C.withAuthError),
     [{ status: 401 }],
+  ) {}
+
+/** No API key with this hash exists (or it was deleted). */
+export class KeyNotFound
+  extends /*@__PURE__*/ T.applyErrorMatchers(
+    /*@__PURE__*/ S.TaggedError<KeyNotFound>()("KeyNotFound", {
+      message: S.String,
+    }).pipe(C.withBadRequestError),
+    [{ status: 404 }],
   ) {}
 
 /** The selected model requires moderation and the input was flagged. `error.metadata` carries `reasons`, `flagged_input`, `provider_name` and `model_slug`. */
@@ -15035,12 +15053,12 @@ export interface CreateKeyResponse {
   /** The created API key information */
   data: CreateKeyResponseData;
   /** The actual API key string (only shown once) */
-  key: string;
+  key: string | Redacted.Redacted<string>;
 }
 export const CreateKeyResponse = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     data: CreateKeyResponseData,
-    key: S.String,
+    key: S.String.pipe(T.SensitiveValue({})),
   }),
 ).annotate({ identifier: "CreateKeyResponse" }) as any as S.Schema<CreateKeyResponse>;
 
@@ -38001,7 +38019,7 @@ export const deleteFile: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type DeleteGuardrailError = InvalidApiKey | NotFound | OpenRouterOpError;
+export type DeleteGuardrailError = InvalidApiKey | GuardrailNotFound | OpenRouterOpError;
 /** Delete a guardrail Delete an existing guardrail. [Management key](/docs/guides/overview/auth/management-api-keys) required. */
 export const deleteGuardrail: API.OperationMethod<
   DeleteGuardrailRequest,
@@ -38011,7 +38029,7 @@ export const deleteGuardrail: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: DeleteGuardrailRequest,
   output: DeleteGuardrailResponse,
-  errors: [InvalidApiKey, NotFound, UnknownOpenRouterError],
+  errors: [InvalidApiKey, GuardrailNotFound, UnknownOpenRouterError],
   protocol: OpenRouterProtocol,
   retry: Retry.Retry,
 }));
@@ -38088,7 +38106,7 @@ export const deleteInternVaultSecret: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type DeleteKeyError = InvalidApiKey | NotFound | RateLimited | OpenRouterOpError;
+export type DeleteKeyError = InvalidApiKey | KeyNotFound | RateLimited | OpenRouterOpError;
 /** Delete an API key Delete an existing API key. Authenticate with a [management key](/docs/guides/overview/auth/management-api-keys). */
 export const deleteKey: API.OperationMethod<
   DeleteKeyRequest,
@@ -38098,7 +38116,7 @@ export const deleteKey: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: DeleteKeyRequest,
   output: DeleteKeyResponse,
-  errors: [InvalidApiKey, NotFound, RateLimited, UnknownOpenRouterError],
+  errors: [InvalidApiKey, KeyNotFound, RateLimited, UnknownOpenRouterError],
   protocol: OpenRouterProtocol,
   retry: Retry.Retry,
 }));
@@ -38612,7 +38630,7 @@ export const getGeneration: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type GetGuardrailError = InvalidApiKey | NotFound | OpenRouterOpError;
+export type GetGuardrailError = InvalidApiKey | GuardrailNotFound | OpenRouterOpError;
 /** Get a guardrail Get a single guardrail by ID. [Management key](/docs/guides/overview/auth/management-api-keys) required. */
 export const getGuardrail: API.OperationMethod<
   GetGuardrailRequest,
@@ -38622,7 +38640,7 @@ export const getGuardrail: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: GetGuardrailRequest,
   output: GetGuardrailResponse,
-  errors: [InvalidApiKey, NotFound, UnknownOpenRouterError],
+  errors: [InvalidApiKey, GuardrailNotFound, UnknownOpenRouterError],
   protocol: OpenRouterProtocol,
   retry: Retry.Retry,
 }));
@@ -38668,7 +38686,7 @@ export const getInternDaemon: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type GetKeyError = InvalidApiKey | NotFound | RateLimited | OpenRouterOpError;
+export type GetKeyError = InvalidApiKey | KeyNotFound | RateLimited | OpenRouterOpError;
 /** Get a single API key Get a single API key by hash. [Management key](/docs/guides/overview/auth/management-api-keys) required. */
 export const getKey: API.OperationMethod<
   GetKeyRequest,
@@ -38678,7 +38696,7 @@ export const getKey: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: GetKeyRequest,
   output: GetKeyResponse,
-  errors: [InvalidApiKey, NotFound, RateLimited, UnknownOpenRouterError],
+  errors: [InvalidApiKey, KeyNotFound, RateLimited, UnknownOpenRouterError],
   protocol: OpenRouterProtocol,
   retry: Retry.Retry,
 }));
@@ -39181,7 +39199,10 @@ export const listGenerationContent: API.OperationMethod<
   retry: Retry.Retry,
 }));
 
-export type ListGuardrailKeyAssignmentsError = InvalidApiKey | NotFound | OpenRouterOpError;
+export type ListGuardrailKeyAssignmentsError =
+  | InvalidApiKey
+  | GuardrailNotFound
+  | OpenRouterOpError;
 /** List key assignments for a guardrail List all API key assignments for a specific guardrail. [Management key](/docs/guides/overview/auth/management-api-keys) required. */
 export const listGuardrailKeyAssignments: API.OperationMethod<
   ListGuardrailKeyAssignmentsRequest,
@@ -39191,12 +39212,15 @@ export const listGuardrailKeyAssignments: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: ListGuardrailKeyAssignmentsRequest,
   output: ListKeyAssignmentsResponse,
-  errors: [InvalidApiKey, NotFound, UnknownOpenRouterError],
+  errors: [InvalidApiKey, GuardrailNotFound, UnknownOpenRouterError],
   protocol: OpenRouterProtocol,
   retry: Retry.Retry,
 }));
 
-export type ListGuardrailMemberAssignmentsError = InvalidApiKey | NotFound | OpenRouterOpError;
+export type ListGuardrailMemberAssignmentsError =
+  | InvalidApiKey
+  | GuardrailNotFound
+  | OpenRouterOpError;
 /** List member assignments for a guardrail List all organization member assignments for a specific guardrail. [Management key](/docs/guides/overview/auth/management-api-keys) required. */
 export const listGuardrailMemberAssignments: API.OperationMethod<
   ListGuardrailMemberAssignmentsRequest,
@@ -39206,7 +39230,7 @@ export const listGuardrailMemberAssignments: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: ListGuardrailMemberAssignmentsRequest,
   output: ListMemberAssignmentsResponse,
-  errors: [InvalidApiKey, NotFound, UnknownOpenRouterError],
+  errors: [InvalidApiKey, GuardrailNotFound, UnknownOpenRouterError],
   protocol: OpenRouterProtocol,
   retry: Retry.Retry,
 }));
@@ -39950,7 +39974,7 @@ export type UpdateGuardrailError =
   | BadRequest
   | InvalidApiKey
   | Forbidden
-  | NotFound
+  | GuardrailNotFound
   | Conflict
   | OpenRouterOpError;
 /** Update a guardrail Update an existing guardrail, or materialize an unconfigured workspace default guardrail. Collection fields use replace semantics: send the full desired set on every update. [Management key](/docs/guides/overview/auth/management-api-keys) required. */
@@ -39962,7 +39986,14 @@ export const updateGuardrail: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: UpdateGuardrailRequest,
   output: UpdateGuardrailResponse,
-  errors: [BadRequest, InvalidApiKey, Forbidden, NotFound, Conflict, UnknownOpenRouterError],
+  errors: [
+    BadRequest,
+    InvalidApiKey,
+    Forbidden,
+    GuardrailNotFound,
+    Conflict,
+    UnknownOpenRouterError,
+  ],
   protocol: OpenRouterProtocol,
   retry: Retry.Retry,
 }));
@@ -40004,7 +40035,7 @@ export const updateIntern: API.OperationMethod<
 export type UpdateKeyError =
   | BadRequest
   | InvalidApiKey
-  | NotFound
+  | KeyNotFound
   | RateLimited
   | OpenRouterOpError;
 /** Update an API key Update an existing API key. Authenticate with a [management key](/docs/guides/overview/auth/management-api-keys). <Warning> You can't change `workspace_id` through the API. The request body accepts only the fields listed below, and unrecognized fields are ignored. To move a key to another workspace, use the OpenRouter dashboard. If the body contains none of the accepted fields, the request fails with `400` and the message `No update fields provided`. </Warning> */
@@ -40016,7 +40047,7 @@ export const updateKey: API.OperationMethod<
 > = /*@__PURE__*/ API.make(() => ({
   input: UpdateKeyRequest,
   output: UpdateKeyResponse,
-  errors: [BadRequest, InvalidApiKey, NotFound, RateLimited, UnknownOpenRouterError],
+  errors: [BadRequest, InvalidApiKey, KeyNotFound, RateLimited, UnknownOpenRouterError],
   protocol: OpenRouterProtocol,
   retry: Retry.Retry,
 }));

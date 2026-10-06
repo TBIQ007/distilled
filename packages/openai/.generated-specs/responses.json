@@ -14786,31 +14786,17 @@
             "smithy.api#required": {}
           }
         },
-        "code": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#required": {},
-            "com.distilled.openapi#nullable": {}
-          }
-        },
-        "message": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#documentation": "The error message.\n",
-            "smithy.api#required": {}
-          }
-        },
-        "param": {
-          "target": "smithy.api#String",
-          "traits": {
-            "smithy.api#required": {},
-            "com.distilled.openapi#nullable": {}
-          }
-        },
         "sequence_number": {
           "target": "smithy.api#Integer",
           "traits": {
             "smithy.api#documentation": "The sequence number of this event.",
+            "smithy.api#required": {}
+          }
+        },
+        "error": {
+          "target": "com.openai.responses#ResponseErrorEventError",
+          "traits": {
+            "smithy.api#documentation": "The error that interrupted the stream.",
             "smithy.api#required": {}
           }
         }
@@ -14831,6 +14817,42 @@
       },
       "traits": {
         "smithy.api#documentation": "The type of the event. Always `error`.\n"
+      }
+    },
+    "com.openai.responses#ResponseErrorEventError": {
+      "type": "structure",
+      "members": {
+        "type": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The error type, e.g. `invalid_request_error`.",
+            "smithy.api#required": {}
+          }
+        },
+        "code": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The error code.",
+            "com.distilled.openapi#nullable": {}
+          }
+        },
+        "message": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The error message.",
+            "smithy.api#required": {}
+          }
+        },
+        "param": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "The parameter the error relates to.",
+            "com.distilled.openapi#nullable": {}
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "The error that interrupted the stream."
       }
     },
     "com.openai.responses#ResponseFileSearchCallCompletedEvent": {

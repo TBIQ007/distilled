@@ -6585,24 +6585,40 @@ export const ResponseCreatedEvent = /*@__PURE__*/ S.suspend(() =>
 export type ResponseErrorEventType = "error";
 export const ResponseErrorEventType = S.String;
 
+/** The error that interrupted the stream. */
+export interface ResponseErrorEventError {
+  /** The error type, e.g. `invalid_request_error`. */
+  type: string;
+  /** The error code. */
+  code?: string | null;
+  /** The error message. */
+  message: string;
+  /** The parameter the error relates to. */
+  param?: string | null;
+}
+export const ResponseErrorEventError = /*@__PURE__*/ S.suspend(() =>
+  S.Struct({
+    type: S.String,
+    code: S.optional(S.NullOr(S.String)),
+    message: S.String,
+    param: S.optional(S.NullOr(S.String)),
+  }),
+).annotate({ identifier: "ResponseErrorEventError" }) as any as S.Schema<ResponseErrorEventError>;
+
 /** Emitted when an error occurs. */
 export interface ResponseErrorEvent {
   /** The type of the event. Always `error`. */
   type: ResponseErrorEventType;
-  code: string | null;
-  /** The error message. */
-  message: string;
-  param: string | null;
   /** The sequence number of this event. */
   sequence_number: number;
+  /** The error that interrupted the stream. */
+  error: ResponseErrorEventError;
 }
 export const ResponseErrorEvent = /*@__PURE__*/ S.suspend(() =>
   S.Struct({
     type: ResponseErrorEventType,
-    code: S.NullOr(S.String),
-    message: S.String,
-    param: S.NullOr(S.String),
     sequence_number: S.Number,
+    error: ResponseErrorEventError,
   }),
 ).annotate({ identifier: "ResponseErrorEvent" }) as any as S.Schema<ResponseErrorEvent>;
 

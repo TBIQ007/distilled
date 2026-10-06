@@ -383,7 +383,7 @@
           "target": "com.openai.projects#Forbidden"
         },
         {
-          "target": "com.openai.projects#NotFound"
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -449,7 +449,7 @@
           "target": "com.openai.projects#Forbidden"
         },
         {
-          "target": "com.openai.projects#NotFound"
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -876,7 +876,10 @@
           "target": "com.openai.projects#Forbidden"
         },
         {
-          "target": "com.openai.projects#NotFound"
+          "target": "com.openai.projects#ProjectApiKeyNotFound"
+        },
+        {
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -1010,7 +1013,7 @@
           "target": "com.openai.projects#Forbidden"
         },
         {
-          "target": "com.openai.projects#NotFound"
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -1499,6 +1502,9 @@
         },
         {
           "target": "com.openai.projects#NotFound"
+        },
+        {
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -1595,6 +1601,9 @@
         },
         {
           "target": "com.openai.projects#NotFound"
+        },
+        {
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -1936,7 +1945,8 @@
         "value": {
           "target": "smithy.api#String",
           "traits": {
-            "smithy.api#required": {}
+            "smithy.api#required": {},
+            "smithy.api#sensitive": {}
           }
         },
         "name": {
@@ -2050,7 +2060,10 @@
           "target": "com.openai.projects#Forbidden"
         },
         {
-          "target": "com.openai.projects#NotFound"
+          "target": "com.openai.projects#ServiceAccountNotFound"
+        },
+        {
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -2135,7 +2148,10 @@
           "target": "com.openai.projects#Forbidden"
         },
         {
-          "target": "com.openai.projects#NotFound"
+          "target": "com.openai.projects#ServiceAccountNotFound"
+        },
+        {
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -2224,7 +2240,10 @@
           "target": "com.openai.projects#Forbidden"
         },
         {
-          "target": "com.openai.projects#NotFound"
+          "target": "com.openai.projects#ServiceAccountNotFound"
+        },
+        {
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -2746,7 +2765,8 @@
           "target": "smithy.api#String",
           "traits": {
             "smithy.api#documentation": "The unredacted API key value.",
-            "smithy.api#required": {}
+            "smithy.api#required": {},
+            "smithy.api#sensitive": {}
           }
         },
         "name": {
@@ -2809,10 +2829,13 @@
           "target": "com.openai.projects#Forbidden"
         },
         {
-          "target": "com.openai.projects#NotFound"
+          "target": "com.openai.projects#ServiceAccountNotFound"
         },
         {
           "target": "com.openai.projects#Conflict"
+        },
+        {
+          "target": "com.openai.projects#ProjectNotFound"
         }
       ],
       "traits": {
@@ -2957,6 +2980,66 @@
       "traits": {
         "smithy.api#title": "OpenAI API",
         "smithy.api#documentation": "The OpenAI REST API. Please see https://platform.openai.com/docs/api-reference for more details."
+      }
+    },
+    "com.openai.projects#ProjectNotFound": {
+      "type": "structure",
+      "members": {
+        "message": {
+          "target": "smithy.api#String"
+        }
+      },
+      "traits": {
+        "smithy.api#error": "client",
+        "smithy.api#httpError": 404,
+        "smithy.api#documentation": "The project does not exist in the organization.",
+        "com.distilled.openapi#errorMatchers": [
+          {
+            "status": 404,
+            "body": {
+              "/error/code": "project_not_found"
+            }
+          },
+          {
+            "status": 404
+          }
+        ]
+      }
+    },
+    "com.openai.projects#ServiceAccountNotFound": {
+      "type": "structure",
+      "members": {
+        "message": {
+          "target": "smithy.api#String"
+        }
+      },
+      "traits": {
+        "smithy.api#error": "client",
+        "smithy.api#httpError": 404,
+        "smithy.api#documentation": "The project service account does not exist.",
+        "com.distilled.openapi#errorMatchers": [
+          {
+            "status": 404
+          }
+        ]
+      }
+    },
+    "com.openai.projects#ProjectApiKeyNotFound": {
+      "type": "structure",
+      "members": {
+        "message": {
+          "target": "smithy.api#String"
+        }
+      },
+      "traits": {
+        "smithy.api#error": "client",
+        "smithy.api#httpError": 404,
+        "smithy.api#documentation": "The project API key does not exist.",
+        "com.distilled.openapi#errorMatchers": [
+          {
+            "status": 404
+          }
+        ]
       }
     }
   }

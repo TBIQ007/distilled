@@ -39098,7 +39098,7 @@
           "target": "com.openrouter.api#InvalidApiKey"
         },
         {
-          "target": "com.openrouter.api#NotFound"
+          "target": "com.openrouter.api#GuardrailNotFound"
         }
       ],
       "traits": {
@@ -39608,7 +39608,7 @@
           "target": "com.openrouter.api#Forbidden"
         },
         {
-          "target": "com.openrouter.api#NotFound"
+          "target": "com.openrouter.api#GuardrailNotFound"
         },
         {
           "target": "com.openrouter.api#Conflict"
@@ -39665,7 +39665,7 @@
           "target": "com.openrouter.api#InvalidApiKey"
         },
         {
-          "target": "com.openrouter.api#NotFound"
+          "target": "com.openrouter.api#GuardrailNotFound"
         }
       ],
       "traits": {
@@ -39805,7 +39805,7 @@
           "target": "com.openrouter.api#InvalidApiKey"
         },
         {
-          "target": "com.openrouter.api#NotFound"
+          "target": "com.openrouter.api#GuardrailNotFound"
         }
       ],
       "traits": {
@@ -40087,7 +40087,7 @@
           "target": "com.openrouter.api#InvalidApiKey"
         },
         {
-          "target": "com.openrouter.api#NotFound"
+          "target": "com.openrouter.api#GuardrailNotFound"
         }
       ],
       "traits": {
@@ -46891,7 +46891,8 @@
           "target": "smithy.api#String",
           "traits": {
             "smithy.api#documentation": "The actual API key string (only shown once)",
-            "smithy.api#required": {}
+            "smithy.api#required": {},
+            "smithy.api#sensitive": {}
           }
         }
       },
@@ -47142,7 +47143,7 @@
           "target": "com.openrouter.api#InvalidApiKey"
         },
         {
-          "target": "com.openrouter.api#NotFound"
+          "target": "com.openrouter.api#KeyNotFound"
         },
         {
           "target": "com.openrouter.api#RateLimited"
@@ -47430,7 +47431,7 @@
           "target": "com.openrouter.api#InvalidApiKey"
         },
         {
-          "target": "com.openrouter.api#NotFound"
+          "target": "com.openrouter.api#KeyNotFound"
         },
         {
           "target": "com.openrouter.api#RateLimited"
@@ -47489,7 +47490,7 @@
           "target": "com.openrouter.api#InvalidApiKey"
         },
         {
-          "target": "com.openrouter.api#NotFound"
+          "target": "com.openrouter.api#KeyNotFound"
         },
         {
           "target": "com.openrouter.api#RateLimited"
@@ -87000,6 +87001,42 @@
                 "matches": "^"
               }
             }
+          }
+        ]
+      }
+    },
+    "com.openrouter.api#KeyNotFound": {
+      "type": "structure",
+      "members": {
+        "message": {
+          "target": "smithy.api#String"
+        }
+      },
+      "traits": {
+        "smithy.api#error": "client",
+        "smithy.api#httpError": 404,
+        "smithy.api#documentation": "No API key with this hash exists (or it was deleted).",
+        "com.distilled.openapi#errorMatchers": [
+          {
+            "status": 404
+          }
+        ]
+      }
+    },
+    "com.openrouter.api#GuardrailNotFound": {
+      "type": "structure",
+      "members": {
+        "message": {
+          "target": "smithy.api#String"
+        }
+      },
+      "traits": {
+        "smithy.api#error": "client",
+        "smithy.api#httpError": 404,
+        "smithy.api#documentation": "No guardrail with this id exists (or it was deleted).",
+        "com.distilled.openapi#errorMatchers": [
+          {
+            "status": 404
           }
         ]
       }

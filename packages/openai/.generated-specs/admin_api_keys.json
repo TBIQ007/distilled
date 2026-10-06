@@ -407,7 +407,8 @@
           "target": "smithy.api#String",
           "traits": {
             "smithy.api#documentation": "The value of the API key. Only shown on create.",
-            "smithy.api#required": {}
+            "smithy.api#required": {},
+            "smithy.api#sensitive": {}
           }
         }
       },
