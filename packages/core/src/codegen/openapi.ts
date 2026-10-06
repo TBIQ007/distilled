@@ -167,6 +167,12 @@ export interface OpenApiConvertOptions {
    * `application/octet-stream` responses. Opt in only when the provider's
    * generator and protocol support binary inputs and outputs. Default false.
    */
+  /**
+   * Name union cases after each branch's JSON Schema `title` (when it is an
+   * identifier) instead of `Case<n>`. Opt-in: switching an existing package
+   * renames its generated case types.
+   */
+  readonly unionCaseTitles?: boolean;
   readonly binaryTypes?: boolean;
   /**
    * Response statuses to read the operation's output shape from, most
@@ -314,6 +320,7 @@ interface Ctx {
    */
   readonly dirSensitiveRefs: Map<Dir, ReadonlySet<string>>;
   readonly sensitivePatterns: readonly RegExp[];
+  readonly unionCaseTitles: boolean;
   readonly binaryTypes: boolean;
 }
 
@@ -608,7 +615,18 @@ const typeOf = (def: any): string | undefined => {
  * target). Named shapes can participate in reference cycles, so `$ref`s to
  * nameable schemas reserve their name before converting.
  */
+/** `{ const: x }` → `{ enum: [x] }` (leaves schemas with an explicit `enum` alone). */
+const constAsEnum = (def: any): any =>
+  def && typeof def === "object" && def.const !== undefined && def.enum === undefined
+    ? {
+        ...def,
+        enum: [def.const],
+        ...(def.type === undefined && typeof def.const === "string" ? { type: "string" } : {}),
+      }
+    : def;
+
 const isNameable = (ctx: Ctx, def: any): boolean => {
+  def = constAsEnum(def);
   if (!def || typeof def !== "object") return false;
   if (def.$ref) return isNameable(ctx, deref(ctx, def));
   if (Array.isArray(def.enum)) {
@@ -663,6 +681,10 @@ const convertSchema = (
   if (def === true || def === undefined || def === null) {
     return inline(PRELUDE.Document, false);
   }
+  // OAS 3.1 / JSON Schema `const` is a one-value enum — the discriminator of
+  // most tagged unions (`type: { const: "message_start" }`). Without this it
+  // degrades to its base type and unions can't narrow.
+  def = constAsEnum(def);
   if (typeof def !== "object") return inline(PRELUDE.Document, false);
 
   // --- $ref → named (or cached inline) shape --------------------------------
@@ -727,7 +749,9 @@ const convertSchema = (
       const branchName =
         typeof b?.$ref === "string"
           ? pascal(String(b.$ref).split("/").pop() ?? `Case${i}`)
-          : `Case${i}`;
+          : ctx.unionCaseTitles && typeof b?.title === "string" && /^[A-Za-z][\w ]*$/.test(b.title)
+            ? pascal(b.title)
+            : `Case${i}`;
       const r = convertSchema(ctx, b, `${hint}${branchName}`, depth + 1, dir);
       if (seenTargets.has(r.target)) return;
       seenTargets.add(r.target);
@@ -1107,14 +1131,17 @@ const eventStreamContent = (
   ctx: Ctx,
   responses: any,
   order: readonly string[],
-): { schema: any | undefined } | undefined => {
+): { schema: any | undefined; done?: string } | undefined => {
   if (ctx.version === "2.0") return undefined;
   for (const code of order) {
     const raw = responses?.[code];
     if (!raw) continue;
     const resp = raw.$ref ? resolvePointer(ctx.spec, raw.$ref) : raw;
     const sse = resp?.content?.["text/event-stream"];
-    return sse ? { schema: sse.schema } : undefined;
+    if (!sse) return undefined;
+    // Speakeasy-annotated specs name the end-of-stream sentinel (`[DONE]`).
+    const done = sse["x-speakeasy-sse-sentinel"] ?? sse.schema?.["x-speakeasy-sse-sentinel"];
+    return { schema: sse.schema, ...(typeof done === "string" ? { done } : {}) };
   }
   return undefined;
 };
@@ -1354,6 +1381,7 @@ export const convertOpenApiToSmithy = (
     dirSensitiveRefs: new Map(),
     sensitivePatterns: options.sensitivePatterns ?? SENSITIVE_FIELD_PATTERNS,
     binaryTypes: options.binaryTypes ?? false,
+    unionCaseTitles: options.unionCaseTitles ?? false,
   };
   const statusToErrorClass = options.statusToErrorClass ?? DEFAULT_STATUS_TO_ERROR_CLASS;
   const defaultErrorStatuses = new Set(options.defaultErrorStatuses ?? DEFAULT_ERROR_STATUSES);
@@ -1620,7 +1648,9 @@ export const convertOpenApiToSmithy = (
       }
 
       if (streamOnly) {
-        traits[EVENT_STREAM_TRAIT] = {} satisfies EventStreamTraitValue;
+        traits[EVENT_STREAM_TRAIT] = (
+          sse.done ? { done: sse.done } : {}
+        ) satisfies EventStreamTraitValue;
       }
 
       const opId = addShape(ctx, opName, {
@@ -1643,12 +1673,14 @@ export const convertOpenApiToSmithy = (
           type: "operation",
           input: { target: inputTarget },
           output: { target: eventShapeFor(ctx, sse.schema, streamOpName) },
-          ...(errors.length ? { errors } : {}),
+          // A copy: patches appending to one op's errors must not leak into the other.
+          ...(errors.length ? { errors: errors.map((e) => ({ ...e })) } : {}),
           traits: {
             ...streamTraits,
-            [EVENT_STREAM_TRAIT]: (requestFlag
-              ? { requestFlag }
-              : {}) satisfies EventStreamTraitValue,
+            [EVENT_STREAM_TRAIT]: {
+              ...(requestFlag ? { requestFlag } : {}),
+              ...(sse.done ? { done: sse.done } : {}),
+            } satisfies EventStreamTraitValue,
           },
         });
         serviceOps.push({ target: streamOpId });

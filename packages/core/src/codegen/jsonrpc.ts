@@ -205,6 +205,7 @@ export const convertJsonSchemaRpcToSmithy = (options: JsonSchemaRpcConvertOption
     {
       namespace: options.namespace,
       serviceName: options.serviceName,
+      unionCaseTitles: true,
       ...options.openapi,
       // Names are already final (derived from the wire method); the OpenAPI
       // verbNoun heuristic would reorder `SessionCancel` → `CancelSession`.
