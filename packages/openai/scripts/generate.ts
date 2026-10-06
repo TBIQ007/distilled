@@ -143,6 +143,14 @@ const openaiSpec = (model: any): SdkSpec => {
   };
 };
 
+/** `admin_api_keys` → `adminApiKeys` (the barrel's export name; files keep the tag slug). */
+const camel = (slug: string): string =>
+  slug
+    .split("_")
+    .filter(Boolean)
+    .map((s, i) => (i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1)))
+    .join("");
+
 runGeneratorCli({
   description: "Generate the OpenAI Effect SDK from the Smithy models",
   root: `${import.meta.dirname}/..`,
@@ -150,4 +158,5 @@ runGeneratorCli({
   // pointers); generate only compiles the committed, patched models.
   patchesDir: false,
   spec: openaiSpec,
+  barrelExportName: camel,
 });
