@@ -44,6 +44,7 @@
  *     (with the non-standard `mode` member the core runtime dispatches on)
  */
 
+import { EVENT_STREAM_TRAIT, type EventStreamTraitValue } from "./event-stream.ts";
 import {
   isMechanicalOperationId,
   isVerbatimRouteId,
@@ -1097,6 +1098,48 @@ const successSchema = (
 };
 
 /**
+ * The `text/event-stream` content of the first declared success status:
+ * `undefined` when the response doesn't stream, `{ schema }` when it does
+ * (`schema` itself may be undefined — a stream of untyped events). OAS 3.x
+ * only; Swagger 2.0 can't express per-content-type schemas.
+ */
+const eventStreamContent = (
+  ctx: Ctx,
+  responses: any,
+  order: readonly string[],
+): { schema: any | undefined } | undefined => {
+  if (ctx.version === "2.0") return undefined;
+  for (const code of order) {
+    const raw = responses?.[code];
+    if (!raw) continue;
+    const resp = raw.$ref ? resolvePointer(ctx.spec, raw.$ref) : raw;
+    const sse = resp?.content?.["text/event-stream"];
+    return sse ? { schema: sse.schema } : undefined;
+  }
+  return undefined;
+};
+
+/**
+ * The body member that switches a dual-mode endpoint (one path serving both
+ * a JSON response and an event stream) into streaming: a boolean `stream`
+ * property, the convention OpenAI, Anthropic and OpenRouter share.
+ */
+const streamRequestFlag = (ctx: Ctx, bodySchema: any): string | undefined => {
+  if (bodySchema === undefined) return undefined;
+  const prop = deref(ctx, flattenObject(ctx, bodySchema).properties.stream);
+  if (!prop || typeof prop !== "object") return undefined;
+  const isBoolean = (s: any): boolean => {
+    const r = deref(ctx, s);
+    return (
+      r?.type === "boolean" ||
+      (Array.isArray(r?.type) && r.type.includes("boolean")) ||
+      [...(r?.anyOf ?? []), ...(r?.oneOf ?? [])].some(isBoolean)
+    );
+  };
+  return isBoolean(prop) ? "stream" : undefined;
+};
+
+/**
  * Whether the success body is a collection: an array, or an object whose
  * array members outnumber its scalar ones (envelopes like `{ data: [] }`,
  * `{ items: [], total }`). `undefined` when there is no body to judge.
@@ -1125,6 +1168,78 @@ const responseIsCollection = (
   if (arrays === 0) return false;
   // `{ data: [...] }`, `{ items, next_cursor }`, `{ results, count, page }`
   return arrays >= 1 && others <= 3;
+};
+
+/**
+ * The output shape for a success body schema: the named component shape for a
+ * plain `$ref`, an `<Op>Response` structure for a flattenable object, or a
+ * raw-response wrapper for anything else (bare array/scalar/map/union).
+ * `smithy.api#Unit` when there is nothing to decode. Shared by JSON responses
+ * and event-stream payloads, so an event decodes exactly like a body would.
+ */
+const outputShapeFor = (ctx: Ctx, schema: any, opName: string): string => {
+  let outputTarget: string = PRELUDE.Unit;
+  const flat = flattenObject(ctx, schema);
+  if (Object.keys(flat.properties).length > 0) {
+    const resolved = deref(ctx, schema);
+    const isPlainRef =
+      typeof schema.$ref === "string" &&
+      !Array.isArray(resolved?.allOf) &&
+      isNameable(ctx, resolved);
+    if (isPlainRef) {
+      // Reuse the named component shape as the output directly.
+      outputTarget = convertSchema(ctx, schema, opName, 0, "out").target;
+    } else {
+      outputTarget = addShape(ctx, `${opName}Response`, {
+        type: "structure",
+        members: buildMembers(ctx, flat.properties, flat.required, `${opName}Response`, 0, "out"),
+        traits: { "smithy.api#output": {} },
+      });
+    }
+  } else {
+    // Non-flattenable response (bare array/scalar/map/union, or an
+    // opaque object) → wrapper whose sole TYPED member IS the payload;
+    // the SdkSpec's rootPipe collapses the wrapper.
+    const conv = convertSchema(ctx, schema, `${opName}ResponseBody`, 0, "out");
+    if (conv.target !== PRELUDE.Document || deref(ctx, schema)) {
+      outputTarget = addShape(ctx, `${opName}Response`, {
+        type: "structure",
+        members: {
+          body: {
+            target: conv.target,
+            traits: {
+              [RAW_RESPONSE_TRAIT]: {},
+              "smithy.api#required": {},
+              ...(conv.nullable ? { [NULLABLE_TRAIT]: {} } : {}),
+            },
+          },
+        },
+        traits: { "smithy.api#output": {} },
+      });
+    }
+  }
+  return outputTarget;
+};
+
+/**
+ * The output shape for ONE event of a `text/event-stream` response. Same
+ * rules as {@link outputShapeFor}; an event with no (or an opaque) schema
+ * still gets a raw-response wrapper over a Document, so the stream yields
+ * `unknown` values rather than nothing.
+ */
+const eventShapeFor = (ctx: Ctx, schema: any | undefined, opName: string): string => {
+  const target = schema !== undefined ? outputShapeFor(ctx, schema, opName) : PRELUDE.Unit;
+  if (target !== PRELUDE.Unit) return target;
+  return addShape(ctx, `${opName}Response`, {
+    type: "structure",
+    members: {
+      body: {
+        target: PRELUDE.Document,
+        traits: { [RAW_RESPONSE_TRAIT]: {}, "smithy.api#required": {} },
+      },
+    },
+    traits: { "smithy.api#output": {} },
+  });
 };
 
 // ============================================================================
@@ -1462,55 +1577,16 @@ export const convertOpenApiToSmithy = (
         method === "head"
           ? { schema: undefined }
           : successSchema(ctx, op.responses, successStatuses);
-      let outputTarget: string = PRELUDE.Unit;
-      if (respSchema !== undefined) {
-        const flat = flattenObject(ctx, respSchema);
-        if (Object.keys(flat.properties).length > 0) {
-          const resolved = deref(ctx, respSchema);
-          const isPlainRef =
-            typeof respSchema.$ref === "string" &&
-            !Array.isArray(resolved?.allOf) &&
-            isNameable(ctx, resolved);
-          if (isPlainRef) {
-            // Reuse the named component shape as the output directly.
-            outputTarget = convertSchema(ctx, respSchema, opName, 0, "out").target;
-          } else {
-            outputTarget = addShape(ctx, `${opName}Response`, {
-              type: "structure",
-              members: buildMembers(
-                ctx,
-                flat.properties,
-                flat.required,
-                `${opName}Response`,
-                0,
-                "out",
-              ),
-              traits: { "smithy.api#output": {} },
-            });
-          }
-        } else {
-          // Non-flattenable response (bare array/scalar/map/union, or an
-          // opaque object) → wrapper whose sole TYPED member IS the payload;
-          // the SdkSpec's rootPipe collapses the wrapper.
-          const conv = convertSchema(ctx, respSchema, `${opName}ResponseBody`, 0, "out");
-          if (conv.target !== PRELUDE.Document || deref(ctx, respSchema)) {
-            outputTarget = addShape(ctx, `${opName}Response`, {
-              type: "structure",
-              members: {
-                body: {
-                  target: conv.target,
-                  traits: {
-                    [RAW_RESPONSE_TRAIT]: {},
-                    "smithy.api#required": {},
-                    ...(conv.nullable ? { [NULLABLE_TRAIT]: {} } : {}),
-                  },
-                },
-              },
-              traits: { "smithy.api#output": {} },
-            });
-          }
-        }
-      }
+      const sse =
+        method === "head" ? undefined : eventStreamContent(ctx, op.responses, successStatuses);
+      // An endpoint that ONLY streams: its output is the event payload.
+      const streamOnly = sse !== undefined && respSchema === undefined;
+      const outputTarget =
+        respSchema !== undefined
+          ? outputShapeFor(ctx, respSchema, opName)
+          : streamOnly
+            ? eventShapeFor(ctx, sse.schema, opName)
+            : PRELUDE.Unit;
 
       // ---- Errors ----
       const errors: Array<{ target: string }> = [];
@@ -1525,7 +1601,7 @@ export const convertOpenApiToSmithy = (
       }
 
       // ---- Pagination ----
-      const pagination = detectPagination(ctx, params, respSchema);
+      const pagination = streamOnly ? undefined : detectPagination(ctx, params, respSchema);
 
       // ---- Operation shape ----
       const httpTrait: Record<string, any> = {
@@ -1543,6 +1619,10 @@ export const convertOpenApiToSmithy = (
         traits[API_VERSION_TRAIT] = options.apiVersion;
       }
 
+      if (streamOnly) {
+        traits[EVENT_STREAM_TRAIT] = {} satisfies EventStreamTraitValue;
+      }
+
       const opId = addShape(ctx, opName, {
         type: "operation",
         input: { target: inputTarget },
@@ -1551,6 +1631,28 @@ export const convertOpenApiToSmithy = (
         traits,
       });
       serviceOps.push({ target: opId });
+
+      // A dual-mode endpoint (JSON *and* `text/event-stream`, chosen by a
+      // body flag or the Accept header) keeps its JSON operation and gains a
+      // `<Op>Stream` sibling: same input, one event per output value.
+      if (sse !== undefined && !streamOnly) {
+        const streamOpName = `${opName}Stream`;
+        const requestFlag = streamRequestFlag(ctx, bodySchema);
+        const { "smithy.api#paginated": _paginated, ...streamTraits } = traits;
+        const streamOpId = addShape(ctx, streamOpName, {
+          type: "operation",
+          input: { target: inputTarget },
+          output: { target: eventShapeFor(ctx, sse.schema, streamOpName) },
+          ...(errors.length ? { errors } : {}),
+          traits: {
+            ...streamTraits,
+            [EVENT_STREAM_TRAIT]: (requestFlag
+              ? { requestFlag }
+              : {}) satisfies EventStreamTraitValue,
+          },
+        });
+        serviceOps.push({ target: streamOpId });
+      }
     }
   }
 
