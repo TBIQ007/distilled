@@ -25,6 +25,7 @@ import * as API from "@distilled.cloud/core/api";
  * rules) is keyed off the operation config's identity, which `API.make`
  * memoizes — so it runs once per operation per process.
  */
+import * as Cause from "effect/Cause";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import { pipe } from "effect/Function";
@@ -150,19 +151,32 @@ const encode = ({
     // tokens as the one that is sent.
     const filledInput = fillInput(input);
 
+    // Debug logs never carry secrets: the serializers unwrap `Redacted` values
+    // and write sensitive members verbatim into the body, so both logs use a
+    // masked copy of the input instead of the input and the sent request.
+    // `Payload` is logged before serialization, so it is logged even when
+    // serialization fails.
+    const debug = yield* LogLevel.isEnabled("Debug");
+    const maskedInput = debug ? redactInput(filledInput) : undefined;
+    if (debug) {
+      yield* Effect.logDebug("Payload", maskedInput);
+    }
+
     // Serialize the input (protocol serializer + annotation middleware)
     const request = yield* buildRequest(filledInput);
 
-    // Debug logs never carry secrets: the serializers unwrap `Redacted` values
-    // and write sensitive members verbatim into the body, so the logged request
-    // is built from a masked copy of the input instead of the sent request.
-    if (yield* LogLevel.isEnabled("Debug")) {
-      const maskedInput = redactInput(filledInput);
-      yield* Effect.logDebug("Payload", maskedInput);
+    if (debug) {
+      // A failure or defect in the masked build only loses this log line;
+      // interruption still propagates.
       yield* buildRequest(maskedInput).pipe(
         Effect.flatMap((masked) => Effect.logDebug("Built Request", masked)),
-        Effect.catchCause(() =>
-          Effect.logDebug("Built Request", "(unavailable: the redacted copy failed to serialize)"),
+        Effect.catchCauseIf(
+          (cause) => !Cause.hasInterrupts(cause),
+          () =>
+            Effect.logDebug(
+              "Built Request",
+              "(unavailable: the redacted copy failed to serialize)",
+            ),
         ),
       );
     }
